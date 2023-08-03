@@ -1,0 +1,1 @@
+export FREERTOS_KERNEL_PATH=pico/freertos-pico/FreeRTOS-Kernel

@@ -1,0 +1,27 @@
+{
+    "files.associations": {
+        "freertos.h": "c",
+        "functional": "c",
+        "lfs_api.h": "c",
+        "binary_info.h": "c",
+        "sync.h": "c",
+        "sio.h": "c",
+        "flash.h": "c",
+        "bootrom.h": "c",
+        "stdlib.h": "c",
+        "gpio.h": "c",
+        "spi.h": "c",
+        "string.h": "c",
+        "*.tcc": "c",
+        "optional": "c",
+        "ratio": "c",
+        "system_error": "c",
+        "array": "c",
+        "tuple": "c",
+        "type_traits": "c",
+        "utility": "c",
+        "istream": "c",
+        "ostream": "c"
+    },
+    "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
+}
