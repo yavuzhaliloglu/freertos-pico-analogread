@@ -21,8 +21,8 @@
 // SPI DEFINES
 #define FLASH_DATA_COUNT_OFFSET 512 * 1024
 #define FLASH_TARGET_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
-#define FLASH_DATA_SIZE 8
-// #define FLASH_TOTAL_PAGES (PICO_FLASH_SIZE_BYTES - FLASH_TARGET_OFFSET) / FLASH_PAGE_SIZE // 6144
+#define FLASH_TOTAL_SECTORS ((PICO_FLASH_SIZE_BYTES - FLASH_TARGET_OFFSET) / FLASH_SECTOR_SIZE) - 1
+#define FLASH_DATA_SIZE 9
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
@@ -43,12 +43,6 @@
 
 // RTC DEFINES
 #define PT7C4338_REG_SECONDS 0x00
-// #define PT7C4338_REG_MINUTES 0x01
-// #define PT7C4338_REG_HOURS 0x02
-// #define PT7C4338_REG_DAY 0x03
-// #define PT7C4338_REG_DATE 0x04
-// #define PT7C4338_REG_MONTH 0x05
-// #define PT7C4338_REG_YEAR 0x06
 
 // RESET PIN DEFINE
 #define RESET_PULSE_PIN 2
@@ -57,34 +51,28 @@
 // ADC DEFINES
 #define VRMS_SAMPLE 500
 #define DATETIME_SIZE 42
+#define VRMS_BUFFER_SIZE 15
+#define VRMS_DATA_BUFFER_TIME 4000
+#define VRMS_DATA_FLASH_TIME VRMS_DATA_SIZE *VRMS_DATA_BUFFER_TIME
 
 // ADC VARIABLES
 double vrms;
 volatile double vrms_accumulator = 0.0;
-char flash_data_str[FLASH_DATA_SIZE];
 uint8_t max_vrms = 2;
 uint8_t min_vrms = 10;
-// uint8_t flash_data[256];    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
-uint8_t flash_data[FLASH_SECTOR_SIZE] = {};
-static uint16_t sector_data = 0;
-uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)];
-int *p, addr, value;
+uint16_t vrms_buffer[VRMS_BUFFER_SIZE];
+
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
-// uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
-
-char element_str[2];
+char element_str[2]; // initialized for print_buf, will be removed.
 char sector_data_str[2];
+uint8_t flash_data[FLASH_SECTOR_SIZE] = {};
+static uint16_t sector_data = 0; // 382 is last sector
+uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)];
 
 // RTC VARIABLES
 char datetime_buf[64];
 char *datetime_str = &datetime_buf[0];
-
-// DATETIME VARIABLES
-//  clock_t clock()
-//  {
-//      return (clock_t)time_us_64() / 10000;
-//  }
 
 datetime_t t = {
     .year = 2020,
@@ -95,7 +83,6 @@ datetime_t t = {
     .min = 45,
     .sec = 00};
 
-char time_short[20];
 // UART VARIABLES
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
 uint8_t rxChar;
@@ -187,21 +174,26 @@ void print_buf(const uint8_t *buf, size_t len)
     }
 }
 
-void fetch_sector_data()
+void set_sector_data()
 {
     sector_buffer[0] = sector_data;
     flash_range_erase(FLASH_DATA_COUNT_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_DATA_COUNT_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
 }
 
-void fetch_flash_data()
+void set_flash_data()
 {
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     uint16_t i;
 
+    // TO-DO:
+    // flasha yazma işleminde yazamadan önce silinip güç kesildiğinde tüm bitler ff kalıyordu ve yazma işlemi yapmıyordu.
+    // şuan yazma işlemi yapıyor fakat sektörü silip en başından yapıyor ve veri kaybına sebep oluyor.
+
     for (i = 0; i < FLASH_SECTOR_SIZE; i += 8)
     {
-        if (flash_target_contents[i] == '\0')
+
+        if (flash_target_contents[i] == '\0' || flash_target_contents[i] == 0xff)
         {
             flash_data[i] = t.day;
             flash_data[i + 1] = t.month;
@@ -214,34 +206,75 @@ void fetch_flash_data()
             break;
         }
     }
+
     if (i == FLASH_SECTOR_SIZE)
     {
-        sector_data++;
+        if (sector_data == 382)
+        {
+            sector_data = 0;
+        }
+        else
+        {
+            sector_data++;
+        }
         memset(flash_data, 0, FLASH_SECTOR_SIZE);
-        fetch_sector_data();
+        flash_data[0] = t.day;
+        flash_data[1] = t.month;
+        flash_data[2] = t.year;
+        flash_data[3] = t.hour;
+        flash_data[4] = t.min;
+        flash_data[5] = t.sec;
+        flash_data[6] = max_vrms;
+        flash_data[7] = min_vrms;
+        set_sector_data();
     }
+}
+
+void reset_flash()
+{
+    sector_data = 0;
+    memset(flash_data, 0, FLASH_SECTOR_SIZE);
+    set_sector_data();
+    flash_range_erase(FLASH_TARGET_OFFSET, (FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE) - FLASH_PAGE_SIZE);
 }
 
 // SPI WRITE FUNCTION
 void spi_write_buffer()
 {
-    uint8_t *flash_x_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (14 * FLASH_PAGE_SIZE));
-    fetch_flash_data();
-    vTaskDelay(10);
-    // fetch_sector_data();
 
-    printf("\nFLASH PAGE INDEX PAGE:\n");
+    // uint8_t *flash_end_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (382 * FLASH_SECTOR_SIZE) + (14 * FLASH_PAGE_SIZE));
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (14 * FLASH_PAGE_SIZE));
+    set_flash_data();
+    vTaskDelay(10);
+    // set_sector_data();
+
+    printf("\nSECTOR PAGE: \n");
     print_buf(flash_sector_contents, FLASH_PAGE_SIZE);
 
     printf("\nerasing...\n");
     flash_range_erase(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
     printf("DATA PAGE erased\n");
     vTaskDelay(10);
-    print_buf(flash_x_content, FLASH_PAGE_SIZE * 4);
+
+    printf("\nerased content:\n");
+    print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
+
+    // printf("\nFIRST 2 PAGES:\n");
+    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
+    // printf("\nLAST 2 PAGES:\n");
+    // print_buf(flash_end_content, FLASH_PAGE_SIZE * 2);
+
     printf("\nprogramming...\n");
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
     printf("DATA PAGE programmed.\n");
-    print_buf(flash_x_content, FLASH_PAGE_SIZE * 4);
+
+    printf("\nwrited content:\n");
+    print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
+
+    // printf("\nFIRST 2 PAGES:\n");
+    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
+    // printf("\nLAST 2 PAGES:\n");
+    // print_buf(flash_end_content, FLASH_PAGE_SIZE * 2);
 }
 
 // UART TASK
@@ -279,6 +312,10 @@ void vUARTTask(void *pvParameters)
                     uart_puts(UART0_ID, "vrms = ");
                     uart_puts(UART0_ID, "\r\n");
                 }
+                if (rxChar == 'r')
+                {
+                    reset_flash();
+                }
             }
         }
     }
@@ -291,7 +328,6 @@ void vBlinkTask()
     {
         gpio_put(PICO_DEFAULT_LED_PIN, 1);
         vTaskDelay(10);
-        // uart_puts(UART0_ID, "Blink\r\n");
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         vTaskDelay(600);
     }
@@ -320,9 +356,10 @@ void vADCReadTask()
             vTaskDelay(4);
         }
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
+
         spi_write_buffer();
         executionTime = xTaskGetTickCount() - startTime;
-        vTaskDelay(3000 - (unsigned int)executionTime);
+        // vTaskDelay(3000 - (unsigned int)executionTime);
     }
 }
 
@@ -334,7 +371,7 @@ void vWriteDebugTask()
         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
         // rtc_get_datetime(&t);    This function uses rp2040's rtc
         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-        // printf("RTC Time:%s \r\n", datetime_str);
+        printf("RTC Time:%s \r\n", datetime_str);
         vTaskDelay(1000);
     }
 }
@@ -386,21 +423,20 @@ void main()
     // SET TIMER TO RTC
     // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 0x00, 0x04, 0x21, 0x01, 0x30, 0x07, 0x23);
 
-    sprintf(sector_data_str, "%02x", flash_sector_contents[0]);
-    sector_data = strtoul(sector_data_str, NULL, 16);
+    sector_data = *(uint16_t *)flash_sector_contents;
     printf("%d", sector_data);
+
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+
     for (uint16_t k = 0; k < FLASH_SECTOR_SIZE; k++)
     {
-        sprintf(element_str, "%02x", flash_target_contents[k]);
-        // if (element_str == "ff"){
-        //     memset(flash_data,0,FLASH_SECTOR_SIZE);
-        // }
-        flash_data[k] = strtoul(element_str, NULL, 16);
+        flash_data[k] = flash_target_contents[k];
     }
 
-    // for (int i = 0; i < (FLASH_SECTOR_SIZE - FLASH_PAGE_SIZE); i++)
+    // for (int i = 0; i < FLASH_SECTOR_SIZE - FLASH_PAGE_SIZE; i++)
+    // {
     //     flash_data[i] = 12;
+    // }
 
     xTaskCreate(vBlinkTask, "BlinkTask", 128, NULL, 1, NULL);
     xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
