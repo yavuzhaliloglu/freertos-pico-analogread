@@ -22,7 +22,7 @@
 #define FLASH_DATA_COUNT_OFFSET 512 * 1024
 #define FLASH_TARGET_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
 #define FLASH_TOTAL_SECTORS ((PICO_FLASH_SIZE_BYTES - FLASH_TARGET_OFFSET) / FLASH_SECTOR_SIZE) - 1
-#define FLASH_DATA_SIZE 9
+#define FLASH_DATA_SIZE 16
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
@@ -66,10 +66,24 @@ static uint8_t vrms_buffer_count = 0;
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
-char element_str[2]; // initialized for print_buf, will be removed.
-uint8_t flash_data[FLASH_SECTOR_SIZE] = {};
+char element_str[2];             // initialized for print_buf, will be removed.
 static uint16_t sector_data = 0; // 382 is last sector
 uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)];
+struct FlashData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    char sec[2];
+    // char date[12];
+    uint8_t max_volt;
+    uint8_t min_volt;
+    uint8_t mean_volt;
+    uint8_t eod_character;
+};
+struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {};
 
 // RTC VARIABLES
 char datetime_buf[64];
@@ -184,8 +198,19 @@ void set_sector_data()
 
 void set_flash_data()
 {
+    struct FlashData data;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     uint16_t i;
+    sprintf(data.year, "%d", t.year);
+    sprintf(data.month, "%d", t.month);
+    sprintf(data.day, "%d", t.day);
+    sprintf(data.hour, "%d", t.hour);
+    sprintf(data.min, "%d", t.min);
+    sprintf(data.sec, "%d", t.sec);
+    data.max_volt = vrms_max;
+    data.min_volt = vrms_min;
+    data.mean_volt = vrms_mean;
+    data.eod_character = '/';
 
     // TO-DO:
     // flasha yazma işleminde yazamadan önce silinip güç kesildiğinde tüm bitler ff kalıyordu ve yazma işlemi yapmıyordu.
@@ -193,21 +218,9 @@ void set_flash_data()
 
     for (i = 0; i < FLASH_SECTOR_SIZE; i += FLASH_DATA_SIZE)
     {
-        if (FLASH_SECTOR_SIZE - i < 9)
-        {
-            continue;
-        }
         if (flash_target_contents[i] == '\0' || flash_target_contents[i] == 0xff)
         {
-            flash_data[i] = t.day;
-            flash_data[i + 1] = t.month;
-            flash_data[i + 2] = t.year;
-            flash_data[i + 3] = t.hour;
-            flash_data[i + 4] = t.min;
-            flash_data[i + 5] = t.sec;
-            flash_data[i + 6] = vrms_max;
-            flash_data[i + 7] = vrms_min;
-            flash_data[i + 8] = vrms_mean;
+            flash_data[i / FLASH_DATA_SIZE] = data;
             break;
         }
     }
@@ -222,16 +235,8 @@ void set_flash_data()
         {
             sector_data++;
         }
-        memset(flash_data, 0, FLASH_SECTOR_SIZE);
-        flash_data[0] = t.day;
-        flash_data[1] = t.month;
-        flash_data[2] = t.year;
-        flash_data[3] = t.hour;
-        flash_data[4] = t.min;
-        flash_data[5] = t.sec;
-        flash_data[6] = vrms_max;
-        flash_data[7] = vrms_min;
-        flash_data[i + 8] = vrms_mean;
+        memset(flash_data, 0, FLASH_SECTOR_SIZE / FLASH_DATA_SIZE);
+        flash_data[0] = data;
         set_sector_data();
     }
 }
@@ -239,7 +244,7 @@ void set_flash_data()
 void reset_flash()
 {
     sector_data = 0;
-    memset(flash_data, 0, FLASH_SECTOR_SIZE);
+    memset(flash_data, 0, sizeof(flash_data));
     set_sector_data();
     flash_range_erase(FLASH_TARGET_OFFSET, (FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE) - FLASH_PAGE_SIZE);
 }
@@ -384,12 +389,10 @@ void vADCReadTask()
             spi_write_buffer();
             vrms_buffer_count = 0;
         }
-
         executionTime = xTaskGetTickCount() - startTime;
         vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime);
     }
 }
-
 // DEBUG TASK
 void vWriteDebugTask()
 {
@@ -451,18 +454,9 @@ void main()
     // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 0x00, 0x04, 0x21, 0x01, 0x30, 0x07, 0x23);
 
     sector_data = *(uint16_t *)flash_sector_contents;
-    printf("%d", sector_data);
-
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
-    for (uint16_t k = 0; k < FLASH_SECTOR_SIZE; k++)
-    {
-        flash_data[k] = flash_target_contents[k];
-    }
 
-    // for (int i = 0; i < FLASH_SECTOR_SIZE - FLASH_PAGE_SIZE; i++)
-    // {
-    //     flash_data[i] = 12;
-    // }
+    memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
 
     xTaskCreate(vBlinkTask, "BlinkTask", 128, NULL, 1, NULL);
     xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
