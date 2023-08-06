@@ -58,14 +58,15 @@
 // ADC VARIABLES
 double vrms;
 volatile double vrms_accumulator = 0.0;
-uint8_t max_vrms = 2;
-uint8_t min_vrms = 10;
-uint16_t vrms_buffer[VRMS_BUFFER_SIZE];
+uint8_t vrms_max = 3;
+uint8_t vrms_min = 1;
+uint8_t vrms_mean = 2;
+uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
+static uint8_t vrms_buffer_count = 0;
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
 char element_str[2]; // initialized for print_buf, will be removed.
-char sector_data_str[2];
 uint8_t flash_data[FLASH_SECTOR_SIZE] = {};
 static uint16_t sector_data = 0; // 382 is last sector
 uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)];
@@ -190,9 +191,12 @@ void set_flash_data()
     // flasha yazma işleminde yazamadan önce silinip güç kesildiğinde tüm bitler ff kalıyordu ve yazma işlemi yapmıyordu.
     // şuan yazma işlemi yapıyor fakat sektörü silip en başından yapıyor ve veri kaybına sebep oluyor.
 
-    for (i = 0; i < FLASH_SECTOR_SIZE; i += 8)
+    for (i = 0; i < FLASH_SECTOR_SIZE; i += FLASH_DATA_SIZE)
     {
-
+        if (FLASH_SECTOR_SIZE - i < 9)
+        {
+            continue;
+        }
         if (flash_target_contents[i] == '\0' || flash_target_contents[i] == 0xff)
         {
             flash_data[i] = t.day;
@@ -201,13 +205,14 @@ void set_flash_data()
             flash_data[i + 3] = t.hour;
             flash_data[i + 4] = t.min;
             flash_data[i + 5] = t.sec;
-            flash_data[i + 6] = max_vrms;
-            flash_data[i + 7] = min_vrms;
+            flash_data[i + 6] = vrms_max;
+            flash_data[i + 7] = vrms_min;
+            flash_data[i + 8] = vrms_mean;
             break;
         }
     }
 
-    if (i == FLASH_SECTOR_SIZE)
+    if (i >= FLASH_SECTOR_SIZE)
     {
         if (sector_data == 382)
         {
@@ -224,8 +229,9 @@ void set_flash_data()
         flash_data[3] = t.hour;
         flash_data[4] = t.min;
         flash_data[5] = t.sec;
-        flash_data[6] = max_vrms;
-        flash_data[7] = min_vrms;
+        flash_data[6] = vrms_max;
+        flash_data[7] = vrms_min;
+        flash_data[i + 8] = vrms_mean;
         set_sector_data();
     }
 }
@@ -241,9 +247,7 @@ void reset_flash()
 // SPI WRITE FUNCTION
 void spi_write_buffer()
 {
-
-    // uint8_t *flash_end_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (382 * FLASH_SECTOR_SIZE) + (14 * FLASH_PAGE_SIZE));
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (14 * FLASH_PAGE_SIZE));
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
     set_flash_data();
     vTaskDelay(10);
     // set_sector_data();
@@ -259,22 +263,36 @@ void spi_write_buffer()
     printf("\nerased content:\n");
     print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
 
-    // printf("\nFIRST 2 PAGES:\n");
-    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
-    // printf("\nLAST 2 PAGES:\n");
-    // print_buf(flash_end_content, FLASH_PAGE_SIZE * 2);
-
     printf("\nprogramming...\n");
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
     printf("DATA PAGE programmed.\n");
 
-    printf("\nwrited content:\n");
+    printf("\nwritten content:\n");
     print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
+}
 
-    // printf("\nFIRST 2 PAGES:\n");
-    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
-    // printf("\nLAST 2 PAGES:\n");
-    // print_buf(flash_end_content, FLASH_PAGE_SIZE * 2);
+// ADC FUNCTIONS
+void vrms_set_max_min_mean(uint8_t *buffer)
+{
+    uint8_t buffer_max = buffer[0];
+    uint8_t buffer_min = buffer[0];
+    uint16_t buffer_sum = buffer[0];
+    uint8_t buffer_size = sizeof(buffer) / sizeof(buffer[0]);
+
+    for (uint8_t i = 1; i < sizeof(buffer); i++)
+    {
+        if (buffer[i] > buffer_max)
+            buffer_max = buffer[i];
+
+        if (buffer[i] < buffer_min)
+            buffer_min = buffer[i];
+
+        buffer_sum += buffer[i];
+    }
+
+    vrms_max = buffer_max;
+    vrms_min = buffer_min;
+    vrms_mean = buffer_sum / buffer_size;
 }
 
 // UART TASK
@@ -353,13 +371,22 @@ void vADCReadTask()
             sample = adc_read() * conversion_factor;
             double vrms_sample = pow(sample, 2);
             vrms_accumulator += vrms_sample;
-            vTaskDelay(4);
+            vTaskDelay(1);
         }
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
 
-        spi_write_buffer();
+        vrms_buffer[vrms_buffer_count] = (uint8_t)vrms;
+        vrms_buffer_count++;
+
+        if (vrms_buffer_count == VRMS_BUFFER_SIZE)
+        {
+            vrms_set_max_min_mean(vrms_buffer);
+            spi_write_buffer();
+            vrms_buffer_count = 0;
+        }
+
         executionTime = xTaskGetTickCount() - startTime;
-        // vTaskDelay(3000 - (unsigned int)executionTime);
+        vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime);
     }
 }
 
@@ -427,7 +454,6 @@ void main()
     printf("%d", sector_data);
 
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
-
     for (uint16_t k = 0; k < FLASH_SECTOR_SIZE; k++)
     {
         flash_data[k] = flash_target_contents[k];
