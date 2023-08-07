@@ -52,8 +52,8 @@
 #define VRMS_SAMPLE 500
 #define DATETIME_SIZE 42
 #define VRMS_BUFFER_SIZE 15
-#define VRMS_DATA_BUFFER_TIME 4000
-#define VRMS_DATA_FLASH_TIME VRMS_DATA_SIZE *VRMS_DATA_BUFFER_TIME
+#define VRMS_DATA_BUFFER_TIME 60000
+// #define VRMS_DATA_FLASH_TIME VRMS_DATA_SIZE *VRMS_DATA_BUFFER_TIME
 
 // ADC VARIABLES
 double vrms;
@@ -63,6 +63,8 @@ uint8_t vrms_min = 1;
 uint8_t vrms_mean = 2;
 uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
 static uint8_t vrms_buffer_count = 0;
+static int c = 0;
+char c_str[2];
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
@@ -210,7 +212,7 @@ void set_flash_data()
     data.max_volt = vrms_max;
     data.min_volt = vrms_min;
     data.mean_volt = vrms_mean;
-    data.eod_character = '/';
+    data.eod_character = 0x04;
 
     // TO-DO:
     // flasha yazma işleminde yazamadan önce silinip güç kesildiğinde tüm bitler ff kalıyordu ve yazma işlemi yapmıyordu.
@@ -235,7 +237,7 @@ void set_flash_data()
         {
             sector_data++;
         }
-        memset(flash_data, 0, FLASH_SECTOR_SIZE / FLASH_DATA_SIZE);
+        memset(flash_data, 0, FLASH_SECTOR_SIZE);
         flash_data[0] = data;
         set_sector_data();
     }
@@ -257,6 +259,10 @@ void spi_write_buffer()
     vTaskDelay(10);
     // set_sector_data();
 
+    sprintf(c_str, "%d", c);
+    uart_puts(UART0_ID, c_str);
+    c++;
+
     printf("\nSECTOR PAGE: \n");
     print_buf(flash_sector_contents, FLASH_PAGE_SIZE);
 
@@ -266,14 +272,14 @@ void spi_write_buffer()
     vTaskDelay(10);
 
     printf("\nerased content:\n");
-    print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
+    print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 
     printf("\nprogramming...\n");
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
     printf("DATA PAGE programmed.\n");
 
     printf("\nwritten content:\n");
-    print_buf(flash_start_content, (4 * FLASH_PAGE_SIZE));
+    print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 }
 
 // ADC FUNCTIONS
@@ -379,16 +385,17 @@ void vADCReadTask()
             vTaskDelay(1);
         }
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-
         vrms_buffer[vrms_buffer_count] = (uint8_t)vrms;
         vrms_buffer_count++;
 
-        if (vrms_buffer_count == VRMS_BUFFER_SIZE)
+        // control for writing data at min 15,30,45 and 00
+        if (t.min % 15 == 0)
         {
             vrms_set_max_min_mean(vrms_buffer);
             spi_write_buffer();
             vrms_buffer_count = 0;
         }
+
         executionTime = xTaskGetTickCount() - startTime;
         vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime);
     }
