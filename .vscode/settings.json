@@ -21,7 +21,12 @@
         "type_traits": "c",
         "utility": "c",
         "istream": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "uart.h": "c",
+        "adc.h": "c",
+        "datetime.h": "c",
+        "i2c.h": "c",
+        "rtc.h": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
 }

@@ -115,7 +115,7 @@ void UART_receive()
 
 void UART_Isr()
 {
-    printf("UART_ISR TASK\r\n");
+    // printf("UART_ISR TASK\r\n");
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uart_set_irq_enables(UART0_ID, false, false);
 
@@ -131,10 +131,11 @@ void initUART()
 {
     printf("UART_INIT TASK\r\n");
     uart_set_format(UART0_ID, DATA_BITS, STOP_BITS, PARITY);
-    uart_set_fifo_enabled(UART0_ID, false);
+    uart_set_fifo_enabled(UART0_ID, true);
     int UART_IRQ = UART0_ID == uart0 ? UART0_IRQ : UART1_IRQ;
     irq_set_exclusive_handler(UART_IRQ, UART_Isr);
     irq_set_enabled(UART_IRQ, true);
+    uart_set_translate_crlf(UART0_ID, true);
 }
 
 // RTC FUNCTIONS
@@ -305,45 +306,39 @@ void vrms_set_max_min_mean(uint8_t *buffer)
     vrms_min = buffer_min;
     vrms_mean = buffer_sum / buffer_size;
 }
-
+char rxParseBuffer[29] = {};
 // UART TASK
 void vUARTTask(void *pvParameters)
 {
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
+    int i = 0;
+    char rxBuffer[29] = {};
 
     while (true)
     {
         printf("UART TASK\r\n");
         UART_receive();
         ulNotificationValue = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-
         if (ulNotificationValue == 1)
         {
             while (uart_is_readable(UART0_ID))
             {
+                printf("enterRead\n");
                 rxChar = uart_getc(UART0_ID);
-
-                if (uart_is_writable(UART0_ID))
+                // ENTER CONTROL
+                if (rxChar != 13)
                 {
-                    uart_putc(UART0_ID, rxChar);
+                    rxBuffer[i++] = rxChar;
+                    printf("chaerentered:%c\n", rxChar);
                 }
-                if (rxChar == 'b')
+                if (rxChar == 13)
                 {
-                    get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-                    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-                    uart_puts(UART0_ID, datetime_str);
-                    uart_puts(UART0_ID, "\r\n");
-                }
-                if (rxChar == 'v')
-                {
-                    uart_puts(UART0_ID, "vrms = ");
-                    uart_puts(UART0_ID, "\r\n");
-                }
-                if (rxChar == 'r')
-                {
-                    reset_flash();
+                    memcpy(rxParseBuffer, rxBuffer, 29);
+                    memset(rxBuffer, 0, 29);
+                    printf("\nnewline\n");
+                    i = 0;
                 }
             }
         }
@@ -359,6 +354,7 @@ void vBlinkTask()
         vTaskDelay(10);
         gpio_put(PICO_DEFAULT_LED_PIN, 0);
         vTaskDelay(600);
+        printf("%s \n", rxParseBuffer);
     }
 }
 
@@ -408,7 +404,7 @@ void vWriteDebugTask()
         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
         // rtc_get_datetime(&t);    This function uses rp2040's rtc
         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-        printf("RTC Time:%s \r\n", datetime_str);
+        // printf("RTC Time:%s \r\n", datetime_str);
         vTaskDelay(1000);
     }
 }
