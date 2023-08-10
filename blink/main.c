@@ -29,7 +29,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 9600
+#define BAUD_RATE 115200
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -61,9 +61,11 @@
 uint8_t vrms_max = 0;
 uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
+uint16_t sample_buf[VRMS_SAMPLE];
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
+uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {};
 static uint16_t sector_data = 0; // 382 is last sector
 struct FlashData
 {
@@ -220,21 +222,23 @@ void print_buf(const uint8_t *buf, size_t len)
     for (size_t i = 0; i < len; ++i)
     {
         sprintf(element_str, "%02x", buf[i]);
-        printf("%s", element_str);
-
+        // printf("%s", element_str);
+        uart_puts(UART0_ID, element_str);
         if (i % 16 == 15)
-            printf("\n");
+            // printf("\n");
+            uart_putc(UART0_ID, '\n');
         else
-            printf(" ");
+            // printf(" ");
+            uart_putc(UART0_ID, ' ');
 
         if (i % 256 == 0)
-            printf("\n\n");
+            // printf("\n\n");
+            uart_puts(UART0_ID, "\n\n");
     }
 }
 
 void set_sector_data()
 {
-    uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)];
     sector_buffer[0] = sector_data;
     flash_range_erase(FLASH_DATA_COUNT_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_DATA_COUNT_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
@@ -303,25 +307,23 @@ void spi_write_buffer()
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
     set_flash_data();
-    vTaskDelay(10);
     // set_sector_data();
 
-    printf("\nSECTOR PAGE: \n");
+    uart_puts(UART0_ID, "\nSECTOR PAGE: \n");
     print_buf(flash_sector_contents, FLASH_PAGE_SIZE);
 
-    printf("\nerasing...\n");
+    uart_puts(UART0_ID, "\nERASING: \n");
     flash_range_erase(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    printf("DATA PAGE erased\n");
-    vTaskDelay(10);
+    uart_puts(UART0_ID, "\nERASED: \n");
 
-    printf("\nerased content:\n");
+    uart_puts(UART0_ID, "\nERASED CONTENT: \n");
     print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 
-    printf("\nprogramming...\n");
+    uart_puts(UART0_ID, "\nPROGRAMMING: \n");
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
-    printf("DATA PAGE programmed.\n");
+    uart_puts(UART0_ID, "\nPROGRAMMED: \n");
 
-    printf("\nwritten content:\n");
+    uart_puts(UART0_ID, "\nWRITTEN CONTENT: \n");
     print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 }
 
@@ -387,14 +389,14 @@ void __not_in_flash_func(adc_capture)(uint16_t *buf, size_t count)
     adc_fifo_drain();
 }
 
-void vrms_set_max_min_mean(uint8_t *buffer)
+void vrms_set_max_min_mean(uint8_t *buffer, uint8_t size)
 {
     uint8_t buffer_max = buffer[0];
     uint8_t buffer_min = buffer[0];
     uint16_t buffer_sum = buffer[0];
-    uint8_t buffer_size = sizeof(buffer) / sizeof(buffer[0]);
+    uint8_t buffer_size = size;
 
-    for (uint8_t i = 1; i < sizeof(buffer); i++)
+    for (uint8_t i = 1; i < size; i++)
     {
         if (buffer[i] > buffer_max)
             buffer_max = buffer[i];
@@ -488,69 +490,64 @@ void vBlinkTask()
     }
 }
 
+static uint8_t vrms_buffer_count = 0;
+double vrms_accumulator = 0.0;
+char deneme_str[20];
+const float conversion_factor = 1000 * (3.3f / (1 << 12));
+uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
+double vrms;
+
 // ADC CONVERTER TASK
 void vADCReadTask()
 {
     TickType_t startTime;
     TickType_t executionTime;
-    const float conversion_factor = 3.3f / (1 << 12);
-    uint16_t sample_buf[VRMS_SAMPLE];
-    uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
-    static uint8_t vrms_buffer_count = 0;
-    volatile double vrms_accumulator = 0.0;
-    double vrms;
-
-    uint dma_chan = dma_claim_unused_channel(true);
-    dma_channel_config cfg = dma_channel_get_default_config(dma_chan);
-
-    channel_config_set_transfer_data_size(&cfg, DMA_SIZE_8);
-    channel_config_set_read_increment(&cfg, false);
-    channel_config_set_write_increment(&cfg, true);
-
-    channel_config_set_dreq(&cfg, DREQ_ADC);
-    dma_channel_configure(dma_chan, &cfg, sample_buf, &adc_hw->fifo, VRMS_SAMPLE, true);
 
     while (1)
     {
         startTime = xTaskGetTickCount();
-        int sample_count;
-        vrms_accumulator = 0;
-        char deneme_str[4];
 
         adc_capture(sample_buf, VRMS_SAMPLE);
-        vTaskDelay(100);
 
-        if (adc_fifo_is_empty)
-        {
-            printf("fifo is empty\n");
-        }
+        int sumSamples = 0;
 
         for (int i = 0; i < VRMS_SAMPLE; i++)
         {
-            sprintf(deneme_str, "%d", sample_buf[i]);
-            printf("%s\n", deneme_str);
-            vrms_accumulator += sample_buf[i] * sample_buf[i];
+            uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
+            sumSamples += production;
+        }
+
+        uint16_t mean = sumSamples / VRMS_SAMPLE;
+        sprintf(deneme_str, "mean:%d\n", mean);
+        uart_puts(UART0_ID, deneme_str);
+
+        for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
+        {
+            uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
+            vrms_accumulator += pow((production - mean), 2);
         }
 
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-        sprintf(deneme_str, "%f", vrms);
-        printf("\nvrms: %s", deneme_str);
+        vrms = vrms * 65.57;
+        vrms = vrms / 1000;
 
-        vrms_buffer[vrms_buffer_count] = (uint8_t)vrms;
-        vrms_buffer_count++;
+        sprintf(deneme_str, "vrms%f\n", vrms);
+        uart_puts(UART0_ID, deneme_str);
 
-        // control for writing data at min 15,30,45 and 00
+        vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
+
         if (t.min % 15 == 0)
         {
-            vrms_set_max_min_mean(vrms_buffer);
+            vrms_set_max_min_mean(vrms_buffer, vrms_buffer_count);
             spi_write_buffer();
             vrms_buffer_count = 0;
         }
-        printf("adc ended\n");
+
         executionTime = xTaskGetTickCount() - startTime;
         vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime);
     }
 }
+
 // DEBUG TASK
 void vWriteDebugTask()
 {
@@ -617,7 +614,7 @@ void main()
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
 
     xTaskCreate(vBlinkTask, "BlinkTask", 128, NULL, 1, NULL);
-    // xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
     xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 1, NULL);
     xTaskCreate(vResetTask, "ResetTask", 128, NULL, 1, NULL);
