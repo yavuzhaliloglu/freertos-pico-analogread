@@ -702,10 +702,346 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/std
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.s
 
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj -c /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.i: cmake_force
@@ -719,7 +1055,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/Thir
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.i: cmake_force
@@ -733,7 +1069,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.s:
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.i: cmake_force
@@ -747,7 +1083,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.i: cmake_force
@@ -761,7 +1097,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c.s: cma
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.i: cmake_force
@@ -775,7 +1111,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c.s: cm
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c.i: cmake_force
@@ -789,7 +1125,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.i: cmake_force
@@ -803,7 +1139,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c.s: cm
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.i: cmake_force
@@ -817,7 +1153,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.s: c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i: cmake_force
@@ -831,7 +1167,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i: cmake_force
@@ -845,7 +1181,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/mult
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj: /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_81) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.obj -c /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c.i: cmake_force
@@ -859,7 +1195,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemM
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_82) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i: cmake_force
@@ -873,7 +1209,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_83) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i: cmake_force
@@ -887,7 +1223,7 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_84) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i: cmake_force
@@ -898,10 +1234,24 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
 
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj: CMakeFiles/blink.dir/flags.make
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_85) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s"
+	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
+
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: CMakeFiles/blink.dir/flags.make
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_86) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i: cmake_force
@@ -911,20 +1261,6 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-
-CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/blink.dir/flags.make
-CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c
-CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/blink.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -MF CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj.d -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -c /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c
-
-CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c > CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
-
-CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c -o CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
 
 # Object files for target blink
 blink_OBJECTS = \
@@ -974,6 +1310,30 @@ blink_OBJECTS = \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj" \
@@ -988,8 +1348,8 @@ blink_OBJECTS = \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj" \
 "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj" \
-"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj" \
-"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj"
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj" \
+"CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj"
 
 # External object files for target blink
 blink_EXTERNAL_OBJECTS =
@@ -1040,6 +1400,30 @@ blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_sta
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c.obj
@@ -1054,12 +1438,12 @@ blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/po
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
+blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
 blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-blink.elf: CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
 blink.elf: CMakeFiles/blink.dir/build.make
 blink.elf: pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
 blink.elf: CMakeFiles/blink.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Linking CXX executable blink.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_87) "Linking CXX executable blink.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/blink.dir/link.txt --verbose=$(VERBOSE)
 	/usr/bin/arm-none-eabi-objcopy -Oihex /home/yavuz/pico/freertos-pico/blink/build/blink.elf blink.hex
 	/usr/bin/arm-none-eabi-objcopy -Obinary /home/yavuz/pico/freertos-pico/blink/build/blink.elf blink.bin

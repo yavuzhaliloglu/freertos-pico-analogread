@@ -25,13 +25,15 @@ target_link_libraries(blink pico_stdlib
                     hardware_rtc
                     hardware_i2c
                     hardware_adc
+                    hardware_dma
                     hardware_spi
                     hardware_flash
+                    hardware_irq
                     hardware_sync)
                     
 # Enable/disable STDIO via USB and UART
 # We use UART1 as a debug port because UART0 is attached to RS485
-pico_enable_stdio_usb(blink 0)
+pico_enable_stdio_usb(blink 1)
 pico_enable_stdio_uart(blink 1)
 
 # create map/bin/hex/uf2 file etc.

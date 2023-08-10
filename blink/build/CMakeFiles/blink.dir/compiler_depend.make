@@ -471,6 +471,1024 @@ CMakeFiles/blink.dir/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c.obj:
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h \
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h
 
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/include/newlib/assert.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/dcd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_private.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/dcd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/dcd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /usr/include/newlib/stdlib.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/machine/stdlib.h \
+  /usr/include/newlib/alloca.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj: /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_private.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h
+
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj: /home/yavuz/pico/pico-sdk/src/common/pico_sync/critical_section.c \
   /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
   /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
@@ -1026,6 +2044,64 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/clo
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/iobank0.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c \
+  /usr/include/newlib/stdio.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/include/hardware/dma.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/dma.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dma.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_claim/include/hardware/claim.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c \
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/include/hardware/exception.h \
@@ -1724,6 +2800,55 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/double_
   /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/sf_table.h
 
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/padsbank0.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/iobank0.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/include/pico/fix/rp2040_usb_device_enumeration.h
+
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c \
   /usr/include/newlib/string.h \
   /usr/include/newlib/_ansi.h \
@@ -2228,7 +3353,8 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
-  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h
 
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio/driver.h \
@@ -2283,6 +3409,290 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/std
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h
 
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/include/newlib/assert.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb/reset_interface.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_usb_reset_interface/include/pico/usb_reset_interface.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/include/newlib/assert.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio/driver.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  /usr/include/newlib/string.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/include/newlib/sys/reent.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/sys/_types.h \
+  /usr/include/newlib/machine/_types.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /usr/include/newlib/sys/lock.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/sys/_locale.h \
+  /usr/include/newlib/strings.h \
+  /usr/include/newlib/sys/string.h \
+  /usr/include/newlib/stdio.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h \
+  /usr/include/newlib/sys/types.h \
+  /usr/include/newlib/sys/_stdint.h \
+  /usr/include/newlib/machine/endian.h \
+  /usr/include/newlib/machine/_endian.h \
+  /usr/include/newlib/sys/select.h \
+  /usr/include/newlib/sys/_sigset.h \
+  /usr/include/newlib/sys/_timeval.h \
+  /usr/include/newlib/sys/timespec.h \
+  /usr/include/newlib/sys/_timespec.h \
+  /usr/include/newlib/sys/_pthreadtypes.h \
+  /usr/include/newlib/sys/sched.h \
+  /usr/include/newlib/machine/types.h \
+  /usr/include/newlib/sys/stdio.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/include/newlib/assert.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h \
+  /home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb/reset_interface.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_usb_reset_interface/include/pico/usb_reset_interface.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h
+
 CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c \
   /home/yavuz/pico/pico-sdk/src/common/pico_stdlib/include/pico/stdlib.h \
   /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
@@ -2335,12 +3745,46 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_pll/include/hardware/pll.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pll.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pll.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h
+
+CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h \
+  /usr/include/newlib/assert.h \
+  /usr/include/newlib/_ansi.h \
+  /usr/include/newlib/newlib.h \
+  /usr/include/newlib/_newlib_version.h \
+  /usr/include/newlib/sys/config.h \
+  /usr/include/newlib/machine/ieeefp.h \
+  /usr/include/newlib/sys/features.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h \
+  /usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h \
+  generated/pico_base/pico/version.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h \
+  generated/pico_base/pico/config_autogen.h \
+  /home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h \
+  ../FreeRTOSConfig.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h \
+  /usr/include/newlib/sys/cdefs.h \
+  /usr/include/newlib/machine/_default_types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
+  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h
 
 CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /usr/include/newlib/stdio.h \
@@ -2417,6 +3861,7 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/FreeRTOS.h \
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/projdefs.h \
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/portable.h \
@@ -2447,6 +3892,9 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
   /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/include/hardware/dma.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/dma.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dma.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
   /usr/include/newlib/string.h \
   /usr/include/newlib/strings.h \
@@ -2454,458 +3902,568 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h
 
 
-/home/yavuz/pico/pico-sdk/src/common/pico_stdlib/include/pico/stdlib.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio/driver.h:
-
-/usr/include/newlib/sys/stat.h:
-
-/usr/include/newlib/c++/10.3.1/bits/std_abs.h:
-
-/usr/include/newlib/c++/10.3.1/pstl/pstl_config.h:
-
-/usr/include/newlib/c++/10.3.1/cstdlib:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h:
-
-/usr/include/newlib/sys/unistd.h:
-
-/usr/include/newlib/sys/times.h:
-
-/usr/include/newlib/machine/time.h:
-
-/usr/include/newlib/time.h:
-
-/usr/include/newlib/sys/time.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sysinfo.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/mpu.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/platform.c:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/float.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/include/pico/float.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_math.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c:
-
 ../main.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/psm.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_unique_id/include/pico/unique_id.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/vreg_and_chip_reset.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_usb_reset_interface/include/pico/usb_reset_interface.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/rtc.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_printf/include/pico/printf.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/rtc.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_qspi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ioqspi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ssi.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/xosc.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_xosc/include/hardware/xosc.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pll.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pll.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/include/pico/double.h:
-
-/usr/include/newlib/sys/_locale.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/sf_table.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/stack_macros.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h:
-
-/usr/include/newlib/sys/sched.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/boot_stage2/include/boot_stage2/config.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h:
-
-/usr/include/newlib/stdlib.h:
-
-generated/pico_base/pico/config_autogen.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/include/hardware/rtc.h:
-
-/usr/include/newlib/sys/lock.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/mpu_wrappers.h:
-
-/usr/include/newlib/machine/_types.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/croutine.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_util/queue.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/xosc.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/queue.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h:
-
-/usr/include/newlib/machine/_default_types.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/projdefs.h:
-
-/usr/include/newlib/sys/config.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/portmacro.h:
-
-/usr/include/newlib/machine/_time.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_pll/include/hardware/pll.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c:
-
-/usr/include/newlib/newlib.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/vreg_and_chip_reset.h:
-
-/usr/include/newlib/sys/features.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_util/datetime.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/sem.c:
-
-/usr/include/newlib/assert.h:
-
-/usr/include/newlib/machine/ieeefp.h:
-
-/usr/include/newlib/sys/_types.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/tbman.h:
-
-/usr/include/newlib/inttypes.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/padsbank0.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sync.h:
-
-../FreeRTOSConfig.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/FreeRTOS.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h:
-
-/usr/include/newlib/sys/reent.h:
-
-/usr/include/newlib/alloca.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/iobank0.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/portable.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c:
-
-/usr/include/newlib/c++/10.3.1/stdlib.h:
-
-/usr/include/newlib/sys/_intsup.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/deprecated_definitions.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h:
-
-/usr/include/newlib/machine/stdlib.h:
-
-/usr/include/newlib/sys/_stdint.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/psm.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c:
-
-/usr/include/newlib/_ansi.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h:
-
-/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h:
-
-generated/pico_base/pico/version.h:
-
-/usr/include/newlib/machine/_endian.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_vreg/include/hardware/vreg.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_time/timeout_helper.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/mutex.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_printf/printf.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h:
-
-/usr/include/newlib/unistd.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h:
-
-/usr/include/newlib/math.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/timeout_helper.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/datetime.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h:
-
-/usr/include/newlib/c++/10.3.1/cassert:
-
-/usr/include/newlib/strings.h:
-
-/usr/include/newlib/sys/string.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/queue.h:
-
-/usr/include/newlib/sys/cdefs.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/stream_buffer.h:
-
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c:
-
-/usr/include/newlib/string.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/critical_section.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/ssi.h:
-
-/home/yavuz/pico/pico-sdk/src/common/pico_sync/lock_core.c:
-
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb/reset_interface.h:
 
 /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h:
 
-/home/yavuz/pico/pico-sdk/src/common/pico_time/time.c:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio/driver.h:
 
-/usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed/limits.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c:
+/usr/include/newlib/c++/10.3.1/pstl/pstl_config.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_claim/include/hardware/claim.h:
+/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/cpu_defines.h:
+
+/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/c++config.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/boot_stage2/include/boot_stage2/config.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.h:
+
+/usr/include/newlib/machine/_endian.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_timeout.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/portable.h:
+
+/usr/include/newlib/sys/stdio.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.h:
+
+/usr/include/newlib/sys/_pthreadtypes.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/float.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_printf/include/pico/printf.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/clocks.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h:
+
+/usr/include/newlib/machine/types.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c:
+
+/usr/include/newlib/sys/_timespec.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/event_groups.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c:
 
 /usr/include/newlib/sys/_sigset.h:
 
-/usr/include/newlib/stdio.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_claim/include/hardware/claim.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c:
 
-/usr/include/newlib/sys/types.h:
+/usr/include/newlib/sys/select.h:
+
+/usr/include/newlib/sys/_timeval.h:
+
+/home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h:
 
 /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/list.h:
 
-/usr/include/newlib/machine/endian.h:
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_types.h:
 
-/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/os_defines.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/timeout_helper.h:
+
+/usr/include/newlib/math.h:
+
+/usr/include/newlib/sys/types.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h:
+
+/usr/include/newlib/stdio.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/include/pico/stdio.h:
+
+/usr/include/newlib/inttypes.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_mcu.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_common.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/tusb_config.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/MemMang/heap_4.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/timers.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/stream_buffer.h:
+
+/usr/include/newlib/sys/cdefs.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/queue.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd.c:
+
+/usr/include/newlib/strings.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/m0plus.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/datetime.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h:
+
+/usr/include/newlib/string.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/clocks.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/sio.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/critical_section.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_debug.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/timer.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/include/hardware/irq.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/freertos_sdk_config.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c:
+
+generated/pico_base/pico/version.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdbool.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/stream_buffer.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/psm.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h:
+
+/usr/include/newlib/sys/_stdint.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_util/pheap.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/deprecated_definitions.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/tasks.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c:
+
+/usr/include/newlib/alloca.h:
+
+/usr/include/newlib/sys/string.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/FreeRTOS.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c:
+
+../FreeRTOSConfig.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c:
 
 /usr/include/newlib/_newlib_version.h:
 
 /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/resets.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c:
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c:
 
-/home/yavuz/pico/pico-sdk/src/boards/include/boards/pico.h:
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/rp2040_config.h:
 
-/usr/include/newlib/sys/select.h:
+/usr/include/newlib/sys/_types.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/include/hardware/exception.h:
+/usr/include/newlib/machine/ieeefp.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h:
+/usr/include/newlib/c++/10.3.1/stdlib.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c:
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/critical_section.h:
 
-/home/yavuz/pico/pico-sdk/src/common/pico_util/pheap.c:
+/usr/include/newlib/assert.h:
 
-/usr/include/newlib/sys/_timeval.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/sem.c:
 
-/usr/include/newlib/sys/timespec.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_util/datetime.c:
 
-/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/cpu_defines.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h:
 
-/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h:
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/tbman.h:
 
-/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/event_groups.h:
+/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h:
 
-/usr/include/newlib/sys/_timespec.h:
+/usr/include/newlib/sys/features.h:
 
-/usr/include/newlib/sys/_pthreadtypes.h:
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/usbd_pvt.h:
 
-/usr/include/newlib/machine/types.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_clocks/include/hardware/clocks.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h:
+/usr/include/newlib/sys/sched.h:
 
-/usr/include/newlib/sys/stdio.h:
+/usr/include/newlib/newlib.h:
 
-/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/pheap.h:
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/port.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_malloc/include/pico/malloc.h:
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/platform_defs.h:
 
-/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/double_math.c:
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/queue.c:
 
 /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/event_groups.c:
 
 /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_bank0.h:
 
-/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/c++config.h:
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c:
 
-/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/resets.h:
+/usr/include/newlib/sys/reent.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/double_math.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/cmsis/include/cmsis/rename_exceptions.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_pll/include/hardware/pll.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_time/include/pico/time.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdint.h:
+
+/usr/include/newlib/machine/_time.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/portable/ThirdParty/GCC/RP2040/include/portmacro.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/usb.h:
+
+/usr/include/newlib/sys/config.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/projdefs.h:
+
+/usr/include/newlib/c++/10.3.1/bits/std_abs.h:
+
+/usr/include/newlib/machine/_default_types.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_compiler.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/addressmap.h:
+
+/usr/include/newlib/sys/_intsup.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_exception/include/hardware/exception.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pads_bank0.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c:
+
+/usr/include/newlib/machine/_types.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/include/hardware/dma.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_verify.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_private.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/mpu_wrappers.h:
+
+/usr/include/newlib/sys/stat.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c:
+
+/usr/include/newlib/machine/stdlib.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/error.h:
+
+/usr/include/newlib/sys/lock.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/include/hardware/rtc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/interp.h:
+
+generated/pico_base/pico/config_autogen.h:
+
+/usr/include/newlib/stdlib.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_malloc/include/pico/malloc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_base/include/hardware/address_mapped.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/stddef.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/timer.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_multicore/include/pico/multicore.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal_pico.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/stack_macros.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/scb.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom/sf_table.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/padsbank0.h:
+
+/usr/include/newlib/sys/_locale.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/include/pico/double.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_timer/include/hardware/timer.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c:
+
+/usr/include/newlib/c++/10.3.1/cassert:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/vreg_and_chip_reset.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/device/dcd.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sio.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/rtc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/usb.h:
+
+/usr/include/newlib/c++/10.3.1/cstdlib:
+
+/usr/include/newlib/machine/endian.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_resets/include/hardware/resets.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_stdlib/include/pico/stdlib.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/lock_core.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/intctrl.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/ssi.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/mutex.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed/limits.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c:
+
+/usr/include/newlib/_ansi.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sem.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/pheap.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_time/timeout_helper.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_vreg/include/hardware/vreg.h:
+
+/usr/include/newlib/sys/timespec.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_util/queue.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/croutine.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/queue.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/xosc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_gpio/include/hardware/gpio.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/iobank0.h:
 
 /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_printf/printf.c:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb_option.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/pll.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/pll.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_xosc/include/hardware/xosc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/xosc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/dma.h:
+
+/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/list.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dma.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ssi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/ioqspi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/io_qspi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/rtc.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h:
+
+/usr/lib/gcc/arm-none-eabi/10.3.1/include/stdarg.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/include/pico/platform.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/vreg_and_chip_reset.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/psm.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c:
+
+/usr/include/newlib/c++/10.3.1/arm-none-eabi/thumb/v6-m/nofp/bits/os_defines.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/include/pico/fix/rp2040_usb_device_enumeration.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/assert.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_time/time.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/float_math.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_float/include/pico/float.h:
+
+/usr/include/newlib/unistd.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2_common/pico_platform/platform.c:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/config.h:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/mpu.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/tusb.c:
+
+/home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/sysinfo.h:
+
+/usr/include/newlib/sys/time.h:
+
+/home/yavuz/pico/pico-sdk/lib/tinyusb/src/osal/osal.h:
+
+/usr/include/newlib/time.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/sync.h:
+
+/usr/include/newlib/machine/time.h:
+
+/usr/include/newlib/sys/times.h:
+
+/usr/include/newlib/sys/unistd.h:
+
+/home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h:

@@ -60,6 +60,7 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/FreeRTOS.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/projdefs.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/portable.h \
@@ -89,6 +90,9 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_dma/include/hardware/dma.h \
+ /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/dma.h \
+ /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dma.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
  /usr/include/newlib/string.h /usr/include/newlib/strings.h \
  /usr/include/newlib/sys/string.h \

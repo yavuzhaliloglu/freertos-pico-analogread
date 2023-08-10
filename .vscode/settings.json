@@ -26,7 +26,11 @@
         "adc.h": "c",
         "datetime.h": "c",
         "i2c.h": "c",
-        "rtc.h": "c"
+        "rtc.h": "c",
+        "stdio.h": "c",
+        "chrono": "c",
+        "algorithm": "c",
+        "dma.h": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
 }
