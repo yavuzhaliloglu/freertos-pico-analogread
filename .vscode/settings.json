@@ -30,7 +30,8 @@
         "stdio.h": "c",
         "chrono": "c",
         "algorithm": "c",
-        "dma.h": "c"
+        "dma.h": "c",
+        "task.h": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
 }

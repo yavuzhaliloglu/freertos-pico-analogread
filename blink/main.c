@@ -29,7 +29,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 115200
+#define BAUD_RATE 300
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -98,6 +98,9 @@ datetime_t t = {
 
 // UART VARIABLES
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
+uint8_t state = 0;
+uint8_t baud_rate;
+uint16_t max_baud_rate = 9600;
 
 // UART FUNCTIONS
 void UART_receive()
@@ -131,19 +134,35 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
-bool check_uart_data(uint8_t *data_buffer, uint8_t size)
+int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
 {
-    uint8_t xor_result = 0x01;
-
-    for (uint8_t i = 0; i < size - 1; i++)
+    if ((data_buffer[0] == 0x01) && (data_buffer[1] == 0x52) && (data_buffer[2] == 0x32) && (data_buffer[3] == 0x02))
     {
-        xor_result ^= data_buffer[i];
+        // veri alma sorgusu
+        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x2E) && (data_buffer[6] == 0x30) && (data_buffer[7] == 0x31))
+        {
+            // buraya son 2 biti silecek bir yapı ekleyebilirsin
+            uint8_t xor_result = 0x01;
+
+            for (uint8_t i = 0; i < size - 3; i++)
+            {
+                xor_result ^= data_buffer[i];
+            }
+
+            // printf("\nxor result in check_uart_data: %02X", xor_result);
+            // printf("\nxor result in received data: %02X", data_buffer[size - 3]);
+
+            if (xor_result == data_buffer[size - 3])
+                return 0;
+            else
+                return -1;
+        }
+        if ((data_buffer[4] == 0x50) && (data_buffer[6] == 0x2E) && (data_buffer[8] == 0x30))
+        {
+        }
     }
-
-    printf("\nxor result in check_uart_data: %02X", xor_result);
-    printf("\nxor result in received data: %02X", data_buffer[size - 1]);
-
-    return xor_result == data_buffer[size - 1];
+    else
+        return -1;
 }
 
 uint8_t start_time[10];
@@ -151,6 +170,7 @@ uint8_t end_time[10];
 
 void parse_uart_data(uint8_t *buffer)
 {
+    // uart_puts(UART0_ID, "0");
     for (uint i = 0; buffer[i] != '\0'; i++)
     {
         // left bracket control
@@ -171,9 +191,61 @@ void parse_uart_data(uint8_t *buffer)
         }
     }
 
-    printf("\nstart time: %s\n", start_time);
-    printf("\nend time: %s\n", end_time);
+    // uart_puts(UART0_ID, "1");
+
+    // printf("\nstart time: %s\n", start_time);
+    // printf("\nend time: %s\n", end_time);
 }
+
+uint8_t get_baud_rate(uint16_t b_rate)
+{
+    switch (b_rate)
+    {
+    case 300:
+        return 0;
+    case 600:
+        return 1;
+    case 1200:
+        return 2;
+    case 2400:
+        return 3;
+    case 4800:
+        return 4;
+    case 9600:
+        return 5;
+    }
+}
+
+void set_baud_rate(uint8_t b_rate)
+{
+    uint selected_baud_rate;
+    switch (b_rate)
+    {
+    case 0:
+        selected_baud_rate = 300;
+        break;
+    case 1:
+        selected_baud_rate = 600;
+        break;
+    case 2:
+        selected_baud_rate = 1200;
+        break;
+    case 3:
+        selected_baud_rate = 2400;
+        break;
+    case 4:
+        selected_baud_rate = 4800;
+        break;
+    case 5:
+        selected_baud_rate = 9600;
+        break;
+    }
+    uart_set_baudrate(UART0_ID, selected_baud_rate);
+}
+
+// void set_rtc_from_uart(uint8_t){
+
+// }
 
 // RTC FUNCTIONS
 void dateTimeParse(char *dateTime, uint8_t dotw)
@@ -309,15 +381,15 @@ void spi_write_buffer()
     set_flash_data();
     // set_sector_data();
 
-    uart_puts(UART0_ID, "\nSECTOR PAGE: \n");
-    print_buf(flash_sector_contents, FLASH_PAGE_SIZE);
+    // uart_puts(UART0_ID, "\nSECTOR PAGE: \n");
+    // print_buf(flash_sector_contents, FLASH_PAGE_SIZE);
 
     uart_puts(UART0_ID, "\nERASING: \n");
     flash_range_erase(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
     uart_puts(UART0_ID, "\nERASED: \n");
 
-    uart_puts(UART0_ID, "\nERASED CONTENT: \n");
-    print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
+    // uart_puts(UART0_ID, "\nERASED CONTENT: \n");
+    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 
     uart_puts(UART0_ID, "\nPROGRAMMING: \n");
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
@@ -329,12 +401,48 @@ void spi_write_buffer()
 
 void search_data_into_flash()
 {
+    // zamanı küçük büyük olarak kontrol et
+    uint8_t start_control_time = 0;
+    uint8_t end_control_time = 0;
+    uint8_t date_check;
+    uint32_t st_idx;
+    uint8_t start_time_flag = 0;
+    uint32_t end_idx;
+    uint8_t end_time_flag = 0;
+    char uart_string[100] = {0};
+
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
-    char uart_string[256];
+
+    for (date_check = 0; date_check < 10; date_check += 2)
+    {
+        start_control_time = (start_time[date_check] - '0') * 10;
+        start_control_time += (start_time[date_check + 1] - '0');
+
+        end_control_time = (end_time[date_check] - '0') * 10;
+        end_control_time += (end_time[date_check + 1] - '0');
+
+        if (start_control_time < end_control_time)
+        {
+            break;
+        }
+        else
+        {
+            start_control_time = 0;
+            end_control_time = 0;
+        }
+    }
+
+    if (date_check == 10)
+    {
+        printf("\nstart date is bigger than end date!");
+        // uart_puts(UART0_ID,"\nstart date is bigger than end date!");
+        return;
+    }
 
     for (uint32_t i = 0; i < FLASH_TOTAL_DATA_COUNT; i += 16)
     {
         uint8_t k;
+        uint8_t l;
         for (k = 0; k < 10; k++)
         {
             if (flash_start_content[i + k] != start_time[k])
@@ -342,39 +450,47 @@ void search_data_into_flash()
                 break;
             }
         }
-
         if (k == 10)
         {
-            // string size will be changed
-            for (int l = i; i < FLASH_TOTAL_DATA_COUNT; l += 16)
-            {
-                char year[2] = {flash_start_content[l], flash_start_content[l + 1]};
-                char month[2] = {flash_start_content[l + 2], flash_start_content[l + 3]};
-                char day[2] = {flash_start_content[l + 4], flash_start_content[l + 5]};
-                char hour[2] = {flash_start_content[l + 6], flash_start_content[l + 7]};
-                char minute[2] = {flash_start_content[l + 8], flash_start_content[l + 9]};
-                char second[2] = {flash_start_content[l + 10], flash_start_content[l + 11]};
-                uint8_t max = flash_start_content[l + 12];
-                uint8_t min = flash_start_content[l + 13];
-                uint8_t mean = flash_start_content[l + 14];
-                sprintf(uart_string, "\nTime: %s/%s/%s %s:%s:%s max:%d,min:%d,mean:%d\n", year, month, day, hour, minute, second, max, min, mean);
-                uart_puts(UART0_ID, uart_string);
-                int t;
-                for (t = 0; t < 10; t++)
-                {
-                    if (flash_start_content[l + t] != end_time[t])
-                    {
-                        break;
-                    }
-                }
-
-                if (t == 10)
-                {
-                    break;
-                }
-            }
-            break;
+            start_time_flag = 1;
+            st_idx = i;
         }
+
+        // bu for döngüsü start_index if bloğunun içine girebilir mi?
+        for (l = 0; l < 10; l++)
+        {
+            if (flash_start_content[i + l] != end_time[l])
+            {
+                break;
+            }
+        }
+        if (l == 10)
+        {
+            end_time_flag = 1;
+            end_idx = i;
+        }
+    }
+
+    if (start_time_flag && end_time_flag)
+    {
+        for (st_idx; st_idx <= end_idx; st_idx += 16)
+        {
+            char year[3] = {flash_start_content[st_idx], flash_start_content[st_idx + 1], 0x00};
+            char month[3] = {flash_start_content[st_idx + 2], flash_start_content[st_idx + 3], 0x00};
+            char day[3] = {flash_start_content[st_idx + 4], flash_start_content[st_idx + 5], 0x00};
+            char hour[3] = {flash_start_content[st_idx + 6], flash_start_content[st_idx + 7], 0x00};
+            char minute[3] = {flash_start_content[st_idx + 8], flash_start_content[st_idx + 9], 0x00};
+            char second[3] = {flash_start_content[st_idx + 10], flash_start_content[st_idx + 11], 0x00};
+            uint8_t max = flash_start_content[st_idx + 12];
+            uint8_t min = flash_start_content[st_idx + 13];
+            uint8_t mean = flash_start_content[st_idx + 14];
+            snprintf(uart_string, 30, "(%s%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, second, max, min, mean);
+            uart_puts(UART0_ID, uart_string);
+        }
+    }
+    else
+    {
+        printf("\ngirdiginiz verdiler bulunamadi.");
     }
 }
 
@@ -430,47 +546,93 @@ void vUARTTask(void *pvParameters)
         {
             while (uart_is_readable(UART0_ID))
             {
-                rxChar = getchar_timeout_us(10);
+                rxChar = uart_getc(UART0_ID);
 
                 // ENTER CONTROL
-                if (rxChar != 13)
+                if (rxChar != '\n')
                 {
                     rxBuffer[data_len++] = rxChar;
                 }
-                if (rxChar == 13)
+                if (rxChar == '\n')
                 {
-                    rxBuffer[data_len] = '\0';
-                    printf("\nreceived data: ");
-
-                    for (int i = 0; i < data_len; i++)
+                    rxBuffer[data_len++] = rxChar;
+                    // enum oluşturarak stateleri ayarla
+                    switch (state)
                     {
-                        printf("%02X ", rxBuffer[i]);
-                    }
-
-                    printf("\nentering check_uart_data.\n");
-
-                    if (check_uart_data(rxBuffer, data_len))
-                    {
-                        printf("\nentered true area:");
-                        printf("\nwriting rxBuffer:");
-                        for (int i = 0; i < data_len; i++)
+                    case 0:
+                        if ((rxBuffer[0] == 0x2F) && (rxBuffer[1] == 0x3F) && (rxBuffer[data_len - 3] == 0x21) && (rxBuffer[data_len - 2] == 0x0D) && (rxBuffer[data_len - 1] == 0x0A))
                         {
-                            printf("%02X ", rxBuffer[i]);
+                            baud_rate = get_baud_rate(max_baud_rate);
+                            char uart_send_info_buffer[20];
+                            sprintf(uart_send_info_buffer, "/ALP%dMAVIALPV2\r\n", baud_rate);
+                            uart_puts(UART0_ID, uart_send_info_buffer);
+                            state = 1;
                         }
-                        parse_uart_data(rxBuffer);
-                        search_data_into_flash();
-                    }
-                    else
-                    {
-                        printf("\nentered falsae area:\n");
-                        for (int i = 0; i < data_len; i++)
+                        break;
+
+                    case 1:
+                        if ((rxBuffer[0] == 0x06) && (rxBuffer[data_len - 2] == 0x0D) && (rxBuffer[data_len - 1] == 0x0A) && data_len == 6)
                         {
-                            printf("%02X ", rxBuffer[i]);
+                            uint8_t machine_baud_rate;
+                            uint8_t i;
+                            uint16_t program_baud_rate = get_baud_rate(max_baud_rate);
+
+                            for (i = 0; i < data_len; i++)
+                            {
+                                if (rxBuffer[i] == '0')
+                                {
+                                    machine_baud_rate = rxBuffer[i + 1] - '0';
+                                    if ((rxBuffer[i + 2] != '1') && machine_baud_rate > 5 && machine_baud_rate < 0)
+                                    {
+                                        i = data_len;
+                                        break;
+                                    }
+
+                                    // cihazdan gelen benden küçük veya eşit olacak, eğer büyük olursa nak döndür
+                                    if (machine_baud_rate > max_baud_rate)
+                                    {
+                                        uart_putc(UART0_ID, 0x15);
+                                    }
+                                    else
+                                    {
+                                        uart_putc(UART0_ID, 0x06);
+                                        set_baud_rate(machine_baud_rate);
+                                    }
+                                    state = 2;
+                                    break;
+                                }
+                            }
+
+                            if (i == data_len)
+                            {
+                                uart_putc(UART0_ID, 0x15);
+                            }
                         }
-                        uart_puts(UART0_ID, "\nDATA IS WRONG!\n");
+                        else
+                        {
+                            state = 0;
+                            uart_putc(UART0_ID, 0x15);
+                        }
+                        break;
+
+                    case 2:
+
+                        switch (check_uart_data(rxBuffer, data_len))
+                        {
+                        // kayıt gösterme
+                        case 0:
+                            parse_uart_data(rxBuffer);
+                            search_data_into_flash();
+                            break;
+                        case 1:
+
+                        default:
+                            uart_putc(UART0_ID, 0x15);
+                            break;
+                        }
+                        break;
                     }
                     memset(rxBuffer, 0, 256);
-                    printf("\nnewline\n");
                     data_len = 0;
                 }
             }
@@ -506,6 +668,7 @@ void vADCReadTask()
     while (1)
     {
         startTime = xTaskGetTickCount();
+        uint16_t remaining_time = (t.sec * 1000); // şuanki saniye ms cinsinden
 
         adc_capture(sample_buf, VRMS_SAMPLE);
 
@@ -535,6 +698,7 @@ void vADCReadTask()
         uart_puts(UART0_ID, deneme_str);
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
+        vrms = 0.0;
 
         if (t.min % 15 == 0)
         {
@@ -544,7 +708,7 @@ void vADCReadTask()
         }
 
         executionTime = xTaskGetTickCount() - startTime;
-        vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime);
+        vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime - remaining_time);
     }
 }
 
@@ -607,6 +771,8 @@ void main()
 
     // SET TIMER TO RTC
     // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 0x00, 0x35, 0x16, 0x03, 0x09, 0x08, 0x23);
+    get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
+    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
 
     // FLASH CONTENTS
     sector_data = *(uint16_t *)flash_sector_contents;
@@ -616,11 +782,10 @@ void main()
     xTaskCreate(vBlinkTask, "BlinkTask", 128, NULL, 1, NULL);
     xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 1, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 5, NULL);
     xTaskCreate(vResetTask, "ResetTask", 128, NULL, 1, NULL);
     vTaskStartScheduler();
 
     while (true)
-    {
-    };
+        ;
 }
