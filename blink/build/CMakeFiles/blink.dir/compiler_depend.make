@@ -3899,7 +3899,9 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /usr/include/newlib/string.h \
   /usr/include/newlib/strings.h \
   /usr/include/newlib/sys/string.h \
-  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h
+  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h \
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h
 
 
 ../main.c:
