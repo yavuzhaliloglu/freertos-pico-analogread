@@ -30,7 +30,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 300
+#define BAUD_RATE 2400
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -190,8 +190,18 @@ int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
             return 2;
         }
     }
+}
 
-    return -1;
+bool bcc_control(uint8_t *buffer, uint8_t size)
+{
+    uint8_t xor_result = 0x01;
+
+    for (uint8_t i = 0; i < size - 3; i++)
+    {
+        xor_result ^= buffer[i];
+    }
+
+    return xor_result == buffer[size - 3];
 }
 
 void parse_uart_data(uint8_t *buffer)
@@ -719,19 +729,27 @@ void vUARTTask(void *pvParameters)
                         switch (check_uart_data(rxBuffer, data_len))
                         {
                         // kayıt gösterme
-                        case -1:
-                            uart_putc(UART0_ID, 0x15);
-                            break;
                         case 0:
                             parse_uart_data(rxBuffer);
                             search_data_into_flash();
                             break;
                         // saat setleme
                         case 1:
-                            set_time_uart(rxBuffer);
+                            if (bcc_control(rxBuffer, data_len))
+                            {
+                                set_time_uart(rxBuffer);
+                            }
+                            break;
                         // tarih setleme
                         case 2:
-                            set_date_uart(rxBuffer);
+                            if (bcc_control(rxBuffer, data_len))
+                            {
+                                set_date_uart(rxBuffer);
+                            }
+                            break;
+                        default:
+                            uart_putc(UART0_ID, 0x15);
+                            break;
                         }
                         break;
                     }
@@ -806,7 +824,7 @@ void vWriteDebugTask()
         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
         // rtc_get_datetime(&t);    This function uses rp2040's rtc
         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-        // printf("RTC Time:%s \r\n", datetime_str);
+        printf("RTC Time:%s \r\n", datetime_str);
         vTaskDelay(1000);
     }
 }
