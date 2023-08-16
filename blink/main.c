@@ -30,7 +30,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 2400
+#define BAUD_RATE 300
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -135,19 +135,6 @@ void initUART()
     irq_set_exclusive_handler(UART_IRQ, UART_Isr);
     irq_set_enabled(UART_IRQ, true);
     uart_set_translate_crlf(UART0_ID, true);
-}
-
-void reset_rxBuffer()
-{
-    memset(rxBuffer, 0, 256);
-    data_len = 0;
-}
-
-void reset_state()
-{
-    state = 0;
-    memset(rxBuffer, 0, 256);
-    data_len = 0;
 }
 
 uint8_t bcc_control_buffer(uint8_t *data_buffer, uint8_t size)
@@ -270,6 +257,20 @@ void set_baud_rate(uint8_t b_rate)
         break;
     }
     uart_set_baudrate(UART0_ID, selected_baud_rate);
+}
+
+void reset_rxBuffer()
+{
+    memset(rxBuffer, 0, 256);
+    data_len = 0;
+}
+
+void reset_state()
+{
+    state = 0;
+    memset(rxBuffer, 0, 256);
+    set_baud_rate(0);
+    data_len = 0;
 }
 
 void dateTimeParse(char *dateTime, uint8_t dotw)
@@ -498,13 +499,9 @@ void search_data_into_flash()
             xor_result ^= bcc_control_buffer(uart_bcc_checked, 28);
 
             if (st_idx == end_idx)
-            {
                 snprintf(uart_string, 35, "(%s%s%s%s%s%s)(%03d,%03d,%03d)%02X\r\n\r%02X", year, month, day, hour, minute, second, max, min, mean, 0x03, xor_result);
-            }
             else
-            {
                 snprintf(uart_string, 32, "(%s%s%s%s%s%s)(%03d,%03d,%03d)%02X\r\n", year, month, day, hour, minute, second, max, min, mean, 0x03);
-            }
 
             uart_puts(UART0_ID, uart_string);
         }
@@ -767,7 +764,7 @@ double vrms_accumulator = 0.0;
 char deneme_str[20];
 const float conversion_factor = 1000 * (3.3f / (1 << 12));
 uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
-double vrms;
+double vrms = 0.0;
 
 // ADC CONVERTER TASK
 void vADCReadTask()
@@ -790,7 +787,7 @@ void vADCReadTask()
         }
 
         uint16_t mean = sumSamples / VRMS_SAMPLE;
-
+        
         for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
         {
             uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
@@ -802,7 +799,13 @@ void vADCReadTask()
         vrms = vrms / 1000;
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
-        vrms = 0.0;
+
+        char x_array[20] = {30};
+        snprintf(x_array,15,"vrms: %d\n",(int)vrms);
+        x_array[19] = '\0';
+        uart_puts(UART0_ID,x_array);
+
+        vrms_accumulator = 0.0;
 
         if (t.min % 15 == 0)
         {
@@ -877,7 +880,7 @@ void main()
     datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
 
     // FLASH CONTENTS
-    sector_data = *(uint16_t *)flash_sector_contents;
+    sector_data = *(uint8_t *)flash_sector_contents;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
 

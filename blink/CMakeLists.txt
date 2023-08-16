@@ -29,7 +29,8 @@ target_link_libraries(blink pico_stdlib
                     hardware_spi
                     hardware_flash
                     hardware_irq
-                    hardware_sync)
+                    hardware_sync
+                    )
                     
 # Enable/disable STDIO via USB and UART
 # We use UART1 as a debug port because UART0 is attached to RS485
