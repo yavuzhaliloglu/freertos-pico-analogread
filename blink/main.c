@@ -30,7 +30,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 300
+#define BAUD_RATE 9600
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -63,6 +63,13 @@ uint8_t vrms_max = 0;
 uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
 uint16_t sample_buf[VRMS_SAMPLE];
+static uint8_t vrms_buffer_count = 0;
+double vrms_accumulator = 0.0;
+char deneme_str[20];
+const float conversion_factor = 1000 * (3.3f / (1 << 12));
+uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
+double vrms = 0.0;
+TickType_t remaining_time;
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
@@ -166,13 +173,13 @@ int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
                 return 0;
         }
 
-        // zaman setleme sorgusu (P1.9.4)
-        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x34))
+        // zaman setleme sorgusu (0.9.1)
+        if ((data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x34))
         {
             return 1;
         }
-        // tarih setleme sorgusu (P1.9.2)
-        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x32))
+        // tarih setleme sorgusu (0.9.2)
+        if ((data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x32))
         {
             return 2;
         }
@@ -401,13 +408,14 @@ void set_flash_data()
 void spi_write_buffer()
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
+    uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
     set_flash_data();
     // set_sector_data();
 
     flash_range_erase(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
-
-    print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
+    // print_buf(flash_sector_content, FLASH_PAGE_SIZE);
+    // print_buf(flash_start_content, (2 * FLASH_PAGE_SIZE));
 }
 
 void search_data_into_flash()
@@ -603,6 +611,7 @@ void state1_handler(uint8_t *buffer, uint8_t size)
         uart_putc(UART0_ID, 0x15);
     }
 }
+
 // tarih ve saat bilgilerinde de bcc olacak mı?
 void set_time_uart(uint8_t *buffer)
 {
@@ -759,13 +768,6 @@ void vUARTTask(void *pvParameters)
     }
 }
 
-static uint8_t vrms_buffer_count = 0;
-double vrms_accumulator = 0.0;
-char deneme_str[20];
-const float conversion_factor = 1000 * (3.3f / (1 << 12));
-uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
-double vrms = 0.0;
-
 // ADC CONVERTER TASK
 void vADCReadTask()
 {
@@ -775,7 +777,7 @@ void vADCReadTask()
     while (1)
     {
         startTime = xTaskGetTickCount();
-        uint16_t remaining_time = (t.sec * 1000);
+
         adc_capture(sample_buf, VRMS_SAMPLE);
 
         int sumSamples = 0;
@@ -787,7 +789,7 @@ void vADCReadTask()
         }
 
         uint16_t mean = sumSamples / VRMS_SAMPLE;
-        
+
         for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
         {
             uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
@@ -795,42 +797,65 @@ void vADCReadTask()
         }
 
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-        vrms = vrms * 65.57;
+        vrms = vrms * 69;
         vrms = vrms / 1000;
+        vrms = ceil(vrms);
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
-        char x_array[20] = {30};
-        snprintf(x_array,15,"vrms: %d\n",(int)vrms);
-        x_array[19] = '\0';
-        uart_puts(UART0_ID,x_array);
+        // char x_array[20] = {30};
+        // snprintf(x_array, 15, "vrms: %d\n", (int)vrms);
+        // x_array[19] = '\0';
+        // uart_puts(UART0_ID, x_array);
 
         vrms_accumulator = 0.0;
-
-        if (t.min % 15 == 0)
+        if (t.sec == 0 || t.sec == 1)
         {
-            vrms_set_max_min_mean(vrms_buffer, vrms_buffer_count);
-            spi_write_buffer();
-            vrms_buffer_count = 0;
+            if (t.min % 15 == 0)
+            {
+                vrms_set_max_min_mean(vrms_buffer, vrms_buffer_count);
+                spi_write_buffer();
+                vrms_buffer_count = 0;
+            }
         }
 
         executionTime = xTaskGetTickCount() - startTime;
-        vTaskDelay(VRMS_DATA_BUFFER_TIME - executionTime - remaining_time);
+        vTaskDelay(pdMS_TO_TICKS(VRMS_DATA_BUFFER_TIME) - executionTime - remaining_time);
+        remaining_time = 0;
     }
 }
 
 // DEBUG TASK
+
 void vWriteDebugTask()
 {
+    TickType_t startTime;
+    TickType_t executionTime;
+
     for (;;)
     {
+        startTime = xTaskGetTickCount();
         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-        // rtc_get_datetime(&t);    This function uses rp2040's rtc
         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-        printf("RTC Time:%s \r\n", datetime_str);
-        vTaskDelay(1000);
+        // printf("RTC Time:%s \r\n", datetime_str);
+        executionTime = xTaskGetTickCount() - startTime;
+        vTaskDelay(1000 - executionTime);
     }
 }
+
+// void vWriteDebugTask()
+// {
+//     TickType_t startTime;
+//     const TickType_t xFrequency = 1000;
+//     startTime = xTaskGetTickCount();
+//     for (;;)
+//     {
+//         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
+//         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
+//         printf("RTC Time:%s \r\n", datetime_str);
+//         vTaskDelayUntil(&startTime,xFrequency);
+//     }
+// }
 
 // RESET TASK
 void vResetTask()
@@ -847,7 +872,7 @@ void vResetTask()
 void main()
 {
     stdio_init_all();
-    sleep_ms(1000);
+    sleep_ms(1);
 
     // UART INIT
     uart_init(UART0_ID, BAUD_RATE);
@@ -864,7 +889,7 @@ void main()
     adc_gpio_init(27);
     adc_select_input(1);
     adc_set_clkdiv(9600);
-    sleep_ms(1000);
+    sleep_ms(1);
 
     // RTC Init
     rtc_init();
@@ -878,6 +903,7 @@ void main()
     // RTC
     get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
     datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
+    remaining_time = pdMS_TO_TICKS(t.sec * 1000);
 
     // FLASH CONTENTS
     sector_data = *(uint8_t *)flash_sector_contents;
@@ -885,9 +911,9 @@ void main()
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
 
     // xTaskCreate(vBlinkTask, "BlinkTask", 128, NULL, 1, NULL);
-    xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 1, NULL);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 3, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 5, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 2, NULL);
     xTaskCreate(vResetTask, "ResetTask", 128, NULL, 1, NULL);
     vTaskStartScheduler();
 
