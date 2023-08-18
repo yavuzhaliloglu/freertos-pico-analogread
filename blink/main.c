@@ -30,7 +30,7 @@
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 9600
+#define BAUD_RATE 300
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 8
@@ -70,6 +70,7 @@ const float conversion_factor = 1000 * (3.3f / (1 << 12));
 uint8_t vrms_buffer[VRMS_BUFFER_SIZE];
 double vrms = 0.0;
 TickType_t remaining_time;
+uint8_t set_time_flag = 0;
 
 // SPI VARIABLES
 uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
@@ -144,14 +145,13 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
-uint8_t bcc_control_buffer(uint8_t *data_buffer, uint8_t size)
+uint8_t bcc_control_buffer(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
-    uint8_t xor_result = 0x01;
     for (uint8_t i = 0; i < size; i++)
     {
-        xor_result ^= data_buffer[i];
+        xor ^= data_buffer[i];
     }
-    return xor_result;
+    return xor;
 }
 
 int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
@@ -174,12 +174,12 @@ int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
         }
 
         // zaman setleme sorgusu (0.9.1)
-        if ((data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x34))
+        if ((data_buffer[4] == 0x31) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x34))
         {
             return 1;
         }
         // tarih setleme sorgusu (0.9.2)
-        if ((data_buffer[5] == 0x31) && (data_buffer[7] == 0x39) && (data_buffer[9] == 0x32))
+        if ((data_buffer[4] == 0x31) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x32))
         {
             return 2;
         }
@@ -503,13 +503,21 @@ void search_data_into_flash()
             uint8_t min = flash_start_content[st_idx + 13];
             uint8_t mean = flash_start_content[st_idx + 14];
 
-            snprintf(uart_bcc_checked, 28, "(%s%s%s%s%s%s)(%03d,%03d,%03d)", year, month, day, hour, minute, second, max, min, mean);
-            xor_result ^= bcc_control_buffer(uart_bcc_checked, 28);
+            if (st_idx == end_idx)
+            {
+                snprintf(uart_bcc_checked, 32, "(%s%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, second, max, min, mean, 0x03);
+                xor_result = bcc_control_buffer(uart_bcc_checked, 31, xor_result);
+            }
+            else
+            {
+                snprintf(uart_bcc_checked, 30, "(%s%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, second, max, min, mean);
+                xor_result = bcc_control_buffer(uart_bcc_checked, 29, xor_result);
+            }
 
             if (st_idx == end_idx)
-                snprintf(uart_string, 35, "(%s%s%s%s%s%s)(%03d,%03d,%03d)%02X\r\n\r%02X", year, month, day, hour, minute, second, max, min, mean, 0x03, xor_result);
+                snprintf(uart_string, 33, "(%s%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c%c", year, month, day, hour, minute, second, max, min, mean, 0x03, xor_result);
             else
-                snprintf(uart_string, 32, "(%s%s%s%s%s%s)(%03d,%03d,%03d)%02X\r\n", year, month, day, hour, minute, second, max, min, mean, 0x03);
+                snprintf(uart_string, 30, "(%s%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, second, max, min, mean);
 
             uart_puts(UART0_ID, uart_string);
         }
@@ -612,7 +620,6 @@ void state1_handler(uint8_t *buffer, uint8_t size)
     }
 }
 
-// tarih ve saat bilgilerinde de bcc olacak mı?
 void set_time_uart(uint8_t *buffer)
 {
     uint8_t time_buffer[7];
@@ -633,6 +640,7 @@ void set_time_uart(uint8_t *buffer)
     set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)t.dotw, (uint8_t)t.day, (uint8_t)t.month, (uint8_t)t.year);
     get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
     datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
+    set_time_flag = 1;
 }
 
 void set_date_uart(uint8_t *buffer)
@@ -707,31 +715,16 @@ void vUARTTask(void *pvParameters)
                     {
                     case 0:
                         xTimerStart(ResetStateTimer, 0);
-                        if (rxBuffer[0] == '&')
-                        {
-                            state = 0;
-                            break;
-                        }
                         state0_handler(rxBuffer, data_len);
                         break;
 
                     case 1:
                         xTimerStart(ResetStateTimer, 0);
-                        if (rxBuffer[0] == '&')
-                        {
-                            state = 0;
-                            break;
-                        }
                         state1_handler(rxBuffer, data_len);
                         break;
 
                     case 2:
                         xTimerStart(ResetStateTimer, 0);
-                        if (rxBuffer[0] == '&')
-                        {
-                            state = 0;
-                            break;
-                        }
                         switch (check_uart_data(rxBuffer, data_len))
                         {
                         // kayıt gösterme
@@ -797,18 +790,29 @@ void vADCReadTask()
         }
 
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-        vrms = vrms * 69;
+        vrms = vrms * 73;
         vrms = vrms / 1000;
-        vrms = ceil(vrms);
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
+        // printf("RTC Time:%s \r\n", datetime_str);
         // char x_array[20] = {30};
         // snprintf(x_array, 15, "vrms: %d\n", (int)vrms);
         // x_array[19] = '\0';
         // uart_puts(UART0_ID, x_array);
 
         vrms_accumulator = 0.0;
+
+        if (set_time_flag)
+        {
+            remaining_time = pdMS_TO_TICKS((t.sec) * 1000);
+            if (t.min % 15 == 0)
+            {
+                spi_write_buffer();
+            }
+            set_time_flag = 0;
+        }
+
         if (t.sec == 0 || t.sec == 1)
         {
             if (t.min % 15 == 0)
@@ -826,7 +830,6 @@ void vADCReadTask()
 }
 
 // DEBUG TASK
-
 void vWriteDebugTask()
 {
     TickType_t startTime;
@@ -842,20 +845,6 @@ void vWriteDebugTask()
         vTaskDelay(1000 - executionTime);
     }
 }
-
-// void vWriteDebugTask()
-// {
-//     TickType_t startTime;
-//     const TickType_t xFrequency = 1000;
-//     startTime = xTaskGetTickCount();
-//     for (;;)
-//     {
-//         get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-//         datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-//         printf("RTC Time:%s \r\n", datetime_str);
-//         vTaskDelayUntil(&startTime,xFrequency);
-//     }
-// }
 
 // RESET TASK
 void vResetTask()
