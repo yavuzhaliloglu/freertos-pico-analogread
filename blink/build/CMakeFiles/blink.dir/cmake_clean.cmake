@@ -146,8 +146,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj.d"
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj"
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj.d"
-  "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj"
-  "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj.d"
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj"
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj.d"
   "CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj"
