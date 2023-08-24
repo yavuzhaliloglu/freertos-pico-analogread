@@ -57,6 +57,7 @@
 #define VRMS_BUFFER_SIZE 15
 #define VRMS_DATA_BUFFER_TIME 60000
 #define CLOCK_DIV 9600
+#define DEBUG 0
 
 // ADC VARIABLES
 uint8_t vrms_max = 0;
@@ -835,16 +836,17 @@ void vUARTTask(void *pvParameters)
     }
 }
 
+TickType_t startTime;
+TickType_t executionTime;
+uint8_t vrms_buffer_count = 0;
+double vrms_accumulator = 0.0;
+const float conversion_factor = 1000 * (3.3f / (1 << 12));
+uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+double vrms = 0.0;
+
 // ADC CONVERTER TASK
 void vADCReadTask()
 {
-    TickType_t startTime;
-    TickType_t executionTime;
-    uint8_t vrms_buffer_count = 0;
-    double vrms_accumulator = 0.0;
-    const float conversion_factor = 1000 * (3.3f / (1 << 12));
-    uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
-    double vrms = 0.0;
 
     while (1)
     {
@@ -852,36 +854,62 @@ void vADCReadTask()
 
         adc_capture(sample_buf, VRMS_SAMPLE);
 
-        int sumSamples = 0;
-
-        for (int i = 0; i < VRMS_SAMPLE; i++)
+#if DEBUG
+        char deneme[40] = {0};
+        for (uint8_t i = 0; i < 150; i++)
         {
-            uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
-            sumSamples += production;
+            snprintf(deneme, 20, "sample: %d\n", sample_buf[i]);
+            deneme[21] = '\0';
+            uart_puts(UART0_ID, deneme);
         }
 
-        uint16_t mean = sumSamples / VRMS_SAMPLE;
+        printf("\n");
+#endif
+        // double sumSamples = 0;
+
+        // for (int i = 0; i < VRMS_SAMPLE; i++)
+        // {
+        //     double production = (double)(sample_buf[i]);
+        //     sumSamples += production;
+        // }
+        // uint16_t mean = sumSamples / VRMS_SAMPLE;
+        
+        int mean = 2050 * conversion_factor;
+
+#if DEBUG
+        snprintf(deneme, 30, "mean: %d\n", mean);
+        deneme[31] = '\0';
+        uart_puts(UART0_ID, deneme);
+#endif
 
         for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
         {
-            uint16_t production = (uint16_t)(sample_buf[i] * conversion_factor);
+            double production = (double)(sample_buf[i] * conversion_factor);
             vrms_accumulator += pow((production - mean), 2);
         }
 
+#if DEBUG
+        snprintf(deneme, 34, "vrmsAc: %f\n", vrms_accumulator);
+        deneme[35] = '\0';
+        uart_puts(UART0_ID, deneme);
+#endif
+
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-        vrms = vrms * 73;
+        vrms = vrms * 75;
+
+#if DEBUG
+        char x_array[40] = {0};
+        snprintf(x_array, 31, "VRMS: %d\n\n", (uint16_t)vrms);
+        x_array[32] = '\0';
+        uart_puts(UART0_ID, x_array);
+        printf("RTC Time:%s \r\n", datetime_str);
+#endif
+
         vrms = vrms / 1000;
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
-        // char x_array[20] = {0};
-        // sprintf(x_array,"VRMS: %d\n",(uint8_t)vrms);
-        // x_array[8] = '\0';
-        printf("RTC Time:%s \r\n", datetime_str);
-        // printf("%s", x_array);
-
         vrms_accumulator = 0.0;
-        // ben ekledim
         vrms = 0.0;
 
         if (set_time_flag)
@@ -894,7 +922,13 @@ void vADCReadTask()
             set_time_flag = 0;
         }
 
-        if ((t.sec < 5 && t.min % 15 == 0) || (t.min % 15 == 14 && t.sec > 55))
+        if (t.min % 15 == 14 && t.sec > 55)
+        {
+            t.min++;
+            t.sec = 0;
+        }
+
+        if ((t.sec < 5 && t.min % 15 == 0))
         {
             vrms_set_max_min_mean(vrms_buffer, vrms_buffer_count);
             spi_write_buffer();
@@ -904,6 +938,9 @@ void vADCReadTask()
 
         executionTime = xTaskGetTickCount() - startTime;
         vTaskDelay(pdMS_TO_TICKS(VRMS_DATA_BUFFER_TIME) - executionTime - remaining_time);
+#if DEBUG
+// vTaskDelay(5000);
+#endif
         remaining_time = 0;
     }
 }
@@ -965,7 +1002,7 @@ void main()
     adc_init();
     adc_gpio_init(27);
     adc_select_input(1);
-    adc_set_clkdiv(9600);
+    adc_set_clkdiv(4 * 9600);
     sleep_ms(1);
 
     // RTC Init
@@ -982,7 +1019,7 @@ void main()
     // spi_write_buffer();
 
     // RTC
-    // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 10, 44, 12, 2, 22, 8, 23);
+    // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 10, 23, 20, 3, 23, 8, 23);
     get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
     datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
     remaining_time = pdMS_TO_TICKS((t.sec) * 1000);
