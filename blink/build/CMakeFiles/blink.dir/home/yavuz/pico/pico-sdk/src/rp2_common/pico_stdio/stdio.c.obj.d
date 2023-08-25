@@ -52,4 +52,9 @@ CMakeFiles/blink.dir/home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.
  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/mutex.h \
  /home/yavuz/pico/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_sync/include/hardware/sync.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_uart/include/hardware/uart.h \
+ /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
+ /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
+ /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h

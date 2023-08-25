@@ -22,15 +22,15 @@
 #include "timers.h"
 
 // SPI DEFINES
-#define FLASH_DATA_COUNT_OFFSET 512 * 1024
+#define FLASH_SECTOR_OFFSET 512 * 1024
 #define FLASH_TOTAL_SECTORS 382
-#define FLASH_TARGET_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
-#define FLASH_DATA_SIZE 16
-#define FLASH_TOTAL_DATA_COUNT (PICO_FLASH_SIZE_BYTES - (FLASH_TARGET_OFFSET)) / FLASH_DATA_SIZE
+#define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
+#define FLASH_RECORD_SIZE 16
+#define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
 
 // UART DEFINES
 #define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 300
+#define BAUD_RATE 9600
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 7
@@ -47,6 +47,7 @@
 
 // RTC DEFINES
 #define PT7C4338_REG_SECONDS 0x00
+#define RTC_SET_PERIOD_MIN 10
 
 // RESET PIN DEFINE
 #define RESET_PULSE_PIN 2
@@ -55,21 +56,20 @@
 // ADC DEFINES
 #define VRMS_SAMPLE 500
 #define VRMS_BUFFER_SIZE 15
-#define VRMS_DATA_BUFFER_TIME 60000
-#define CLOCK_DIV 9600
-#define DEBUG 0
+#define VRMS_SAMPLING_PERIOD 60000
+#define CLOCK_DIV 4 * 9600
+#define DEBUG 1
 
 // ADC VARIABLES
 uint8_t vrms_max = 0;
 uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
-uint16_t sample_buf[VRMS_SAMPLE];
-TickType_t remaining_time;
-uint8_t set_time_flag = 0;
+uint16_t sample_buffer[VRMS_SAMPLE];
+TickType_t adc_remaining_time;
+uint8_t time_change_flag = 0;
 
 // SPI VARIABLES
-uint8_t *flash_sector_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_COUNT_OFFSET);
-uint8_t sector_buffer[FLASH_SECTOR_SIZE / sizeof(uint8_t)] = {0};
+uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 static uint8_t sector_data = 0;
 struct FlashData
 {
@@ -87,10 +87,9 @@ struct FlashData
 struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};
 
 // RTC VARIABLES
-char datetime_buf[64];
-char *datetime_str = &datetime_buf[0];
-
-datetime_t t = {
+char datetime_buffer[64];
+char *datetime_str = &datetime_buffer[0];
+datetime_t current_time = {
     .year = 2020,
     .month = 06,
     .day = 05,
@@ -100,24 +99,102 @@ datetime_t t = {
     .sec = 00};
 
 // UART VARIABLES
+enum States
+{
+    Greeting = 0,
+    Setting = 1,
+    Listening = 2
+};
+enum ListeningStates
+{
+    DataError = -1,
+    Reading = 0,
+    TimeSet = 1,
+    DateSet = 2
+};
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
-uint8_t state = 0;
-uint8_t baud_rate;
+enum States state = Greeting;
 uint16_t max_baud_rate = 9600;
-uint8_t rxBuffer[256] = {};
-uint8_t data_len = 0;
-uint8_t start_time[10];
-uint8_t end_time[10];
+uint8_t rx_buffer[256] = {};
+uint8_t rx_buffer_len = 0;
+uint8_t reading_state_start_time[10];
+uint8_t reading_state_end_time[10];
+
+// RTC FUNCTIONS
+
+void dateTimeParse(char *dateTime, uint8_t dotw)
+{
+    current_time.year = dateTime[6] % 16 + 10 * (dateTime[6] / 16);
+    current_time.month = dateTime[5] % 16 + 10 * (dateTime[5] / 16);
+    current_time.day = dateTime[4] % 16 + 10 * (dateTime[4] / 16);
+    current_time.dotw = dotw;
+    current_time.hour = dateTime[2] % 16 + 10 * (dateTime[2] / 16);
+    current_time.min = dateTime[1] % 16 + 10 * (dateTime[1] / 16);
+    current_time.sec = dateTime[0] % 16 + 10 * (dateTime[0] / 16);
+}
+
+uint8_t decimalToBCD(uint8_t decimalValue)
+{
+    return ((decimalValue / 10) << 4) | (decimalValue % 10);
+}
+
+uint8_t bcd_to_decimal(uint8_t bcd)
+{
+    return bcd - 6 * (bcd >> 4);
+}
+
+void setTimePt7c4338(struct i2c_inst *i2c, uint8_t address, uint8_t seconds, uint8_t minutes, uint8_t hours, uint8_t day, uint8_t date, uint8_t month, uint8_t year)
+{
+    uint8_t buf[8];
+    buf[0] = PT7C4338_REG_SECONDS;
+    buf[1] = decimalToBCD(seconds);
+    buf[2] = decimalToBCD(minutes);
+    buf[3] = decimalToBCD(hours);
+    buf[4] = decimalToBCD(day);
+    buf[5] = decimalToBCD(date);
+    buf[6] = decimalToBCD(month);
+    buf[7] = decimalToBCD(year);
+
+    i2c_write_blocking(i2c, address, buf, 8, false);
+}
+
+// void getTimePt7c4338(struct i2c_inst *i2c, uint8_t address)
+// {
+//     uint8_t buf[7];
+//     uint8_t dotw;
+//     buf[0] = PT7C4338_REG_SECONDS;
+
+//     i2c_write_blocking(i2c, address, buf, 1, true);
+//     i2c_read_blocking(i2c, address, buf, 7, false);
+//     dotw = buf[3];
+//     dateTimeParse(buf, dotw);
+// }
+
+datetime_t getTimePt7c4338(datetime_t *dt)
+{
+    uint8_t buffer[7] = {PT7C4338_REG_SECONDS};
+
+    i2c_write_blocking(I2C_PORT, I2C_ADDRESS, buffer, 1, 1);
+    i2c_read_blocking(I2C_PORT, I2C_ADDRESS, buffer, 7, 0);
+
+    dt->year = bcd_to_decimal(buffer[6]);
+    dt->month = bcd_to_decimal(buffer[5]);
+    dt->day = bcd_to_decimal(buffer[4]);
+    dt->dotw = buffer[3];
+    dt->hour = bcd_to_decimal(buffer[2]);
+    dt->min = bcd_to_decimal(buffer[1]);
+    dt->sec = bcd_to_decimal(buffer[0]);
+}
 
 // UART FUNCTIONS
-void UART_receive()
+void UARTReceive()
 {
     configASSERT(xTaskToNotify_UART == NULL);
     xTaskToNotify_UART = xTaskGetCurrentTaskHandle();
     uart_set_irq_enables(UART0_ID, true, false);
 }
 
-void UART_Isr()
+void UARTIsr()
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
     uart_set_irq_enables(UART0_ID, false, false);
@@ -135,66 +212,53 @@ void initUART()
     uart_set_format(UART0_ID, DATA_BITS, STOP_BITS, PARITY);
     uart_set_fifo_enabled(UART0_ID, true);
     int UART_IRQ = UART0_ID == uart0 ? UART0_IRQ : UART1_IRQ;
-    irq_set_exclusive_handler(UART_IRQ, UART_Isr);
+    irq_set_exclusive_handler(UART_IRQ, UARTIsr);
     irq_set_enabled(UART_IRQ, true);
     uart_set_translate_crlf(UART0_ID, true);
 }
 
-uint8_t bcc_control_buffer(uint8_t *data_buffer, uint8_t size, uint8_t xor)
+uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
     for (uint8_t i = 0; i < size; i++)
-    {
         xor ^= data_buffer[i];
-    }
+
     return xor;
 }
 
-int8_t check_uart_data(uint8_t *data_buffer, uint8_t size)
-{
-    if ((data_buffer[0] == 0x01) && (data_buffer[1] == 0x52) && (data_buffer[2] == 0x32) && (data_buffer[3] == 0x02))
-    {
-        // veri alma sorgusu
-        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x2E) && (data_buffer[6] == 0x30) && (data_buffer[7] == 0x31))
-        {
-            // buraya son 2 biti silecek bir yapı ekleyebilirsin
-            uint8_t xor_result = 0x01;
-
-            for (uint8_t i = 0; i < size; i++)
-            {
-                xor_result ^= data_buffer[i];
-            }
-
-            if (xor_result == data_buffer[size - 1])
-                return 0;
-        }
-
-        // zaman setleme sorgusu (0.9.1)
-        if ((data_buffer[4] == 0x31) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x34))
-        {
-            return 1;
-        }
-        // tarih setleme sorgusu (0.9.2)
-        if ((data_buffer[4] == 0x31) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x32))
-        {
-            return 2;
-        }
-    }
-    return -1;
-}
-
-bool bcc_control(uint8_t *buffer, uint8_t size)
+bool bccControl(uint8_t *buffer, uint8_t size)
 {
     uint8_t xor_result = 0x01;
 
-    for (uint8_t i = 0; i < size - 3; i++)
-    {
+    for (uint8_t i = 0; i < size; i++)
         xor_result ^= buffer[i];
-    }
 
-    return xor_result == buffer[size - 3];
+    return xor_result == buffer[size - 1];
 }
 
-void parse_uart_data(uint8_t *buffer)
+enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
+{
+    if (!(bccControl(data_buffer, size)))
+        return DataError;
+
+    // Default Control ([SOH]R2[STX])
+    if ((data_buffer[0] == 0x01) && (data_buffer[1] == 0x52) && (data_buffer[2] == 0x32) && (data_buffer[3] == 0x02))
+    {
+        // Reading Control (P.01)
+        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x2E) && (data_buffer[6] == 0x30) && (data_buffer[7] == 0x31))
+            return Reading;
+
+        // Time Set Control (0.9.1)
+        if ((data_buffer[4] == 0x30) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x31))
+            return TimeSet;
+
+        // Date Set Control (0.9.2)
+        if ((data_buffer[4] == 0x30) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x32))
+            return DateSet;
+    }
+    return DataError;
+}
+
+void parseReadingData(uint8_t *buffer)
 {
     for (uint i = 0; buffer[i] != '\0'; i++)
     {
@@ -203,20 +267,17 @@ void parse_uart_data(uint8_t *buffer)
             uint8_t k;
 
             for (k = i + 1; buffer[k] != 0x3B; k++)
-            {
-                start_time[k - (i + 1)] = buffer[k];
-            }
+                reading_state_start_time[k - (i + 1)] = buffer[k];
 
             for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
-            {
-                end_time[l - (k + 1)] = buffer[l];
-            }
+                reading_state_end_time[l - (k + 1)] = buffer[l];
+
             break;
         }
     }
 }
 
-uint8_t get_baud_rate(uint16_t b_rate)
+uint8_t getProgramBaudRate(uint16_t b_rate)
 {
     switch (b_rate)
     {
@@ -235,9 +296,10 @@ uint8_t get_baud_rate(uint16_t b_rate)
     }
 }
 
-void set_baud_rate(uint8_t b_rate)
+void setProgramBaudRate(uint8_t b_rate)
 {
     uint selected_baud_rate;
+
     switch (b_rate)
     {
     case 0:
@@ -262,66 +324,135 @@ void set_baud_rate(uint8_t b_rate)
     uart_set_baudrate(UART0_ID, selected_baud_rate);
 }
 
-void reset_rxBuffer()
+void resetRxBuffer()
 {
-    memset(rxBuffer, 0, 256);
-    data_len = 0;
+    memset(rx_buffer, 0, 256);
+    rx_buffer_len = 0;
 }
 
-void reset_state()
+void resetState()
 {
-    state = 0;
-    memset(rxBuffer, 0, 256);
-    set_baud_rate(0);
-    data_len = 0;
+    state = Greeting;
+    memset(rx_buffer, 0, 256);
+    setProgramBaudRate(0);
+    rx_buffer_len = 0;
 }
 
-void dateTimeParse(char *dateTime, uint8_t dotw)
+void greetingStateHandler(uint8_t *buffer, uint8_t size)
 {
-    t.year = dateTime[6] % 16 + 10 * (dateTime[6] / 16);
-    t.month = dateTime[5] % 16 + 10 * (dateTime[5] / 16);
-    t.day = dateTime[4] % 16 + 10 * (dateTime[4] / 16);
-    t.dotw = dotw;
-    t.hour = dateTime[2] % 16 + 10 * (dateTime[2] / 16);
-    t.min = dateTime[1] % 16 + 10 * (dateTime[1] / 16);
-    t.sec = dateTime[0] % 16 + 10 * (dateTime[0] / 16);
+    if ((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[2] == 0x36) && (buffer[3] == 0x31) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A))
+    {
+        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+        char greeting_uart_buffer[19];
+
+        snprintf(greeting_uart_buffer, 17, "/ALP%dMAVIALPV2\r\n", program_baud_rate);
+        greeting_uart_buffer[18] = '\0';
+        uart_puts(UART0_ID, greeting_uart_buffer);
+
+        state = Setting;
+    }
 }
 
-uint8_t decimalToBCD(uint8_t decimalValue)
+void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
-    return ((decimalValue / 10) << 4) | (decimalValue % 10);
+    if ((buffer[0] == 0x06) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A) && size == 6)
+    {
+        uint8_t modem_baud_rate;
+        uint8_t i;
+        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+
+        for (i = 0; i < size; i++)
+        {
+            if (buffer[i] == '0')
+            {
+                modem_baud_rate = buffer[i + 1] - '0';
+                if ((buffer[i + 2] != '1') && modem_baud_rate > 5 && modem_baud_rate < 0)
+                {
+                    i = size;
+                    break;
+                }
+                if (modem_baud_rate > max_baud_rate)
+                {
+                    uart_putc(UART0_ID, 0x15);
+                }
+                else
+                {
+                    uart_putc(UART0_ID, 0x06);
+                    setProgramBaudRate(modem_baud_rate);
+                    state = Listening;
+                }
+                break;
+            }
+        }
+
+        if (i == size)
+        {
+            uart_putc(UART0_ID, 0x15);
+        }
+    }
+    else
+    {
+        uart_putc(UART0_ID, 0x15);
+    }
 }
 
-void set_time_pt7c4338(struct i2c_inst *i2c, uint8_t address, uint8_t seconds, uint8_t minutes, uint8_t hours, uint8_t day, uint8_t date, uint8_t month, uint8_t year)
+void setTimeFromUART(uint8_t *buffer)
 {
-    uint8_t buf[8];
-    buf[0] = PT7C4338_REG_SECONDS;
-    buf[1] = decimalToBCD(seconds);
-    buf[2] = decimalToBCD(minutes);
-    buf[3] = decimalToBCD(hours);
-    buf[4] = decimalToBCD(day);
-    buf[5] = decimalToBCD(date);
-    buf[6] = decimalToBCD(month);
-    buf[7] = decimalToBCD(year);
+    uint8_t time_buffer[7];
+    uint8_t hour;
+    uint8_t min;
+    uint8_t sec;
 
-    i2c_write_blocking(i2c, address, buf, 8, false);
+    char *start_ptr = strchr(buffer, '(');
+    start_ptr++;
+
+    strncpy(time_buffer, start_ptr, 6);
+    time_buffer[6] = '\0';
+
+    hour = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
+    min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
+    sec = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
+
+    setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
+    getTimePt7c4338(&current_time);
+    datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+    time_change_flag = 1;
 }
 
-void get_time_pt7c4338(struct i2c_inst *i2c, uint8_t address)
+void setDateFromUART(uint8_t *buffer)
 {
-    uint8_t buf[7];
-    uint8_t dotw;
-    buf[0] = PT7C4338_REG_SECONDS;
+    uint8_t time_buffer[7];
+    uint8_t year;
+    uint8_t month;
+    uint8_t day;
 
-    i2c_write_blocking(i2c, address, buf, 1, true);
-    i2c_read_blocking(i2c, address, buf, 7, false);
-    dotw = buf[3];
-    dateTimeParse(buf, dotw);
+    char *start_ptr = strchr(buffer, '(');
+    start_ptr++;
+
+    strncpy(time_buffer, start_ptr, 6);
+    time_buffer[6] = '\0';
+
+    year = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
+    month = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
+    day = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
+
+    setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
+    getTimePt7c4338(&current_time);
+    datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
 }
 
 // SPI FUNCTIONS
 
-void print_buf(uint8_t *buf, size_t len)
+void __not_in_flash_func(getFlashContents)()
+{
+    uint32_t ints = save_and_disable_interrupts();
+    sector_data = *(uint8_t *)flash_sector_content;
+    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
+    restore_interrupts(ints);
+}
+
+void printBufferHex(uint8_t *buf, size_t len)
 {
     for (size_t i = 0; i < len; ++i)
     {
@@ -333,34 +464,16 @@ void print_buf(uint8_t *buf, size_t len)
     }
 }
 
-// void print_buf(const uint8_t *buf, size_t len)
-// {
-//     char element_str[2]; // initialized for print_buf, will be removed.
-
-//     for (size_t i = 0; i < len; ++i)
-//     {
-//         sprintf(element_str, "%02x", buf[i]);
-//         uart_puts(UART0_ID, element_str);
-
-//         if (i % 16 == 15)
-//             uart_putc(UART0_ID, '\n');
-//         else
-//             uart_putc(UART0_ID, ' ');
-//         if (i % 256 == 0)
-//             uart_puts(UART0_ID, "\n\n");
-//     }
-// }
-
-void __not_in_flash_func(set_sector_data)()
+void __not_in_flash_func(setSectorData)()
 {
-    // uint32_t ints = save_and_disable_interrupts();
+    uint8_t sector_buffer[FLASH_SECTOR_SIZE / sizeof(uint8_t)] = {0};
     sector_buffer[0] = sector_data;
-    flash_range_erase(FLASH_DATA_COUNT_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_DATA_COUNT_OFFSET, (uint8_t *)sector_buffer, FLASH_SECTOR_SIZE);
-    // restore_interrupts(ints);
+
+    flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_SECTOR_SIZE);
 }
 
-void set_date_to_char_array(int value, char *array)
+void setDateToCharArray(int value, char *array)
 {
     if (value < 10)
     {
@@ -374,7 +487,7 @@ void set_date_to_char_array(int value, char *array)
     }
 }
 
-void vrms_set_max_min_mean(uint8_t *buffer, uint8_t size)
+void vrmsSetMinMaxMean(uint8_t *buffer, uint8_t size)
 {
     uint8_t buffer_max = buffer[0];
     uint8_t buffer_min = buffer[0];
@@ -397,18 +510,18 @@ void vrms_set_max_min_mean(uint8_t *buffer, uint8_t size)
     vrms_mean = (uint8_t)(buffer_sum / buffer_size);
 }
 
-void set_flash_data()
+void setFlashData()
 {
     struct FlashData data;
-    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
-    uint16_t i;
+    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint16_t offset;
 
-    set_date_to_char_array(t.year, data.year);
-    set_date_to_char_array(t.month, data.month);
-    set_date_to_char_array(t.day, data.day);
-    set_date_to_char_array(t.hour, data.hour);
-    set_date_to_char_array(t.min, data.min);
-    set_date_to_char_array(t.sec, data.sec);
+    setDateToCharArray(current_time.year, data.year);
+    setDateToCharArray(current_time.month, data.month);
+    setDateToCharArray(current_time.day, data.day);
+    setDateToCharArray(current_time.hour, data.hour);
+    setDateToCharArray(current_time.min, data.min);
+    setDateToCharArray(current_time.sec, data.sec);
     data.max_volt = vrms_max;
     data.min_volt = vrms_min;
     data.mean_volt = vrms_mean;
@@ -418,39 +531,38 @@ void set_flash_data()
     // flasha yazma işleminde yazamadan önce silinip güç kesildiğinde tüm bitler ff kalıyordu ve yazma işlemi yapmıyordu.
     // şuan yazma işlemi yapıyor fakat sektörü silip en başından yapıyor ve veri kaybına sebep oluyor.
 
-    for (i = 0; i < FLASH_SECTOR_SIZE; i += FLASH_DATA_SIZE)
+    for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
     {
-        if (flash_target_contents[i] == '\0' || flash_target_contents[i] == 0xff)
+        if (flash_target_contents[offset] == '\0' || flash_target_contents[offset] == 0xff)
         {
-            flash_data[i / FLASH_DATA_SIZE] = data;
+            flash_data[offset / FLASH_RECORD_SIZE] = data;
             break;
         }
     }
 
-    if (i >= FLASH_SECTOR_SIZE)
+    if (offset >= FLASH_SECTOR_SIZE)
     {
-        if (sector_data == 382)
+        if (sector_data == FLASH_TOTAL_SECTORS)
             sector_data = 0;
         else
             sector_data++;
 
         memset(flash_data, 0, FLASH_SECTOR_SIZE);
         flash_data[0] = data;
-        set_sector_data();
+        setSectorData();
     }
 }
 
-void __not_in_flash_func(spi_write_buffer)()
+void __not_in_flash_func(SPIWriteToFlash)()
 {
-    set_flash_data();
-    // set_sector_data();
-    // uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
-    // restore_interrupts(ints);
+    setFlashData();
+    // setSectorData();
+
+    flash_range_erase(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
 }
 
-void array_to_datetime(datetime_t *dt, uint8_t *arr)
+void arrayToDatetime(datetime_t *dt, uint8_t *arr)
 {
     dt->year = (arr[0] - '0') * 10 + (arr[1] - '0');
     dt->month = (arr[2] - '0') * 10 + (arr[3] - '0');
@@ -459,43 +571,30 @@ void array_to_datetime(datetime_t *dt, uint8_t *arr)
     dt->min = (arr[8] - '0') * 10 + (arr[9] - '0');
 }
 
-int datetime_cmp(datetime_t *dt1, datetime_t *dt2)
+int datetimeComp(datetime_t *dt1, datetime_t *dt2)
 {
     if (dt1->year - dt2->year != 0)
-    {
-        // printf("y: %d\n", dt1->year - dt2->year);
         return dt1->year - dt2->year;
-    }
+
     else if (dt1->month - dt2->month != 0)
-    {
-        // printf("m: %d\n", dt1->month - dt2->month);
         return dt1->month - dt2->month;
-    }
+
     else if (dt1->day - dt2->day != 0)
-    {
-        // printf("d: %d\n", dt1->day - dt2->day);
         return dt1->day - dt2->day;
-    }
+
     else if (dt1->hour - dt2->hour != 0)
-    {
-        // printf("h: %d\n", dt1->hour - dt2->hour);
         return dt1->hour - dt2->hour;
-    }
+
     else if (dt1->min - dt2->min != 0)
-    {
-        // printf("min: %d\n", dt1->min - dt2->min);
         return dt1->min - dt2->min;
-    }
+
     else if (dt1->sec - dt2->sec != 0)
-    {
-        // printf("sec: %d\n", dt1->sec - dt2->sec);
         return dt1->sec - dt2->sec;
-    }
 
     return 0;
 }
 
-void datetime_cpy(datetime_t *src, datetime_t *dst)
+void datetimeCopy(datetime_t *src, datetime_t *dst)
 {
     dst->year = src->year;
     dst->month = src->month;
@@ -506,15 +605,15 @@ void datetime_cpy(datetime_t *src, datetime_t *dst)
     dst->sec = src->sec;
 }
 
-void search_data_into_flash()
+void searchDataInFlash()
 {
     datetime_t start = {0};
     datetime_t end = {0};
 
-    array_to_datetime(&start, start_time);
-    array_to_datetime(&end, end_time);
+    arrayToDatetime(&start, reading_state_start_time);
+    arrayToDatetime(&end, reading_state_end_time);
 
-    if (datetime_cmp(&start, &end) > 0)
+    if (datetimeComp(&start, &end) > 0)
         return;
 
     datetime_t dt_start = {0};
@@ -525,54 +624,38 @@ void search_data_into_flash()
     char uart_bcc_checked[100] = {0};
     char uart_string[100] = {0};
 
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET);
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
-    for (uint32_t i = 0; i < FLASH_TOTAL_DATA_COUNT; i += 16)
+    for (uint32_t i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
     {
         datetime_t rec_time = {0};
 
         if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
             continue;
 
-        array_to_datetime(&rec_time, &flash_start_content[i]);
-        // printf("start -> %d-%d-%d,%d:%d:%d\n", start.year, start.month, start.day, start.hour, start.min, start.sec);
-        // printf("sdt -> %d-%d-%d,%d:%d:%d\n", dt_start.year, dt_start.month, dt_start.day, dt_start.hour, dt_start.min, dt_start.sec);
-        // printf("end -> %d-%d-%d,%d:%d:%d\n", end.year, end.month, end.day, end.hour, end.min, end.sec);
-        // printf("edt -> %d-%d-%d,%d:%d:%d\n", dt_end.year, dt_end.month, dt_end.day, dt_end.hour, dt_end.min, dt_end.sec);
-        // printf("rec -> %d-%d-%d,%d:%d:%d\n", rec_time.year, rec_time.month, rec_time.day, rec_time.hour, rec_time.min, rec_time.sec);
+        arrayToDatetime(&rec_time, &flash_start_content[i]);
 
-        // printf("sc -> %d\n", datetime_cmp(&rec_time, &start));
-        if (datetime_cmp(&rec_time, &start) >= 0)
+        if (datetimeComp(&rec_time, &start) >= 0)
         {
-            if (start_index == -1 || (datetime_cmp(&rec_time, &dt_start) < 0))
+            if (start_index == -1 || (datetimeComp(&rec_time, &dt_start) < 0))
             {
-                // if (start_index != -1)
-                // printf("rec_sc -> %d\n", datetime_cmp(&rec_time, &dt_start));
-                // printf("Start match\n");
                 start_index = i;
-                datetime_cpy(&rec_time, &dt_start);
+                datetimeCopy(&rec_time, &dt_start);
             }
         }
 
-        // printf("dc -> %d\n", datetime_cmp(&rec_time, &end));
-        if (datetime_cmp(&rec_time, &end) <= 0)
+        if (datetimeComp(&rec_time, &end) <= 0)
         {
-            if (end_index == -1 || datetime_cmp(&rec_time, &dt_end) > 0)
+            if (end_index == -1 || datetimeComp(&rec_time, &dt_end) > 0)
             {
-                // if (end_index != -1)
-                // printf("rec_dc -> %d\n", datetime_cmp(&rec_time, &dt_end));
-                // printf("End match\n");
                 end_index = i;
-                datetime_cpy(&rec_time, &dt_end);
+                datetimeCopy(&rec_time, &dt_end);
             }
         }
     }
 
-    // printf("%d - %d\n", start_index, end_index);
-
     if (start_index >= 0 && end_index >= 0)
     {
-        // printf("1\n");
         uint8_t xor_result = 0x01;
         uint32_t start_addr = start_index;
         uint32_t end_addr = start_index <= end_index ? end_index : 1572864;
@@ -591,12 +674,12 @@ void search_data_into_flash()
             if (start_addr == end_addr)
             {
                 snprintf(uart_bcc_checked, 32, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
-                xor_result = bcc_control_buffer(uart_bcc_checked, 29, xor_result);
+                xor_result = bccCreate(uart_bcc_checked, 29, xor_result);
             }
             else
             {
                 snprintf(uart_bcc_checked, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
-                xor_result = bcc_control_buffer(uart_bcc_checked, 27, xor_result);
+                xor_result = bccCreate(uart_bcc_checked, 27, xor_result);
             }
 
             if (start_addr == end_addr)
@@ -617,210 +700,105 @@ void search_data_into_flash()
     }
     else
     {
-        // printf("2\n");
         uart_putc(UART0_ID, 0x15);
     }
-    // printf("3\n");
-    memset(start_time, 0, 10);
-    memset(end_time, 0, 10);
+    memset(reading_state_start_time, 0, 10);
+    memset(reading_state_end_time, 0, 10);
 }
 
 // ADC FUNCTIONS
-void __not_in_flash_func(adc_capture)(uint16_t *buf, size_t count)
+void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
 {
     adc_fifo_setup(true, false, 0, false, false);
     adc_run(true);
+
     for (int i = 0; i < count; i = i + 1)
         buf[i] = adc_fifo_get_blocking();
+
     adc_run(false);
     adc_fifo_drain();
 }
 
-void state0_handler(uint8_t *buffer, uint8_t size)
-{
-    if ((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[2] == 0x36) && (buffer[3] == 0x31) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A))
-    {
-        baud_rate = get_baud_rate(max_baud_rate);
-        char uart_send_info_buffer[19];
-        snprintf(uart_send_info_buffer, 17, "/ALP%dMAVIALPV2\r\n", baud_rate);
-        uart_send_info_buffer[18] = '\0';
-        uart_puts(UART0_ID, uart_send_info_buffer);
-        state = 1;
-    }
-}
-
-void state1_handler(uint8_t *buffer, uint8_t size)
-{
-    if ((buffer[0] == 0x06) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A) && size == 6)
-    {
-        uint8_t machine_baud_rate;
-        uint8_t i;
-        uint8_t program_baud_rate = get_baud_rate(max_baud_rate);
-
-        for (i = 0; i < size; i++)
-        {
-            if (buffer[i] == '0')
-            {
-                machine_baud_rate = buffer[i + 1] - '0';
-                if ((buffer[i + 2] != '1') && machine_baud_rate > 5 && machine_baud_rate < 0)
-                {
-                    i = size;
-                    break;
-                }
-                if (machine_baud_rate > max_baud_rate)
-                {
-                    uart_putc(UART0_ID, 0x15);
-                }
-                else
-                {
-                    uart_putc(UART0_ID, 0x06);
-                    set_baud_rate(machine_baud_rate);
-                    state = 2;
-                }
-                break;
-            }
-        }
-
-        if (i == size)
-        {
-            uart_putc(UART0_ID, 0x15);
-        }
-    }
-    else
-    {
-        uart_putc(UART0_ID, 0x15);
-    }
-}
-
-void set_time_uart(uint8_t *buffer)
-{
-    uint8_t time_buffer[7];
-    uint8_t hour;
-    uint8_t min;
-    uint8_t sec;
-
-    char *start_ptr = strchr(buffer, '(');
-    start_ptr++;
-
-    strncpy(time_buffer, start_ptr, 6);
-    time_buffer[6] = '\0';
-
-    hour = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
-    min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
-    sec = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
-
-    set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)t.dotw, (uint8_t)t.day, (uint8_t)t.month, (uint8_t)t.year);
-    get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-    set_time_flag = 1;
-}
-
-void set_date_uart(uint8_t *buffer)
-{
-    uint8_t time_buffer[7];
-    uint8_t year;
-    uint8_t month;
-    uint8_t day;
-
-    char *start_ptr = strchr(buffer, '(');
-    start_ptr++;
-
-    strncpy(time_buffer, start_ptr, 6);
-    time_buffer[6] = '\0';
-
-    year = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
-    month = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
-    day = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
-
-    set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)t.sec, (uint8_t)t.min, (uint8_t)t.hour, (uint8_t)t.dotw, day, month, year);
-    get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-}
-
 // UART TASK
+
 void vUARTTask(void *pvParameters)
 {
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
-    uint8_t rxChar;
+    uint8_t rx_char;
 
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
         pdTRUE,
         NULL,
-        reset_rxBuffer);
+        resetRxBuffer);
 
     TimerHandle_t ResetStateTimer = xTimerCreate(
         "StateTimer",
         pdMS_TO_TICKS(30000),
         pdTRUE,
         NULL,
-        reset_state);
+        resetState);
 
     while (true)
     {
         xTimerStart(ResetBufferTimer, 0);
-        UART_receive();
+        UARTReceive();
         ulNotificationValue = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
         if (ulNotificationValue == 1)
         {
             while (uart_is_readable(UART0_ID))
             {
-                rxChar = uart_getc(UART0_ID);
+                rx_char = uart_getc(UART0_ID);
 
                 // ENTER CONTROL
-                if (rxChar != '\n')
+                if (rx_char != '\n')
                 {
                     xTimerReset(ResetBufferTimer, 0);
-                    rxBuffer[data_len++] = rxChar;
+                    rx_buffer[rx_buffer_len++] = rx_char;
                 }
-                if (rxChar == '\n' || (data_len == 33 && ((rxBuffer[4] == 0x50) && (rxBuffer[5] == 0x2E) && (rxBuffer[6] == 0x30) && (rxBuffer[7] == 0x31))) || (data_len == 18 && ((rxBuffer[4] == 0x31) && (rxBuffer[6] == 0x39) && (rxBuffer[8] == 0x34))) || (data_len == 18 && ((rxBuffer[4] == 0x31) && (rxBuffer[6] == 0x39) && (rxBuffer[8] == 0x32))))
+                if (rx_char == '\n' || (rx_buffer_len == 33 && ((rx_buffer[4] == 0x50) && (rx_buffer[5] == 0x2E) && (rx_buffer[6] == 0x30) && (rx_buffer[7] == 0x31))) || (rx_buffer_len == 18 && ((rx_buffer[4] == 0x31) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x34))) || (rx_buffer_len == 18 && ((rx_buffer[4] == 0x31) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x32))))
                 {
-                    rxBuffer[data_len++] = rxChar;
+                    rx_buffer[rx_buffer_len++] = rx_char;
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
 
                     // enum oluşturarak stateleri ayarla
                     switch (state)
                     {
-                    case 0:
+                    case Greeting:
                         xTimerStart(ResetStateTimer, 0);
-                        state0_handler(rxBuffer, data_len);
+                        greetingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
-                    case 1:
+                    case Setting:
                         xTimerStart(ResetStateTimer, 0);
-                        state1_handler(rxBuffer, data_len);
+                        settingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
-                    case 2:
+                    case Listening:
                         xTimerStart(ResetStateTimer, 0);
-                        switch (check_uart_data(rxBuffer, data_len))
+                        switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
-                        // kayıt gösterme
-                        case -1:
+                        case DataError:
                             uart_putc(UART0_ID, 0x15);
                             break;
-                        case 0:
-                            parse_uart_data(rxBuffer);
-                            search_data_into_flash();
+
+                        case Reading:
+                            parseReadingData(rx_buffer);
+                            searchDataInFlash();
                             break;
-                        // saat setleme
-                        case 1:
-                            if (bcc_control(rxBuffer, data_len))
-                            {
-                                set_time_uart(rxBuffer);
-                            }
+
+                        case TimeSet:
+                            setTimeFromUART(rx_buffer);
                             break;
-                        // tarih setleme
-                        case 2:
-                            if (bcc_control(rxBuffer, data_len))
-                            {
-                                set_date_uart(rxBuffer);
-                            }
+
+                        case DateSet:
+                            setDateFromUART(rx_buffer);
                             break;
+
                         default:
                             uart_putc(UART0_ID, 0x15);
                             break;
@@ -828,37 +806,37 @@ void vUARTTask(void *pvParameters)
                         break;
                     }
 
-                    memset(rxBuffer, 0, 256);
-                    data_len = 0;
+                    memset(rx_buffer, 0, 256);
+                    rx_buffer_len = 0;
                 }
             }
         }
     }
 }
 
-TickType_t startTime;
-TickType_t executionTime;
-uint8_t vrms_buffer_count = 0;
-double vrms_accumulator = 0.0;
-const float conversion_factor = 1000 * (3.3f / (1 << 12));
-uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
-double vrms = 0.0;
-
 // ADC CONVERTER TASK
+
 void vADCReadTask()
 {
+    TickType_t startTime;
+    TickType_t executionTime;
+    uint8_t vrms_buffer_count = 0;
+    double vrms_accumulator = 0.0;
+    const float conversion_factor = 1000 * (3.3f / (1 << 12));
+    uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+    double vrms = 0.0;
 
     while (1)
     {
         startTime = xTaskGetTickCount();
 
-        adc_capture(sample_buf, VRMS_SAMPLE);
+        adcCapture(sample_buffer, VRMS_SAMPLE);
 
 #if DEBUG
         char deneme[40] = {0};
         for (uint8_t i = 0; i < 150; i++)
         {
-            snprintf(deneme, 20, "sample: %d\n", sample_buf[i]);
+            snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
             deneme[21] = '\0';
             uart_puts(UART0_ID, deneme);
         }
@@ -869,11 +847,11 @@ void vADCReadTask()
 
         // for (int i = 0; i < VRMS_SAMPLE; i++)
         // {
-        //     double production = (double)(sample_buf[i]);
+        //     double production = (double)(sample_buffer[i]);
         //     sumSamples += production;
         // }
         // uint16_t mean = sumSamples / VRMS_SAMPLE;
-        
+
         int mean = 2050 * conversion_factor;
 
 #if DEBUG
@@ -884,7 +862,7 @@ void vADCReadTask()
 
         for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
         {
-            double production = (double)(sample_buf[i] * conversion_factor);
+            double production = (double)(sample_buffer[i] * conversion_factor);
             vrms_accumulator += pow((production - mean), 2);
         }
 
@@ -902,9 +880,7 @@ void vADCReadTask()
         snprintf(x_array, 31, "VRMS: %d\n\n", (uint16_t)vrms);
         x_array[32] = '\0';
         uart_puts(UART0_ID, x_array);
-        printf("RTC Time:%s \r\n", datetime_str);
 #endif
-
         vrms = vrms / 1000;
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
@@ -912,40 +888,46 @@ void vADCReadTask()
         vrms_accumulator = 0.0;
         vrms = 0.0;
 
-        if (set_time_flag)
+        if (time_change_flag)
         {
-            remaining_time = pdMS_TO_TICKS((t.sec) * 1000);
-            if (t.min % 15 == 0)
+            adc_remaining_time = pdMS_TO_TICKS((current_time.sec) * 1000);
+            if (current_time.min % 15 == 0)
             {
-                spi_write_buffer();
+                SPIWriteToFlash();
             }
-            set_time_flag = 0;
+            time_change_flag = 0;
         }
 
-        if (t.min % 15 == 14 && t.sec > 55)
+        if (current_time.min % 15 == 14 && current_time.sec > 55)
         {
-            t.min++;
-            t.sec = 0;
+            if (current_time.hour == 23)
+                current_time.day++;
+
+            if (current_time.min == 59)
+                current_time.hour = (++current_time.hour) % 24;
+
+            current_time.min = (++current_time.min) % 60;
+            current_time.sec = 0;
         }
 
-        if ((t.sec < 5 && t.min % 15 == 0))
+        if ((current_time.sec < 5 && current_time.min % 15 == 0))
         {
-            vrms_set_max_min_mean(vrms_buffer, vrms_buffer_count);
-            spi_write_buffer();
+            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+            SPIWriteToFlash();
             memset(vrms_buffer, 0, 15);
             vrms_buffer_count = 0;
         }
+        // printf("adcread task\n");
 
         executionTime = xTaskGetTickCount() - startTime;
-        vTaskDelay(pdMS_TO_TICKS(VRMS_DATA_BUFFER_TIME) - executionTime - remaining_time);
-#if DEBUG
-// vTaskDelay(5000);
-#endif
-        remaining_time = 0;
+        vTaskDelay(5000);
+        // vTaskDelay(pdMS_TO_TICKS(VRMS_SAMPLING_PERIOD) - executionTime - adc_remaining_time);
+        adc_remaining_time = 0;
     }
 }
 
 // DEBUG TASK
+
 void vWriteDebugTask()
 {
     TickType_t startTime;
@@ -953,16 +935,31 @@ void vWriteDebugTask()
 
     for (;;)
     {
-        startTime = xTaskGetTickCount();
-        get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-        datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
+        TickType_t startTime = xTaskGetTickCount();
+        // getTimePt7c4338(&current_time);
+        rtc_get_datetime(&current_time);
+        datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
         // printf("RTC Time:%s \r\n", datetime_str);
         executionTime = xTaskGetTickCount() - startTime;
+        // vTaskDelayUntil(&startTime, pdMS_TO_TICKS(1000));
         vTaskDelay(1000 - executionTime);
     }
 }
 
+void vRTCTask()
+{
+    TickType_t startTime = xTaskGetTickCount();
+
+    while (true)
+    {
+        vTaskDelayUntil(&startTime, RTC_SET_PERIOD_MIN * 60 * 1000);
+        getTimePt7c4338(&current_time);
+        rtc_set_datetime(&current_time);
+    }
+}
+
 // RESET TASK
+
 void vResetTask()
 {
     while (1)
@@ -974,19 +971,33 @@ void vResetTask()
     }
 }
 
-void __not_in_flash_func(get_flash_contents)()
+static volatile bool fired = false;
+
+datetime_t alarm = {
+    .year = -1,
+    .month = -1,
+    .day = -1,
+    .dotw = -1,
+    .hour = -1,
+    .min = -1,
+    .sec = 00};
+
+static void alarmcallback(void)
 {
-    uint32_t ints = save_and_disable_interrupts();
-    sector_data = *(uint8_t *)flash_sector_contents;
-    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_TARGET_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
-    memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
-    restore_interrupts(ints);
+    datetime_t t = {0};
+    rtc_get_datetime(&t);
+    char datetime_buf[256];
+    char *datetime_str = &datetime_buf[0];
+    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
+    printf("Alarm Fired At %s\n", datetime_str);
+    stdio_flush();
+    fired = true;
 }
 
 void main()
 {
     stdio_init_all();
-    sleep_ms(3000);
+    sleep_ms(1000);
 
     // UART INIT
     uart_init(UART0_ID, BAUD_RATE);
@@ -1002,12 +1013,12 @@ void main()
     adc_init();
     adc_gpio_init(27);
     adc_select_input(1);
-    adc_set_clkdiv(4 * 9600);
+    adc_set_clkdiv(CLOCK_DIV);
     sleep_ms(1);
 
     // RTC Init
     rtc_init();
-    rtc_set_datetime(&t);
+    rtc_set_datetime(&current_time);
 
     // I2C Init
     i2c_init(i2c0, 400 * 1000);
@@ -1015,18 +1026,24 @@ void main()
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
     // FLASH CONTENTS
-    get_flash_contents();
-    // spi_write_buffer();
+    getFlashContents();
+    // SPIWriteToFlash();
 
     // RTC
-    // set_time_pt7c4338(I2C_PORT, I2C_ADDRESS, 10, 23, 20, 3, 23, 8, 23);
-    get_time_pt7c4338(I2C_PORT, I2C_ADDRESS);
-    datetime_to_str(datetime_str, sizeof(datetime_buf), &t);
-    remaining_time = pdMS_TO_TICKS((t.sec) * 1000);
+    // setTimePt7c4338(I2C_PORT, I2C_ADDRESS, 10, 23, 20, 3, 23, 8, 23);
+    getTimePt7c4338(&current_time);
+    rtc_set_datetime(&current_time);
+    // rtc_set_alarm(&alarm, &alarmcallback);
+    datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+    adc_remaining_time = pdMS_TO_TICKS((current_time.sec + 1) * 1000);
+
+    sleep_us(64);
 
     xTaskCreate(vADCReadTask, "ADCReadTask", 128, NULL, 3, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 2, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 3, NULL);
+    // xTaskCreate(vRTCGetTask, "RTCGetTask", 128, NULL, 2, NULL);
+    xTaskCreate(vRTCTask, "RTCTask", 128, NULL, 2, NULL);
     xTaskCreate(vResetTask, "ResetTask", 128, NULL, 1, NULL);
     vTaskStartScheduler();
 

@@ -59,6 +59,7 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/uart.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/FreeRTOS.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/projdefs.h \
