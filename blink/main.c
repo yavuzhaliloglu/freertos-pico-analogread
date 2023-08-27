@@ -425,6 +425,25 @@ void setDateFromUART(uint8_t *buffer)
     rtc_set_datetime(&current_time);
 }
 
+bool controlRXBuffer(uint8_t *buffer,uint8_t len)
+{
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
+    uint8_t time[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
+    uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
+
+    uint8_t reading_len = 33;
+    uint8_t time_len = 19;
+    uint8_t date_len = 19;
+
+    if((len == reading_len) && (strncmp(buffer,reading,8) == 0))
+        return 1;
+    if((len == time_len) && (strncmp(buffer,time,9)==0))
+        return 1;
+    if((len == date_len) && (strncmp(buffer,date,9)==0))
+        return 1;
+    return 0;
+}
+
 // SPI FUNCTIONS
 
 void __not_in_flash_func(getFlashContents)()
@@ -714,7 +733,7 @@ void vUARTTask(void *pvParameters)
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
-
+    uint8_t rx_control_buffer[10];
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
@@ -746,7 +765,8 @@ void vUARTTask(void *pvParameters)
                     xTimerReset(ResetBufferTimer, 0);
                     rx_buffer[rx_buffer_len++] = rx_char;
                 }
-                if (rx_char == '\n' || (rx_buffer_len == 33 && ((rx_buffer[4] == 0x50) && (rx_buffer[5] == 0x2E) && (rx_buffer[6] == 0x30) && (rx_buffer[7] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x32))))
+                // (rx_buffer_len == 33 && ((rx_buffer[4] == 0x50) && (rx_buffer[5] == 0x2E) && (rx_buffer[6] == 0x30) && (rx_buffer[7] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x32)))
+                if (rx_char == '\n' || controlRXBuffer(rx_buffer,rx_buffer_len))
                 {
                     rx_buffer[rx_buffer_len++] = rx_char;
                     xTimerReset(ResetStateTimer, 0);
