@@ -35,7 +35,8 @@
         "timers.h": "c",
         "mem_ops.h": "c",
         "types.h": "c",
-        "cmath": "c"
+        "cmath": "c",
+        "irq.h": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
 }

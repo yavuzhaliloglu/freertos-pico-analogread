@@ -20,6 +20,13 @@
 #include "pico/bootrom.h"
 #include "hardware/irq.h"
 #include "timers.h"
+#include "hardware/watchdog.h"
+#include "hardware/structs/watchdog.h"
+
+TaskHandle_t ADCReadTaskHandle;
+TaskHandle_t UARTTaskHandle;
+TaskHandle_t WriteDebugTaskHandle;
+TaskHandle_t ResetTaskHandle;
 
 // SPI DEFINES
 #define FLASH_SECTOR_OFFSET 512 * 1024
@@ -66,6 +73,7 @@ uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
 uint16_t sample_buffer[VRMS_SAMPLE];
 TickType_t adc_remaining_time = 0;
+uint8_t time_change_flag;
 datetime_t alarm = {
     .year = -1,
     .month = -1,
@@ -110,7 +118,9 @@ enum States
 {
     Greeting = 0,
     Setting = 1,
-    Listening = 2
+    Listening = 2,
+    ReProgram = 3,
+    WriteProgram = 4
 };
 enum ListeningStates
 {
@@ -202,6 +212,15 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
+void readENUART()
+{
+    gpio_put(3, 0);
+}
+void writeENUART()
+{
+    gpio_put(3, 1);
+    vTaskDelay(1);
+}
 uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
     for (uint8_t i = 0; i < size; i++)
@@ -332,7 +351,9 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 
         snprintf(greeting_uart_buffer, 17, "/ALP%dMAVIALPV2\r\n", program_baud_rate);
         greeting_uart_buffer[18] = '\0';
+        writeENUART();
         uart_puts(UART0_ID, greeting_uart_buffer);
+        readENUART();
 
         state = Setting;
     }
@@ -340,6 +361,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
+    writeENUART();
     if ((buffer[0] == 0x06) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A) && size == 6)
     {
         uint8_t modem_baud_rate;
@@ -369,7 +391,6 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                 break;
             }
         }
-
         if (i == size)
         {
             uart_putc(UART0_ID, 0x15);
@@ -379,6 +400,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     {
         uart_putc(UART0_ID, 0x15);
     }
+    readENUART();
 }
 
 void setTimeFromUART(uint8_t *buffer)
@@ -425,22 +447,30 @@ void setDateFromUART(uint8_t *buffer)
     rtc_set_datetime(&current_time);
 }
 
-bool controlRXBuffer(uint8_t *buffer,uint8_t len)
+bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
     uint8_t time[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
     uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
+    uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
 
+    uint8_t reprogram_len = 4;
     uint8_t reading_len = 33;
     uint8_t time_len = 19;
     uint8_t date_len = 19;
 
-    if((len == reading_len) && (strncmp(buffer,reading,8) == 0))
+    if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
+    {
+        state = ReProgram;
         return 1;
-    if((len == time_len) && (strncmp(buffer,time,9)==0))
+    }
+    if ((len == reading_len) && (strncmp(buffer, reading, 8) == 0))
         return 1;
-    if((len == date_len) && (strncmp(buffer,date,9)==0))
+    if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
         return 1;
+    if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
+        return 1;
+
     return 0;
 }
 
@@ -464,6 +494,9 @@ void printBufferHex(uint8_t *buf, size_t len)
             printf("\n");
         else
             printf(" ");
+
+        if (i % 256 == 0)
+            printf("\n\n");
     }
 }
 
@@ -661,6 +694,7 @@ void searchDataInFlash()
         }
     }
 
+    writeENUART();
     if (start_index >= 0 && end_index >= 0)
     {
         uint8_t xor_result = 0x01;
@@ -709,6 +743,7 @@ void searchDataInFlash()
     {
         uart_putc(UART0_ID, 0x15);
     }
+    readENUART();
     memset(reading_state_start_time, 0, 10);
     memset(reading_state_end_time, 0, 10);
 }
@@ -733,7 +768,6 @@ void vUARTTask(void *pvParameters)
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
-    uint8_t rx_control_buffer[10];
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
@@ -765,15 +799,18 @@ void vUARTTask(void *pvParameters)
                     xTimerReset(ResetBufferTimer, 0);
                     rx_buffer[rx_buffer_len++] = rx_char;
                 }
-                // (rx_buffer_len == 33 && ((rx_buffer[4] == 0x50) && (rx_buffer[5] == 0x2E) && (rx_buffer[6] == 0x30) && (rx_buffer[7] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x31))) || (rx_buffer_len == 19 && ((rx_buffer[4] == 0x30) && (rx_buffer[6] == 0x39) && (rx_buffer[8] == 0x32)))
-                if (rx_char == '\n' || controlRXBuffer(rx_buffer,rx_buffer_len))
+                if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
                     rx_buffer[rx_buffer_len++] = rx_char;
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
-
+                    writeENUART();
                     switch (state)
                     {
+                    case ReProgram:
+                        xTimerStart(ResetStateTimer, 0);
+                        // reProgramHandler();
+                        break;
                     case Greeting:
                         xTimerStart(ResetStateTimer, 0);
                         greetingStateHandler(rx_buffer, rx_buffer_len);
@@ -816,6 +853,7 @@ void vUARTTask(void *pvParameters)
                     }
                     memset(rx_buffer, 0, 256);
                     rx_buffer_len = 0;
+                    readENUART();
                 }
             }
         }
@@ -824,44 +862,111 @@ void vUARTTask(void *pvParameters)
 
 // ADC CONVERTER TASK
 
-static void adc_read(void)
+void vADCReadTask()
 {
-    rtc_get_datetime(&current_time);
-    datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-    printf("Alarm Fired At %s\n", datetime_str);
-    stdio_flush();
-
+    TickType_t startTime;
+    TickType_t xFrequency = pdMS_TO_TICKS(60000);
     uint8_t vrms_buffer_count = 0;
     double vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
     uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
     double vrms = 0.0;
 
-    adcCapture(sample_buffer, VRMS_SAMPLE);
-
-    double mean = 2050 * conversion_factor;
-
-    for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
+    while (1)
     {
-        double production = (double)(sample_buffer[i] * conversion_factor);
-        vrms_accumulator += pow((production - mean), 2);
-    }
 
-    vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-    vrms = vrms * 75;
-    vrms = vrms / 1000;
+#if !DEBUG
+        if (adc_remaining_time > 0)
+        {
+            vTaskDelay(pdMS_TO_TICKS(60000) - adc_remaining_time);
+            adc_remaining_time = 0;
+        }
+#endif
 
-    if (vrms < 0)
+        startTime = xTaskGetTickCount();
+        rtc_get_datetime(&current_time);
+        datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+        printf("Alarm Fired At %s\n", datetime_str);
+
+        adcCapture(sample_buffer, VRMS_SAMPLE);
+
+#if DEBUG
+        char deneme[40] = {0};
+        writeENUART();
+        for (uint8_t i = 0; i < 150; i++)
+        {
+            snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
+            deneme[21] = '\0';
+
+            uart_puts(UART0_ID, deneme);
+        }
+        readENUART();
+        printf("\n");
+#endif
+
+        int mean = 2050 * conversion_factor;
+
+#if DEBUG
+        snprintf(deneme, 30, "mean: %d\n", mean);
+        deneme[31] = '\0';
+        writeENUART();
+        uart_puts(UART0_ID, deneme);
+        readENUART();
+#endif
+
+        for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
+        {
+            double production = (double)(sample_buffer[i] * conversion_factor);
+            vrms_accumulator += pow((production - mean), 2);
+        }
+
+#if DEBUG
+        snprintf(deneme, 34, "vrmsAc: %f\n", vrms_accumulator);
+        deneme[35] = '\0';
+        writeENUART();
+        uart_puts(UART0_ID, deneme);
+        readENUART();
+#endif
+        vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
+        vrms = vrms * 75;
+
+#if DEBUG
+        char x_array[40] = {0};
+        snprintf(x_array, 31, "VRMS: %d\n\n", (uint16_t)vrms);
+        x_array[32] = '\0';
+        writeENUART();
+        uart_puts(UART0_ID, x_array);
+        readENUART();
+#endif
+
+        vrms = vrms / 1000;
+        vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
+
+        vrms_accumulator = 0.0;
         vrms = 0.0;
 
-    vrms_buffer[(vrms_buffer_count++) % 15] = (uint8_t)vrms;
+        if (time_change_flag)
+        {
+            adc_remaining_time = pdMS_TO_TICKS((current_time.sec) * 1000);
+            if (current_time.min % 15 == 0)
+            {
+                SPIWriteToFlash();
+            }
+            time_change_flag = 0;
+            vTaskDelay(60000 - adc_remaining_time);
+            adc_remaining_time = 0;
+        }
 
-    if ((current_time.sec < 5 && current_time.min % 15 == 0))
-    {
-        vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-        SPIWriteToFlash();
-        memset(vrms_buffer, 0, 15);
-        vrms_buffer_count = 0;
+        if ((current_time.sec < 5 && current_time.min % 15 == 0))
+        {
+            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+            SPIWriteToFlash();
+            memset(vrms_buffer, 0, 15);
+            vrms_buffer_count = 0;
+        }
+
+        // vTaskDelay(5000);
+        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -870,13 +975,14 @@ static void adc_read(void)
 void vWriteDebugTask()
 {
     TickType_t startTime = xTaskGetTickCount();
+    TickType_t xFrequency = pdMS_TO_TICKS(1000);
 
-    for (;;)
+    while (true)
     {
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-        // printf("RTC Time:%s \r\n", datetime_str);
-        vTaskDelayUntil(&startTime, pdMS_TO_TICKS(1000));
+        printf("RTC Time:%s \r\n", datetime_str);
+        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -886,6 +992,7 @@ void vRTCTask()
 
     while (true)
     {
+        // senkronizasyonu sağlamak için queue gbi bir yapı kullanılabilir mi?
         vTaskDelayUntil(&startTime, RTC_SET_PERIOD_MIN * 60 * 1000);
         getTimePt7c4338(&current_time);
         rtc_set_datetime(&current_time);
@@ -919,12 +1026,15 @@ void main()
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
+    gpio_init(3);
+    gpio_set_dir(3, GPIO_OUT);
 
     // ADC INIT
     adc_init();
     adc_gpio_init(27);
     adc_select_input(1);
     adc_set_clkdiv(CLOCK_DIV);
+    adcCapture(sample_buffer, VRMS_SAMPLE);
     sleep_ms(1);
 
     // RTC Init
@@ -940,16 +1050,16 @@ void main()
     // SPIWriteToFlash();
 
     // RTC
-    // setTimePt7c4338(I2C_PORT, I2C_ADDRESS, 10, 23, 20, 3, 23, 8, 23);
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
     sleep_us(64);
-    rtc_set_alarm(&alarm, &adc_read);
+    adc_remaining_time = pdMS_TO_TICKS((current_time.sec + 1) * 1000);
 
-    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 128, NULL, 2, NULL);
-    xTaskCreate(vRTCTask, "RTCTask", 128, NULL, 2, NULL);
-    xTaskCreate(vResetTask, "ResetTask", 128, NULL, 1, NULL);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, &ADCReadTaskHandle);
+    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, &UARTTaskHandle);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, &WriteDebugTaskHandle);
+    // xTaskCreate(vRTCTask, "RTCTask", 256, NULL, 2, NULL);
+    xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &ResetTaskHandle);
 
     vTaskStartScheduler();
 

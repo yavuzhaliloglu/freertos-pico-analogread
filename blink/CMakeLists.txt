@@ -13,12 +13,15 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-add_executable(blink main.c)
+add_executable(blink main.c)    
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
  
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
+                    pico_stdlib_headers
+                    hardware_structs    
+                    hardware_watchdog
                     FreeRTOS-Kernel
                     FreeRTOS-Kernel-Heap4
                     hardware_uart

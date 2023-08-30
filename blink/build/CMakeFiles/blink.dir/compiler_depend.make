@@ -3845,7 +3845,10 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /usr/include/newlib/sys/string.h \
   /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
   /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h \
-  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h
+  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h \
+  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
+  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h
 
 
 ../main.c:
