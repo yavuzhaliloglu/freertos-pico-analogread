@@ -38,5 +38,6 @@
         "cmath": "c",
         "irq.h": "c"
     },
-    "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel"
+    "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel",
+    "python.analysis.typeCheckingMode": "basic"
 }

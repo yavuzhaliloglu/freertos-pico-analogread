@@ -23,11 +23,6 @@
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
 
-TaskHandle_t ADCReadTaskHandle;
-TaskHandle_t UARTTaskHandle;
-TaskHandle_t WriteDebugTaskHandle;
-TaskHandle_t ResetTaskHandle;
-
 // SPI DEFINES
 #define FLASH_SECTOR_OFFSET 512 * 1024
 #define FLASH_TOTAL_SECTORS 382
@@ -119,15 +114,15 @@ enum States
     Greeting = 0,
     Setting = 1,
     Listening = 2,
-    ReProgram = 3,
-    WriteProgram = 4
+    WriteProgram = 3
 };
 enum ListeningStates
 {
     DataError = -1,
     Reading = 0,
     TimeSet = 1,
-    DateSet = 2
+    DateSet = 2,
+    ReProgram = 3
 };
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
 enum States state = Greeting;
@@ -137,6 +132,7 @@ uint8_t rx_buffer_len = 0;
 uint8_t reading_state_start_time[10];
 uint8_t reading_state_end_time[10];
 volatile uint8_t test_flag = 0;
+uint32_t reprogram_size = 0;
 
 // RTC FUNCTIONS
 
@@ -216,11 +212,13 @@ void readENUART()
 {
     gpio_put(3, 0);
 }
+
 void writeENUART()
 {
     gpio_put(3, 1);
     vTaskDelay(1);
 }
+
 uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
     for (uint8_t i = 0; i < size; i++)
@@ -241,6 +239,10 @@ bool bccControl(uint8_t *buffer, uint8_t size)
 
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
+    uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
+    if (strncmp(reprogram, data_buffer, 4) == 0)
+        return ReProgram;
+
     if (!(bccControl(data_buffer, size)))
         return DataError;
 
@@ -259,6 +261,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         if ((data_buffer[4] == 0x30) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x32))
             return DateSet;
     }
+
     return DataError;
 }
 
@@ -328,10 +331,103 @@ void setProgramBaudRate(uint8_t b_rate)
     uart_set_baudrate(UART0_ID, selected_baud_rate);
 }
 
+uint8_t rpb[7 * FLASH_PAGE_SIZE] = {0};
+uint8_t crc_buffer[9] = {0};
+uint8_t rpb_len = 0;
+
+void writeBlock(uint8_t *buffer, uint8_t size)
+{
+    uint8_t lsb_byte = buffer[size - 2];
+    printf("lsb byte: %02X\n", lsb_byte);
+
+    for (uint8_t i = 0; i < size - 2; i++)
+    {
+        buffer[i] = (buffer[i] << 1);
+        uint8_t lsb = lsb_byte & 0x01;
+        buffer[i] += lsb;
+        lsb_byte = (lsb_byte >> 1);
+    }
+
+    memcpy(rpb + (rpb_len), buffer, size - 2);
+
+    rpb_len += 7;
+
+    if (rpb_len == 7 * FLASH_PAGE_SIZE)
+    {
+
+    }
+
+    // DEBUG
+    for (int i = 0; i < rpb_len; i++)
+    {
+        printf("hex: %02x\tbinary: ", rpb[i]);
+        for (int k = 7; k >= 0; k--)
+        {
+            printf("%d", (rpb[i] >> k) & 1);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+uint8_t crc_cnt = 0;
+
+void writeProgramToFlash(uint8_t chr)
+{
+    crc_buffer[crc_cnt++] = chr;
+    printf("received hexadecimal: %X\n", chr);
+    reprogram_size--;
+
+    if (crc_cnt == 9 || reprogram_size == 0)
+    {
+        printf("Reprogram Size: %d\n", reprogram_size);
+        printf("Buffer:\n");
+
+        for (int i = 0; i < 9; i++)
+            printf("%02X ", crc_buffer[i]);
+        printf("\n");
+
+        uint8_t bcc_received = crc_buffer[crc_cnt - 1];
+        printf("bcc value received: %02X\n", bcc_received);
+        uint8_t bcc = bccCreate(crc_buffer, crc_cnt - 1, 0x00) & 0x7F;
+        printf("bcc value generated: %02X\n", bcc);
+
+        if (bcc == bcc_received)
+        {
+            writeBlock(crc_buffer, crc_cnt);
+        }
+
+        crc_cnt = 0;
+        memset(crc_buffer, 0, 9);
+    }
+}
+
+void setReProgramSize(uint8_t *data_buffer)
+{
+    uint8_t lsb_byte = data_buffer[7];
+
+    for (int i = 4; i < 7; i++)
+    {
+        uint8_t lsb = lsb_byte & 0x01;
+        data_buffer[i] = (data_buffer[i] << 1);
+        data_buffer[i] += lsb;
+        lsb_byte = (lsb_byte >> 1);
+
+        reprogram_size += data_buffer[i];
+        if (i != 6)
+        {
+            reprogram_size = (reprogram_size << 8);
+        }
+    }
+
+    printf("reprogram size: %u\n", reprogram_size);
+}
+
 void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
+    printf("buffer reset\n");
 }
 
 void resetState()
@@ -420,6 +516,7 @@ void setTimeFromUART(uint8_t *buffer)
     min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
     sec = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
 
+    rtc_get_datetime(&current_time);
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
@@ -442,6 +539,7 @@ void setDateFromUART(uint8_t *buffer)
     month = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
     day = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
 
+    rtc_get_datetime(&current_time);
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
@@ -454,16 +552,13 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
 
-    uint8_t reprogram_len = 4;
+    uint8_t reprogram_len = 8;
     uint8_t reading_len = 33;
     uint8_t time_len = 19;
     uint8_t date_len = 19;
 
     if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
-    {
-        state = ReProgram;
         return 1;
-    }
     if ((len == reading_len) && (strncmp(buffer, reading, 8) == 0))
         return 1;
     if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
@@ -768,17 +863,18 @@ void vUARTTask(void *pvParameters)
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
+
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
-        pdFALSE,
+        pdTRUE,
         NULL,
         resetRxBuffer);
 
     TimerHandle_t ResetStateTimer = xTimerCreate(
         "StateTimer",
         pdMS_TO_TICKS(30000),
-        pdTRUE,
+        pdFALSE,
         NULL,
         resetState);
 
@@ -793,10 +889,14 @@ void vUARTTask(void *pvParameters)
             {
                 rx_char = uart_getc(UART0_ID);
 
+                if (state == WriteProgram)
+                {
+                    writeProgramToFlash(rx_char);
+                    continue;
+                }
                 // ENTER CONTROL
                 if (rx_char != '\n')
                 {
-                    xTimerReset(ResetBufferTimer, 0);
                     rx_buffer[rx_buffer_len++] = rx_char;
                 }
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
@@ -807,10 +907,6 @@ void vUARTTask(void *pvParameters)
                     writeENUART();
                     switch (state)
                     {
-                    case ReProgram:
-                        xTimerStart(ResetStateTimer, 0);
-                        // reProgramHandler();
-                        break;
                     case Greeting:
                         xTimerStart(ResetStateTimer, 0);
                         greetingStateHandler(rx_buffer, rx_buffer_len);
@@ -825,6 +921,10 @@ void vUARTTask(void *pvParameters)
                         xTimerStart(ResetStateTimer, 0);
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
+                        case ReProgram:
+                            state = WriteProgram;
+                            setReProgramSize(rx_buffer);
+
                         case DataError:
                             uart_putc(UART0_ID, 0x15);
                             break;
@@ -882,8 +982,8 @@ void vADCReadTask()
             adc_remaining_time = 0;
         }
 #endif
-
         startTime = xTaskGetTickCount();
+
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
         printf("Alarm Fired At %s\n", datetime_str);
@@ -904,10 +1004,10 @@ void vADCReadTask()
         printf("\n");
 #endif
 
-        int mean = 2050 * conversion_factor;
+        float mean = 2050 * conversion_factor / 1000;
 
 #if DEBUG
-        snprintf(deneme, 30, "mean: %d\n", mean);
+        snprintf(deneme, 30, "mean: %f\n", mean);
         deneme[31] = '\0';
         writeENUART();
         uart_puts(UART0_ID, deneme);
@@ -916,7 +1016,7 @@ void vADCReadTask()
 
         for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
         {
-            double production = (double)(sample_buffer[i] * conversion_factor);
+            double production = (double)(sample_buffer[i] * conversion_factor) / 1000;
             vrms_accumulator += pow((production - mean), 2);
         }
 
@@ -939,7 +1039,6 @@ void vADCReadTask()
         readENUART();
 #endif
 
-        vrms = vrms / 1000;
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
         vrms_accumulator = 0.0;
@@ -974,28 +1073,16 @@ void vADCReadTask()
 
 void vWriteDebugTask()
 {
-    TickType_t startTime = xTaskGetTickCount();
-    TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    TickType_t startTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    startTime = xTaskGetTickCount();
 
     while (true)
     {
+        vTaskDelayUntil(&startTime, xFrequency);
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
         printf("RTC Time:%s \r\n", datetime_str);
-        vTaskDelayUntil(&startTime, xFrequency);
-    }
-}
-
-void vRTCTask()
-{
-    TickType_t startTime = xTaskGetTickCount();
-
-    while (true)
-    {
-        // senkronizasyonu sağlamak için queue gbi bir yapı kullanılabilir mi?
-        vTaskDelayUntil(&startTime, RTC_SET_PERIOD_MIN * 60 * 1000);
-        getTimePt7c4338(&current_time);
-        rtc_set_datetime(&current_time);
     }
 }
 
@@ -1055,11 +1142,10 @@ void main()
     sleep_us(64);
     adc_remaining_time = pdMS_TO_TICKS((current_time.sec + 1) * 1000);
 
-    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, &ADCReadTaskHandle);
-    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, &UARTTaskHandle);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, &WriteDebugTaskHandle);
-    // xTaskCreate(vRTCTask, "RTCTask", 256, NULL, 2, NULL);
-    xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &ResetTaskHandle);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, NULL);
+    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
+    xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
 
     vTaskStartScheduler();
 
