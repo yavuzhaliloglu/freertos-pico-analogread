@@ -36,7 +36,13 @@
         "mem_ops.h": "c",
         "types.h": "c",
         "cmath": "c",
-        "irq.h": "c"
+        "irq.h": "c",
+        "md5.h": "c",
+        "math.h": "c",
+        "time.h": "c",
+        "aio.h": "c",
+        "watchdog.h": "c",
+        "stdint.h": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel",
     "python.analysis.typeCheckingMode": "basic"

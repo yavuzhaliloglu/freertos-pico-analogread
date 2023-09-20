@@ -13,10 +13,10 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-add_executable(blink main.c)    
+add_executable(blink main.c)
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
- 
+
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
                     pico_stdlib_headers
@@ -34,7 +34,8 @@ target_link_libraries(blink pico_stdlib
                     hardware_irq
                     hardware_sync
                     )
-                    
+
+set(PICO_COPY_TO_RAM,1)
 # Enable/disable STDIO via USB and UART
 # We use UART1 as a debug port because UART0 is attached to RS485
 pico_enable_stdio_usb(blink 1)

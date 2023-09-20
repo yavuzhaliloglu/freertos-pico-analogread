@@ -17,7 +17,10 @@ CMakeFiles/blink.dir/main.c.obj: \
  /usr/include/newlib/sys/_pthreadtypes.h /usr/include/newlib/sys/sched.h \
  /usr/include/newlib/machine/types.h /usr/include/newlib/sys/stdio.h \
  /usr/include/newlib/stdlib.h /usr/include/newlib/machine/stdlib.h \
- /usr/include/newlib/alloca.h \
+ /usr/include/newlib/alloca.h /usr/include/newlib/time.h \
+ /usr/include/newlib/machine/time.h /usr/include/newlib/sys/_locale.h \
+ /usr/include/newlib/string.h /usr/include/newlib/strings.h \
+ /usr/include/newlib/sys/string.h \
  /home/yavuz/pico/pico-sdk/src/common/pico_stdlib/include/pico/stdlib.h \
  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico.h \
  /home/yavuz/pico/pico-sdk/src/common/pico_base/include/pico/types.h \
@@ -69,23 +72,24 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/mpu_wrappers.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h \
  /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/list.h \
- /usr/include/newlib/time.h /usr/include/newlib/machine/time.h \
- /usr/include/newlib/sys/_locale.h \
+ /usr/include/newlib/math.h \
+ /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h \
+ /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h \
+ /home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/datetime.h \
+ /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h \
+ /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h \
+ /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h \
+ /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h \
+ /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_rtc/include/hardware/rtc.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/rtc.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/rtc.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_i2c/include/hardware/i2c.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h \
- /home/yavuz/pico/pico-sdk/src/common/pico_util/include/pico/util/datetime.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_adc/include/hardware/adc.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/adc.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/adc.h \
- /usr/include/newlib/math.h \
- /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info.h \
- /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/defs.h \
- /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/structure.h \
- /home/yavuz/pico/pico-sdk/src/common/pico_binary_info/include/pico/binary_info/code.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_spi/include/hardware/spi.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/spi.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/spi.h \
@@ -93,11 +97,6 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/dma.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dma.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_flash/include/hardware/flash.h \
- /usr/include/newlib/string.h /usr/include/newlib/strings.h \
- /usr/include/newlib/sys/string.h \
- /home/yavuz/pico/pico-sdk/src/rp2_common/pico_bootrom/include/pico/bootrom.h \
- /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/timers.h \
- /home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/include/task.h \
  /home/yavuz/pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
  /home/yavuz/pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h

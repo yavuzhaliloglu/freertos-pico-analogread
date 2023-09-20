@@ -1,30 +1,34 @@
 #include "stdio.h"
 #include <stdlib.h>
+#include <time.h>
+#include <string.h>
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include <time.h>
+#include "math.h"
+#include "timers.h"
+#include "pico/util/datetime.h"
+#include "pico/binary_info.h"
+#include "pico/bootrom.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/rtc.h"
 #include "hardware/i2c.h"
-#include "pico/util/datetime.h"
 #include "hardware/adc.h"
-#include "math.h"
-#include "pico/binary_info.h"
 #include "hardware/spi.h"
 #include "hardware/dma.h"
-#include "hardware/flash.h"
-#include "hardware/sync.h"
-#include <string.h>
-#include "pico/bootrom.h"
 #include "hardware/irq.h"
-#include "timers.h"
+#include "hardware/sync.h"
+#include "hardware/flash.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
 
+#define ENTRY_MAGIC 0xb105f00d
+
 // SPI DEFINES
 #define FLASH_SECTOR_OFFSET 512 * 1024
+#define FLASH_REPROGRAM_OFFSET 256 * 1024
+#define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 #define FLASH_TOTAL_SECTORS 382
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
 #define FLASH_RECORD_SIZE 16
@@ -94,6 +98,7 @@ struct FlashData
     uint8_t mean_volt;
     uint8_t eod_character;
 };
+
 struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};
 
 // RTC VARIABLES
@@ -331,14 +336,16 @@ void setProgramBaudRate(uint8_t b_rate)
     uart_set_baudrate(UART0_ID, selected_baud_rate);
 }
 
-uint8_t rpb[7 * FLASH_PAGE_SIZE] = {0};
-uint8_t crc_buffer[9] = {0};
-uint8_t rpb_len = 0;
+uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
+uint8_t data_pck[9] = {0};
+int rpb_len = 0;
+int ota_block_count = 0;
+uint8_t data_cnt = 0;
 
 void writeBlock(uint8_t *buffer, uint8_t size)
 {
+    printf("x");
     uint8_t lsb_byte = buffer[size - 2];
-    printf("lsb byte: %02X\n", lsb_byte);
 
     for (uint8_t i = 0; i < size - 2; i++)
     {
@@ -347,59 +354,134 @@ void writeBlock(uint8_t *buffer, uint8_t size)
         buffer[i] += lsb;
         lsb_byte = (lsb_byte >> 1);
     }
+    printf("y");
 
     memcpy(rpb + (rpb_len), buffer, size - 2);
-
     rpb_len += 7;
+    printf("z");
 
-    if (rpb_len == 7 * FLASH_PAGE_SIZE)
+    if (rpb_len == FLASH_RPB_BLOCK_SIZE || reprogram_size == 0)
     {
-
+        printf("wrote to flash 1792 bytes.\n");
+        flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+        ota_block_count++;
+        memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);
+        rpb_len = 0;
     }
+    printf("t");
+    printf("rpb_len: %d\n", rpb_len);
 
     // DEBUG
-    for (int i = 0; i < rpb_len; i++)
-    {
-        printf("hex: %02x\tbinary: ", rpb[i]);
-        for (int k = 7; k >= 0; k--)
-        {
-            printf("%d", (rpb[i] >> k) & 1);
-        }
-        printf("\n");
-    }
-    printf("\n");
+    // for (int i = 0; i < rpb_len; i++)
+    // {
+    //     printf("hex: %02x\tbinary: ", rpb[i]);
+    //     for (int k = 7; k >= 0; k--)
+    //     {
+    //         printf("%d", (rpb[i] >> k) & 1);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n");
+    // printf("data pack received.\n");
 }
 
-uint8_t crc_cnt = 0;
-
-void writeProgramToFlash(uint8_t chr)
+bool writeProgramToFlash(uint8_t chr)
 {
-    crc_buffer[crc_cnt++] = chr;
-    printf("received hexadecimal: %X\n", chr);
+    // printf("1");
+    data_pck[data_cnt++] = chr;
     reprogram_size--;
-
-    if (crc_cnt == 9 || reprogram_size == 0)
+    // printf("2");
+    if (data_cnt == 9 || reprogram_size == 0)
     {
+        // printf("3");
+
         printf("Reprogram Size: %d\n", reprogram_size);
-        printf("Buffer:\n");
 
-        for (int i = 0; i < 9; i++)
-            printf("%02X ", crc_buffer[i]);
-        printf("\n");
-
-        uint8_t bcc_received = crc_buffer[crc_cnt - 1];
-        printf("bcc value received: %02X\n", bcc_received);
-        uint8_t bcc = bccCreate(crc_buffer, crc_cnt - 1, 0x00) & 0x7F;
-        printf("bcc value generated: %02X\n", bcc);
+        uint8_t bcc_received = data_pck[data_cnt - 1];
+        uint8_t bcc = bccCreate(data_pck, data_cnt - 1, 0x00) & 0x7F;
+        // printf("4");
 
         if (bcc == bcc_received)
         {
-            writeBlock(crc_buffer, crc_cnt);
+            printf("5");
+            uart_putc(UART0_ID, 0x06);
+            printf("6");
+            writeBlock(data_pck, data_cnt);
+            printf("7");
         }
+        else
+        {
+            // printf("6");
+            uart_putc(UART0_ID, 0x15);
+        }
+        // printf("7");
 
-        crc_cnt = 0;
-        memset(crc_buffer, 0, 9);
+        data_cnt = 0;
+        memset(data_pck, 0, 9);
+        // printf("8\n");
     }
+
+    if (reprogram_size == 0)
+        return true;
+    else
+        return false;
+}
+
+void printBufferHex(uint8_t *buf, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        printf("%02X", buf[i]);
+        if (i % 16 == 15)
+            printf("\n");
+        else
+            printf(" ");
+
+        if (i % 256 == 0 && i != 0)
+            printf("\n\n");
+    }
+}
+
+void __not_in_flash_func(rebootDevice)()
+{
+    uint8_t *old_prg_offset = (uint8_t *)(XIP_BASE);
+    uint8_t *new_prg_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET);
+    uint8_t *ram_offset = (uint8_t *)(0x200000c0);
+
+    printf("\nold_prg_offset:\n\n");
+    printBufferHex(old_prg_offset, 2048);
+    printf("\nnew_prg_offset:\n\n");
+    printBufferHex(new_prg_offset, 2048);
+    printf("\nram:\n\n");
+    printBufferHex(ram_offset, 2048);
+
+    uint32_t ints = save_and_disable_interrupts();
+    printf("1");
+    flash_range_erase(0, 256 * 1024);
+    printf("2");
+
+    for (int i = 0; i < ota_block_count; i++)
+    {
+        memcpy(rpb, new_prg_offset, FLASH_RPB_BLOCK_SIZE);
+        flash_range_program(0 + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+        new_prg_offset += FLASH_RPB_BLOCK_SIZE;
+        sleep_ms(1);
+    }
+
+    printf("3");
+    flash_range_erase(FLASH_REPROGRAM_OFFSET, 256 * 1024);
+    printf("4\n");
+    restore_interrupts(ints);
+
+    printf("old area:\n");
+    printBufferHex(old_prg_offset, 2048);
+    printf("new area:\n");
+    printBufferHex(new_prg_offset, 2048);
+
+    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+    watchdog_hw->scratch[5] = ENTRY_MAGIC;
+    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+    watchdog_reboot(0, 0, 0);
 }
 
 void setReProgramSize(uint8_t *data_buffer)
@@ -419,7 +501,7 @@ void setReProgramSize(uint8_t *data_buffer)
             reprogram_size = (reprogram_size << 8);
         }
     }
-
+    uart_putc(UART0_ID, 0x06);
     printf("reprogram size: %u\n", reprogram_size);
 }
 
@@ -427,7 +509,7 @@ void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
-    printf("buffer reset\n");
+    // printf("buffer reset\n");
 }
 
 void resetState()
@@ -578,21 +660,6 @@ void __not_in_flash_func(getFlashContents)()
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
-}
-
-void printBufferHex(uint8_t *buf, size_t len)
-{
-    for (size_t i = 0; i < len; ++i)
-    {
-        printf("%02x", buf[i]);
-        if (i % 16 == 15)
-            printf("\n");
-        else
-            printf(" ");
-
-        if (i % 256 == 0)
-            printf("\n\n");
-    }
 }
 
 void __not_in_flash_func(setSectorData)()
@@ -867,7 +934,7 @@ void vUARTTask(void *pvParameters)
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
-        pdTRUE,
+        pdFALSE,
         NULL,
         resetRxBuffer);
 
@@ -887,11 +954,18 @@ void vUARTTask(void *pvParameters)
         {
             while (uart_is_readable(UART0_ID))
             {
+                // printf("a");
                 rx_char = uart_getc(UART0_ID);
-
+                // printf("b");
                 if (state == WriteProgram)
                 {
-                    writeProgramToFlash(rx_char);
+                    xTimerReset(ResetBufferTimer, 0);
+                    xTimerReset(ResetStateTimer, 0);
+                    xTimerStop(ResetBufferTimer, 0);
+                    xTimerStop(ResetStateTimer, 0);
+                    bool reprogram_is_done = writeProgramToFlash(rx_char);
+                    if (reprogram_is_done)
+                        rebootDevice();
                     continue;
                 }
                 // ENTER CONTROL
@@ -1082,7 +1156,7 @@ void vWriteDebugTask()
         vTaskDelayUntil(&startTime, xFrequency);
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-        printf("RTC Time:%s \r\n", datetime_str);
+        // printf("RTC Time:%s \r\n", datetime_str);
     }
 }
 
@@ -1142,9 +1216,9 @@ void main()
     sleep_us(64);
     adc_remaining_time = pdMS_TO_TICKS((current_time.sec + 1) * 1000);
 
-    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, NULL);
+    // xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
+    // xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
     xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
 
     vTaskStartScheduler();
