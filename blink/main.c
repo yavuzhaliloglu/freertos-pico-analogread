@@ -163,12 +163,8 @@ void writeENUART()
 
 uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
-    printf("xor received: %02X\n", xor);
-
     for (uint8_t i = 0; i < size; i++)
         xor ^= data_buffer[i];
-
-    printf("xor changed to: %02X\n", xor);
 
     return xor;
 }
@@ -185,15 +181,6 @@ bool bccControl(uint8_t *buffer, uint8_t size)
 
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
-    for (int i = 0; i < size; i++)
-    {
-        printf("%02X ", data_buffer[i]);
-        if (i == size - 1)
-        {
-            printf("\n");
-        }
-    }
-
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
     if (strncmp(reprogram, data_buffer, 4) == 0)
         return ReProgram;
@@ -422,7 +409,7 @@ void setReProgramSize(uint8_t *data_buffer)
     printf("reprogram size: %u\n", reprogram_size);
 }
 
-void setBCC(uint8_t *buffer, uint8_t size,uint8_t xor)
+void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
 {
     for (int i = 0; i < size; i++)
         xor ^= buffer[i];
@@ -436,6 +423,7 @@ void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
+    printf("reset Buffer func!\n");
 }
 
 void resetState()
@@ -444,6 +432,7 @@ void resetState()
     memset(rx_buffer, 0, 256);
     setProgramBaudRate(0);
     rx_buffer_len = 0;
+    printf("reset state func!\n");
 }
 
 void greetingStateHandler(uint8_t *buffer, uint8_t size)
@@ -469,12 +458,6 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
     printf("setting state entered.\n");
-    for (int i = 0; i < size; i++)
-    {
-        printf("%02X ", buffer[i]);
-        if (i == size - 1)
-            printf("\n");
-    }
 
     writeENUART();
     uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
@@ -507,7 +490,6 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                 {
                     printf("modem baud rate = %d\n", modem_baud_rate);
                     setProgramBaudRate(modem_baud_rate);
-                    sleep_ms(200);
                 }
                 break;
             }
@@ -792,7 +774,7 @@ void searchDataInFlash()
     datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    char load_profile_line[31] = {0};
+    char load_profile_line[32] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
     printf("rx buffer len: %d\n", rx_buffer_len);
@@ -881,20 +863,37 @@ void searchDataInFlash()
 
             if (start_addr == end_addr)
             {
-                snprintf(load_profile_line, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
-                xor_result = bccCreate(load_profile_line, 30, xor_result);
-                load_profile_line[29] = xor_result;
+                printf("1\n");
+
+                if (!first_flag)
+                {
+                    printf("2\n");
+                    snprintf(load_profile_line, 31, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
+                    first_flag = 1;
+                    xor_result = bccCreate(load_profile_line, 32, xor_result);
+                    load_profile_line[30] = xor_result;
+                }
+                else
+                {
+                    printf("3\n");
+                    snprintf(load_profile_line, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
+                    xor_result = bccCreate(load_profile_line, 32, xor_result);
+                    load_profile_line[29] = xor_result;
+                }
             }
             else
             {
+                printf("4\n");
                 if (!first_flag)
                 {
+                    printf("5\n");
                     snprintf(load_profile_line, 29, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
                     xor_result = bccCreate(load_profile_line, 29, xor_result);
                     first_flag = 1;
                 }
                 else
                 {
+                    printf("6\n");
                     snprintf(load_profile_line, 28, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
                     xor_result = bccCreate(load_profile_line, 28, xor_result);
                 }
@@ -902,6 +901,8 @@ void searchDataInFlash()
 
             printf("data sent\n");
             uart_puts(UART0_ID, load_profile_line);
+
+            sleep_ms(15);
 
             if (start_index > end_index && start_addr == 1572848)
             {
@@ -968,6 +969,13 @@ void vUARTTask(void *pvParameters)
             {
                 rx_char = uart_getc(UART0_ID);
 
+                char test[3];
+                test[0] = rx_char;
+                test[1] = '\n';
+                test[2] = '\0';
+
+                printf("%s",test);
+
                 if (state == WriteProgram)
                 {
                     xTimerReset(ResetBufferTimer, 0);
@@ -987,17 +995,22 @@ void vUARTTask(void *pvParameters)
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
                     printf("\n");
-
+                    
                     rx_buffer[rx_buffer_len++] = rx_char;
+                    vTaskDelay(pdMS_TO_TICKS(200));
+
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
-
+                    char *ptr = strchr(rx_buffer, 0x2F);
                     writeENUART();
+
                     switch (state)
                     {
                     case Greeting:
+                        if (ptr != NULL)
+                            greetingStateHandler(ptr, rx_buffer_len - ((uint8_t *)ptr - rx_buffer));
+
                         xTimerStart(ResetStateTimer, 0);
-                        greetingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
                     case Setting:
@@ -1008,6 +1021,7 @@ void vUARTTask(void *pvParameters)
                     case Listening:
                         printf("listening state entered.\n");
                         xTimerStart(ResetStateTimer, 0);
+
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
                         case ReProgram:

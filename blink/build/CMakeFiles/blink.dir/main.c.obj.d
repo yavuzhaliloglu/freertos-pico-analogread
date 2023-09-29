@@ -100,4 +100,4 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
  /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
  /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h \
- /home/yavuz/pico/freertos-pico/blink/header/newheader.h
+ /home/yavuz/pico/freertos-pico/blink/header/rtc.h

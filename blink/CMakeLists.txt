@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-add_executable(blink main.c header/newheader.h)
+add_executable(blink main.c header/rtc.h)
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 
