@@ -22,8 +22,7 @@
 #include "hardware/flash.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
-
-#define ENTRY_MAGIC 0xb105f00d
+#include "header/newheader.h"
 
 // SPI DEFINES
 #define FLASH_SECTOR_OFFSET 512 * 1024
@@ -35,12 +34,13 @@
 #define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
 
 // UART DEFINES
+#define ENTRY_MAGIC 0xb105f00d
 #define UART0_ID uart0 // UART0 for RS485
 #define BAUD_RATE 300
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
 #define DATA_BITS 7
-#define STOP_BITS 2
+#define STOP_BITS 1
 #define PARITY UART_PARITY_EVEN
 #define UART_TASK_PRIORITY 3
 #define UART_TASK_STACK_SIZE (1024 * 3)
@@ -226,8 +226,12 @@ void writeENUART()
 
 uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
 {
+    printf("xor received: %02X\n", xor);
+
     for (uint8_t i = 0; i < size; i++)
         xor ^= data_buffer[i];
+
+    printf("xor changed to: %02X\n", xor);
 
     return xor;
 }
@@ -244,12 +248,24 @@ bool bccControl(uint8_t *buffer, uint8_t size)
 
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
+    for (int i = 0; i < size; i++)
+    {
+        printf("%02X ", data_buffer[i]);
+        if (i == size - 1)
+        {
+            printf("\n");
+        }
+    }
+
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
     if (strncmp(reprogram, data_buffer, 4) == 0)
         return ReProgram;
 
     if (!(bccControl(data_buffer, size)))
+    {
+        printf("bcc control error.");
         return DataError;
+    }
 
     // Default Control ([SOH]R2[STX])
     if ((data_buffer[0] == 0x01) && (data_buffer[1] == 0x52) && (data_buffer[2] == 0x32) && (data_buffer[3] == 0x02))
@@ -344,7 +360,6 @@ uint8_t data_cnt = 0;
 
 void writeBlock(uint8_t *buffer, uint8_t size)
 {
-    printf("x");
     uint8_t lsb_byte = buffer[size - 2];
 
     for (uint8_t i = 0; i < size - 2; i++)
@@ -354,71 +369,44 @@ void writeBlock(uint8_t *buffer, uint8_t size)
         buffer[i] += lsb;
         lsb_byte = (lsb_byte >> 1);
     }
-    printf("y");
 
     memcpy(rpb + (rpb_len), buffer, size - 2);
     rpb_len += 7;
-    printf("z");
 
     if (rpb_len == FLASH_RPB_BLOCK_SIZE || reprogram_size == 0)
     {
-        printf("wrote to flash 1792 bytes.\n");
         flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         ota_block_count++;
         memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);
         rpb_len = 0;
     }
-    printf("t");
-    printf("rpb_len: %d\n", rpb_len);
-
-    // DEBUG
-    // for (int i = 0; i < rpb_len; i++)
-    // {
-    //     printf("hex: %02x\tbinary: ", rpb[i]);
-    //     for (int k = 7; k >= 0; k--)
-    //     {
-    //         printf("%d", (rpb[i] >> k) & 1);
-    //     }
-    //     printf("\n");
-    // }
-    // printf("\n");
-    // printf("data pack received.\n");
 }
 
 bool writeProgramToFlash(uint8_t chr)
 {
-    // printf("1");
     data_pck[data_cnt++] = chr;
     reprogram_size--;
-    // printf("2");
+
     if (data_cnt == 9 || reprogram_size == 0)
     {
-        // printf("3");
-
+        // DEBUG
         printf("Reprogram Size: %d\n", reprogram_size);
 
         uint8_t bcc_received = data_pck[data_cnt - 1];
         uint8_t bcc = bccCreate(data_pck, data_cnt - 1, 0x00) & 0x7F;
-        // printf("4");
 
         if (bcc == bcc_received)
         {
-            printf("5");
             uart_putc(UART0_ID, 0x06);
-            printf("6");
             writeBlock(data_pck, data_cnt);
-            printf("7");
         }
         else
         {
-            // printf("6");
             uart_putc(UART0_ID, 0x15);
         }
-        // printf("7");
 
         data_cnt = 0;
         memset(data_pck, 0, 9);
-        // printf("8\n");
     }
 
     if (reprogram_size == 0)
@@ -438,7 +426,10 @@ void printBufferHex(uint8_t *buf, size_t len)
             printf(" ");
 
         if (i % 256 == 0 && i != 0)
+        {
             printf("\n\n");
+            printf("page %d\n", i / 256);
+        }
     }
 }
 
@@ -448,29 +439,18 @@ void __not_in_flash_func(rebootDevice)()
     uint8_t *new_prg_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET);
     uint8_t *ram_offset = (uint8_t *)(0x200000c0);
 
-    printf("\nold_prg_offset:\n\n");
-    printBufferHex(old_prg_offset, 2048);
-    printf("\nnew_prg_offset:\n\n");
-    printBufferHex(new_prg_offset, 2048);
-    printf("\nram:\n\n");
-    printBufferHex(ram_offset, 2048);
-
     uint32_t ints = save_and_disable_interrupts();
     printf("1");
-    flash_range_erase(0, 256 * 1024);
+    flash_range_erase(16 * 1024, 240 * 1024);
     printf("2");
 
     for (int i = 0; i < ota_block_count; i++)
     {
         memcpy(rpb, new_prg_offset, FLASH_RPB_BLOCK_SIZE);
-        flash_range_program(0 + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+        flash_range_program(16 * 1024 + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         new_prg_offset += FLASH_RPB_BLOCK_SIZE;
         sleep_ms(1);
     }
-
-    printf("3");
-    flash_range_erase(FLASH_REPROGRAM_OFFSET, 256 * 1024);
-    printf("4\n");
     restore_interrupts(ints);
 
     printf("old area:\n");
@@ -505,11 +485,20 @@ void setReProgramSize(uint8_t *data_buffer)
     printf("reprogram size: %u\n", reprogram_size);
 }
 
+void setBCC(uint8_t *buffer, uint8_t size,uint8_t xor)
+{
+    for (int i = 0; i < size; i++)
+        xor ^= buffer[i];
+
+    printf("xor result in function is: %02X", xor);
+
+    buffer[size - 1] = xor;
+}
+
 void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
-    // printf("buffer reset\n");
 }
 
 void resetState()
@@ -522,26 +511,43 @@ void resetState()
 
 void greetingStateHandler(uint8_t *buffer, uint8_t size)
 {
-    if ((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[2] == 0x36) && (buffer[3] == 0x31) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A))
-    {
-        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
-        char greeting_uart_buffer[19];
 
-        snprintf(greeting_uart_buffer, 17, "/ALP%dMAVIALPV2\r\n", program_baud_rate);
-        greeting_uart_buffer[18] = '\0';
+    if (((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A)) || ((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[2] == 0x41) && (buffer[3] == 0x4C) && (buffer[4] == 0x50) && (buffer[5] == 0x36) && (buffer[6] == 0x30) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A)))
+    {
+        printf("greeting entered.\n");
+        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+        char greeting_uart_buffer[21] = {0};
+
+        snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+
         writeENUART();
         uart_puts(UART0_ID, greeting_uart_buffer);
         readENUART();
 
         state = Setting;
+        printf("state is setting.\n");
     }
 }
 
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
-    writeENUART();
-    if ((buffer[0] == 0x06) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A) && size == 6)
+    printf("setting state entered.\n");
+    for (int i = 0; i < size; i++)
     {
+        printf("%02X ", buffer[i]);
+        if (i == size - 1)
+            printf("\n");
+    }
+
+    writeENUART();
+    uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
+    uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
+    uint8_t default_control[2] = {0x06, 0x30};
+
+    if ((strncmp(buffer, default_control, 2) == 0) && (size == 6))
+    {
+        printf("default entered.\n");
+
         uint8_t modem_baud_rate;
         uint8_t i;
         uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
@@ -551,7 +557,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             if (buffer[i] == '0')
             {
                 modem_baud_rate = buffer[i + 1] - '0';
-                if ((buffer[i + 2] != '1') && modem_baud_rate > 5 && modem_baud_rate < 0)
+                if (modem_baud_rate > 5 && modem_baud_rate < 0)
                 {
                     i = size;
                     break;
@@ -562,9 +568,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                 }
                 else
                 {
-                    uart_putc(UART0_ID, 0x06);
+                    printf("modem baud rate = %d\n", modem_baud_rate);
                     setProgramBaudRate(modem_baud_rate);
-                    state = Listening;
+                    sleep_ms(200);
                 }
                 break;
             }
@@ -573,10 +579,41 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         {
             uart_putc(UART0_ID, 0x15);
         }
-    }
-    else
-    {
-        uart_putc(UART0_ID, 0x15);
+
+        // Load Profile ([ACK]0Z1[CR][LF])
+        if (strncmp(load_profile, (buffer + 3), 3) == 0)
+        {
+            uint8_t ack_buff[17] = {0};
+            snprintf(ack_buff, 16, "%cP0%c(60616161)%c", 0x01, 0x02, 0x03);
+            setBCC(ack_buff, 16, 0x01);
+
+            uart_puts(UART0_ID, ack_buff);
+            printf("ack sent.\n");
+
+            printf("state is listening.\n");
+            state = Listening;
+        }
+
+        // Read Out ([ACK]0Z0[CR][LF])
+        if (strncmp(meter_read, (buffer + 3), 3) == 0)
+        {
+            printf("meter read entered.\n");
+            uint8_t mread_data_buff[55] = {0};
+
+            snprintf(mread_data_buff, 55, "%c0.0.0(60616161)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n!%c", 0x02, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0X03);
+            uint8_t bcc = bccCreate(mread_data_buff, 55, 0x02);
+            mread_data_buff[54] = bcc;
+
+            for (int i = 0; i < 55; i++)
+            {
+                printf("%02X ", mread_data_buff[i]);
+                if (i % 18 == 0 && i != 0)
+                    printf("\n");
+                vTaskDelay(1);
+            }
+
+            uart_puts(UART0_ID, mread_data_buff);
+        }
     }
     readENUART();
 }
@@ -630,18 +667,20 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
     uint8_t time[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
     uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
 
     uint8_t reprogram_len = 8;
     uint8_t reading_len = 33;
+    uint8_t reading_all_len = 13;
     uint8_t time_len = 19;
     uint8_t date_len = 19;
 
     if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
         return 1;
-    if ((len == reading_len) && (strncmp(buffer, reading, 8) == 0))
+    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
         return 1;
     if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
         return 1;
@@ -659,6 +698,7 @@ void __not_in_flash_func(getFlashContents)()
     sector_data = *(uint8_t *)flash_sector_content;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
+    flash_range_erase(FLASH_REPROGRAM_OFFSET, 256 * 1024);
     restore_interrupts(ints);
 }
 
@@ -811,47 +851,74 @@ void searchDataInFlash()
 {
     datetime_t start = {0};
     datetime_t end = {0};
-
-    arrayToDatetime(&start, reading_state_start_time);
-    arrayToDatetime(&end, reading_state_end_time);
-
-    if (datetimeComp(&start, &end) > 0)
-        return;
-
     datetime_t dt_start = {0};
     datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-
-    char uart_bcc_checked[100] = {0};
-    char uart_string[100] = {0};
-
+    char load_profile_line[31] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
-    for (uint32_t i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
+    printf("rx buffer len: %d\n", rx_buffer_len);
+
+    if (rx_buffer_len == 14)
     {
-        datetime_t rec_time = {0};
-
-        if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
-            continue;
-
-        arrayToDatetime(&rec_time, &flash_start_content[i]);
-
-        if (datetimeComp(&rec_time, &start) >= 0)
+        for (int i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
         {
-            if (start_index == -1 || (datetimeComp(&rec_time, &dt_start) < 0))
+            if ((start_index != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
             {
+                printf("end index entered.\n");
+                arrayToDatetime(&end, &flash_start_content[i - 16]);
+                end_index = i - 16;
+                break;
+            }
+
+            if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
+            {
+                printf("empty rec entered.\n");
+                continue;
+            }
+
+            if (start_index == -1)
+            {
+                printf("start index entered.\n");
+                arrayToDatetime(&start, &flash_start_content[i]);
                 start_index = i;
-                datetimeCopy(&rec_time, &dt_start);
             }
         }
+    }
+    else
+    {
+        arrayToDatetime(&start, reading_state_start_time);
+        arrayToDatetime(&end, reading_state_end_time);
 
-        if (datetimeComp(&rec_time, &end) <= 0)
+        if (datetimeComp(&start, &end) > 0)
+            return;
+
+        for (uint32_t i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
         {
-            if (end_index == -1 || datetimeComp(&rec_time, &dt_end) > 0)
+            datetime_t recurrent_time = {0};
+
+            if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
+                continue;
+
+            arrayToDatetime(&recurrent_time, &flash_start_content[i]);
+
+            if (datetimeComp(&recurrent_time, &start) >= 0)
             {
-                end_index = i;
-                datetimeCopy(&rec_time, &dt_end);
+                if (start_index == -1 || (datetimeComp(&recurrent_time, &dt_start) < 0))
+                {
+                    start_index = i;
+                    datetimeCopy(&recurrent_time, &dt_start);
+                }
+            }
+
+            if (datetimeComp(&recurrent_time, &end) <= 0)
+            {
+                if (end_index == -1 || datetimeComp(&recurrent_time, &dt_end) > 0)
+                {
+                    end_index = i;
+                    datetimeCopy(&recurrent_time, &dt_end);
+                }
             }
         }
     }
@@ -859,8 +926,9 @@ void searchDataInFlash()
     writeENUART();
     if (start_index >= 0 && end_index >= 0)
     {
-        uint8_t xor_result = 0x01;
+        uint8_t xor_result = 0x02;
         uint32_t start_addr = start_index;
+        uint8_t first_flag = 0;
         uint32_t end_addr = start_index <= end_index ? end_index : 1572864;
 
         for (; start_addr <= end_addr;)
@@ -876,21 +944,27 @@ void searchDataInFlash()
 
             if (start_addr == end_addr)
             {
-                snprintf(uart_bcc_checked, 32, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
-                xor_result = bccCreate(uart_bcc_checked, 29, xor_result);
+                snprintf(load_profile_line, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
+                xor_result = bccCreate(load_profile_line, 30, xor_result);
+                load_profile_line[29] = xor_result;
             }
             else
             {
-                snprintf(uart_bcc_checked, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
-                xor_result = bccCreate(uart_bcc_checked, 27, xor_result);
+                if (!first_flag)
+                {
+                    snprintf(load_profile_line, 29, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
+                    xor_result = bccCreate(load_profile_line, 29, xor_result);
+                    first_flag = 1;
+                }
+                else
+                {
+                    snprintf(load_profile_line, 28, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
+                    xor_result = bccCreate(load_profile_line, 28, xor_result);
+                }
             }
 
-            if (start_addr == end_addr)
-                snprintf(uart_string, 31, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c%c", year, month, day, hour, minute, min, max, mean, 0x03, xor_result);
-            else
-                snprintf(uart_string, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
-
-            uart_puts(UART0_ID, uart_string);
+            printf("data sent\n");
+            uart_puts(UART0_ID, load_profile_line);
 
             if (start_index > end_index && start_addr == 1572848)
             {
@@ -903,6 +977,7 @@ void searchDataInFlash()
     }
     else
     {
+        printf("data not found\n");
         uart_putc(UART0_ID, 0x15);
     }
     readENUART();
@@ -954,9 +1029,8 @@ void vUARTTask(void *pvParameters)
         {
             while (uart_is_readable(UART0_ID))
             {
-                // printf("a");
                 rx_char = uart_getc(UART0_ID);
-                // printf("b");
+
                 if (state == WriteProgram)
                 {
                     xTimerReset(ResetBufferTimer, 0);
@@ -975,9 +1049,12 @@ void vUARTTask(void *pvParameters)
                 }
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
+                    printf("\n");
+
                     rx_buffer[rx_buffer_len++] = rx_char;
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
+
                     writeENUART();
                     switch (state)
                     {
@@ -992,6 +1069,7 @@ void vUARTTask(void *pvParameters)
                         break;
 
                     case Listening:
+                        printf("listening state entered.\n");
                         xTimerStart(ResetStateTimer, 0);
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
@@ -1004,6 +1082,7 @@ void vUARTTask(void *pvParameters)
                             break;
 
                         case Reading:
+                            printf("state is listening-reading.\n");
                             parseReadingData(rx_buffer);
                             searchDataInFlash();
                             break;
@@ -1156,7 +1235,7 @@ void vWriteDebugTask()
         vTaskDelayUntil(&startTime, xFrequency);
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-        // printf("RTC Time:%s \r\n", datetime_str);
+        printf("RTC Time:%s \r\n", datetime_str);
     }
 }
 
@@ -1216,9 +1295,9 @@ void main()
     sleep_us(64);
     adc_remaining_time = pdMS_TO_TICKS((current_time.sec + 1) * 1000);
 
-    // xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, NULL);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, NULL);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    // xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
     xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
 
     vTaskStartScheduler();

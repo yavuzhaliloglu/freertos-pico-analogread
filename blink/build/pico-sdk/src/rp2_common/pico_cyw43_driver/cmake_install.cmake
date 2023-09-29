@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/pico/pico-sdk/src/rp2_common/pico_cyw43_driver
+# Install script for directory: /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/pico_cyw43_driver
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
