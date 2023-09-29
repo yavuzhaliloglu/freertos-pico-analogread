@@ -23,15 +23,7 @@
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
 #include "header/rtc.h"
-
-// SPI DEFINES
-#define FLASH_SECTOR_OFFSET 512 * 1024
-#define FLASH_REPROGRAM_OFFSET 256 * 1024
-#define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
-#define FLASH_TOTAL_SECTORS 382
-#define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
-#define FLASH_RECORD_SIZE 16
-#define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
+#include "header/spiflash.h"
 
 // UART DEFINES
 #define ENTRY_MAGIC 0xb105f00d
@@ -44,8 +36,6 @@
 #define PARITY UART_PARITY_EVEN
 #define UART_TASK_PRIORITY 3
 #define UART_TASK_STACK_SIZE (1024 * 3)
-
-// I2C DEFINES
 
 // RESET PIN DEFINE
 #define RESET_PULSE_PIN 2
@@ -65,33 +55,7 @@ uint8_t vrms_mean = 0;
 uint16_t sample_buffer[VRMS_SAMPLE];
 TickType_t adc_remaining_time = 0;
 uint8_t time_change_flag;
-datetime_t alarm = {
-    .year = -1,
-    .month = -1,
-    .day = -1,
-    .dotw = -1,
-    .hour = -1,
-    .min = -1,
-    .sec = 00};
 
-// SPI VARIABLES
-uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
-static uint8_t sector_data = 0;
-struct FlashData
-{
-    char year[2];
-    char month[2];
-    char day[2];
-    char hour[2];
-    char min[2];
-    char sec[2];
-    uint8_t max_volt;
-    uint8_t min_volt;
-    uint8_t mean_volt;
-    uint8_t eod_character;
-};
-
-struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};
 
 // UART VARIABLES
 enum States
@@ -117,7 +81,6 @@ uint8_t rx_buffer_len = 0;
 uint8_t reading_state_start_time[10];
 uint8_t reading_state_end_time[10];
 volatile uint8_t test_flag = 0;
-uint32_t reprogram_size = 0;
 
 // UART FUNCTIONS
 void UARTReceive()
@@ -161,23 +124,7 @@ void writeENUART()
     vTaskDelay(1);
 }
 
-uint8_t bccCreate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
-{
-    for (uint8_t i = 0; i < size; i++)
-        xor ^= data_buffer[i];
 
-    return xor;
-}
-
-bool bccControl(uint8_t *buffer, uint8_t size)
-{
-    uint8_t xor_result = 0x01;
-
-    for (uint8_t i = 0; i < size; i++)
-        xor_result ^= buffer[i];
-
-    return xor_result == buffer[size - 1];
-}
 
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
@@ -276,68 +223,7 @@ void setProgramBaudRate(uint8_t b_rate)
     uart_set_baudrate(UART0_ID, selected_baud_rate);
 }
 
-uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
-uint8_t data_pck[9] = {0};
-int rpb_len = 0;
-int ota_block_count = 0;
-uint8_t data_cnt = 0;
 
-void writeBlock(uint8_t *buffer, uint8_t size)
-{
-    uint8_t lsb_byte = buffer[size - 2];
-
-    for (uint8_t i = 0; i < size - 2; i++)
-    {
-        buffer[i] = (buffer[i] << 1);
-        uint8_t lsb = lsb_byte & 0x01;
-        buffer[i] += lsb;
-        lsb_byte = (lsb_byte >> 1);
-    }
-
-    memcpy(rpb + (rpb_len), buffer, size - 2);
-    rpb_len += 7;
-
-    if (rpb_len == FLASH_RPB_BLOCK_SIZE || reprogram_size == 0)
-    {
-        flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
-        ota_block_count++;
-        memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);
-        rpb_len = 0;
-    }
-}
-
-bool writeProgramToFlash(uint8_t chr)
-{
-    data_pck[data_cnt++] = chr;
-    reprogram_size--;
-
-    if (data_cnt == 9 || reprogram_size == 0)
-    {
-        // DEBUG
-        printf("Reprogram Size: %d\n", reprogram_size);
-
-        uint8_t bcc_received = data_pck[data_cnt - 1];
-        uint8_t bcc = bccCreate(data_pck, data_cnt - 1, 0x00) & 0x7F;
-
-        if (bcc == bcc_received)
-        {
-            uart_putc(UART0_ID, 0x06);
-            writeBlock(data_pck, data_cnt);
-        }
-        else
-        {
-            uart_putc(UART0_ID, 0x15);
-        }
-
-        data_cnt = 0;
-        memset(data_pck, 0, 9);
-    }
-
-    if (reprogram_size == 0)
-        return true;
-    else
-        return false;
-}
 
 void printBufferHex(uint8_t *buf, size_t len)
 {
@@ -974,7 +860,7 @@ void vUARTTask(void *pvParameters)
                 test[1] = '\n';
                 test[2] = '\0';
 
-                printf("%s",test);
+                printf("%s", test);
 
                 if (state == WriteProgram)
                 {
@@ -995,7 +881,7 @@ void vUARTTask(void *pvParameters)
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
                     printf("\n");
-                    
+
                     rx_buffer[rx_buffer_len++] = rx_char;
                     vTaskDelay(pdMS_TO_TICKS(200));
 
