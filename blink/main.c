@@ -1047,7 +1047,7 @@ void main()
     // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
-    adc_select_input(1);
+    adc_select_input(0);
     adc_set_clkdiv(CLOCK_DIV);
     adcCapture(sample_buffer, VRMS_SAMPLE);
     sleep_ms(1);
