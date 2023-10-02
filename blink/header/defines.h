@@ -1,7 +1,6 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-
 // FLASH DEFINES
 // this is the start offset of sector information that load profile records will written
 #define FLASH_SECTOR_OFFSET 512 * 1024
@@ -40,7 +39,9 @@
 #define VRMS_SAMPLING_PERIOD 60000
 #define CLOCK_DIV 4 * 9600
 #define ADC_READ_PIN 26
-#define DEBUG 1
+#define ADC_BIAS_PIN 27
+#define ADC_SELECT_INPUT 0
+#define DEBUG 0
 
 // RTC DEFINES
 #define PT7C4338_REG_SECONDS 0x00

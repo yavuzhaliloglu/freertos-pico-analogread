@@ -20,6 +20,7 @@ add_executable(blink main.c
                     header/variables.h
                     header/spiflash.h
                     header/uart.h
+                    header/adc.h
                     )
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})

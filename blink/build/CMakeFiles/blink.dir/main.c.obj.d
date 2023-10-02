@@ -107,4 +107,6 @@ CMakeFiles/blink.dir/main.c.obj: \
  /home/yavuz/pico/freertos-pico/blink/header/bcc.h \
  /home/yavuz/pico/freertos-pico/blink/header/defines.h \
  /home/yavuz/pico/freertos-pico/blink/header/bcc.h \
- /home/yavuz/pico/freertos-pico/blink/header/variables.h
+ /home/yavuz/pico/freertos-pico/blink/header/variables.h \
+ /home/yavuz/pico/freertos-pico/blink/header/uart.h \
+ /home/yavuz/pico/freertos-pico/blink/header/adc.h

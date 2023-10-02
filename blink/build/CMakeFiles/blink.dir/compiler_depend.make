@@ -3893,8 +3893,14 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   ../header/bcc.h \
   ../header/defines.h \
   ../header/bcc.h \
-  ../header/variables.h
+  ../header/variables.h \
+  ../header/uart.h \
+  ../header/adc.h
 
+
+../header/adc.h:
+
+../header/uart.h:
 
 ../header/bcc.h:
 
