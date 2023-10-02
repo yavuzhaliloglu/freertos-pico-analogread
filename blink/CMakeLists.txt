@@ -15,6 +15,9 @@ pico_sdk_init()
 
 add_executable(blink main.c
                     header/rtc.h
+                    header/bcc.h
+                    header/defines.h
+                    header/variables.h
                     header/spiflash.h
                     )
 

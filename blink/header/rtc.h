@@ -1,27 +1,8 @@
 #ifndef RTC_H
 #define RTC_H
 
-// RTC DEFINES
-#define PT7C4338_REG_SECONDS 0x00
-#define RTC_SET_PERIOD_MIN 10
-#define I2C_PORT i2c0
-#define I2C_ADDRESS 0x68
-#define RTC_I2C_SDA_PIN 20
-#define RTC_I2C_SCL_PIN 21
-
-// RTC VARIABLES
-char datetime_buffer[64];
-char *datetime_str = &datetime_buffer[0];
-datetime_t current_time = {
-    .year = 2020,
-    .month = 06,
-    .day = 05,
-    .dotw = 5, // 0 is Sunday, so 5 is Friday
-    .hour = 15,
-    .min = 45,
-    .sec = 00};
-
-// RTC FUNCTIONS
+#include "defines.h"
+#include "variables.h"
 
 uint8_t decimalToBCD(uint8_t decimalValue)
 {

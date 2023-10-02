@@ -24,63 +24,9 @@
 #include "hardware/structs/watchdog.h"
 #include "header/rtc.h"
 #include "header/spiflash.h"
-
-// UART DEFINES
-#define ENTRY_MAGIC 0xb105f00d
-#define UART0_ID uart0 // UART0 for RS485
-#define BAUD_RATE 300
-#define UART0_TX_PIN 0
-#define UART0_RX_PIN 1
-#define DATA_BITS 7
-#define STOP_BITS 1
-#define PARITY UART_PARITY_EVEN
-#define UART_TASK_PRIORITY 3
-#define UART_TASK_STACK_SIZE (1024 * 3)
-
-// RESET PIN DEFINE
-#define RESET_PULSE_PIN 2
-#define INTERVAL_MS 60000
-
-// ADC DEFINES
-#define VRMS_SAMPLE 500
-#define VRMS_BUFFER_SIZE 15
-#define VRMS_SAMPLING_PERIOD 60000
-#define CLOCK_DIV 4 * 9600
-#define DEBUG 0
-
-// ADC VARIABLES
-uint8_t vrms_max = 0;
-uint8_t vrms_min = 0;
-uint8_t vrms_mean = 0;
-uint16_t sample_buffer[VRMS_SAMPLE];
-TickType_t adc_remaining_time = 0;
-uint8_t time_change_flag;
-
-
-// UART VARIABLES
-enum States
-{
-    Greeting = 0,
-    Setting = 1,
-    Listening = 2,
-    WriteProgram = 3
-};
-enum ListeningStates
-{
-    DataError = -1,
-    Reading = 0,
-    TimeSet = 1,
-    DateSet = 2,
-    ReProgram = 3
-};
-volatile TaskHandle_t xTaskToNotify_UART = NULL;
-enum States state = Greeting;
-uint16_t max_baud_rate = 9600;
-uint8_t rx_buffer[256] = {};
-uint8_t rx_buffer_len = 0;
-uint8_t reading_state_start_time[10];
-uint8_t reading_state_end_time[10];
-volatile uint8_t test_flag = 0;
+#include "header/defines.h"
+#include "header/bcc.h"
+#include "header/variables.h"
 
 // UART FUNCTIONS
 void UARTReceive()
@@ -123,6 +69,7 @@ void writeENUART()
     gpio_put(3, 1);
     vTaskDelay(1);
 }
+
 
 
 
@@ -223,8 +170,6 @@ void setProgramBaudRate(uint8_t b_rate)
     uart_set_baudrate(UART0_ID, selected_baud_rate);
 }
 
-
-
 void printBufferHex(uint8_t *buf, size_t len)
 {
     for (size_t i = 0; i < len; ++i)
@@ -293,16 +238,6 @@ void setReProgramSize(uint8_t *data_buffer)
     }
     uart_putc(UART0_ID, 0x06);
     printf("reprogram size: %u\n", reprogram_size);
-}
-
-void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
-{
-    for (int i = 0; i < size; i++)
-        xor ^= buffer[i];
-
-    printf("xor result in function is: %02X", xor);
-
-    buffer[size - 1] = xor;
 }
 
 void resetRxBuffer()
@@ -855,12 +790,12 @@ void vUARTTask(void *pvParameters)
             {
                 rx_char = uart_getc(UART0_ID);
 
-                char test[3];
-                test[0] = rx_char;
-                test[1] = '\n';
-                test[2] = '\0';
+                // char test[3];
+                // test[0] = rx_char;
+                // test[1] = '\n';
+                // test[2] = '\0';
 
-                printf("%s", test);
+                // printf("%s", test);
 
                 if (state == WriteProgram)
                 {
@@ -965,13 +900,12 @@ void vADCReadTask()
     while (1)
     {
 
-#if !DEBUG
         if (adc_remaining_time > 0)
         {
             vTaskDelay(pdMS_TO_TICKS(60000) - adc_remaining_time);
             adc_remaining_time = 0;
         }
-#endif
+
         startTime = xTaskGetTickCount();
 
         rtc_get_datetime(&current_time);
@@ -988,7 +922,8 @@ void vADCReadTask()
             snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
             deneme[21] = '\0';
 
-            uart_puts(UART0_ID, deneme);
+            printf("%s", deneme);
+            vTaskDelay(1);
         }
         readENUART();
         printf("\n");
@@ -1000,7 +935,8 @@ void vADCReadTask()
         snprintf(deneme, 30, "mean: %f\n", mean);
         deneme[31] = '\0';
         writeENUART();
-        uart_puts(UART0_ID, deneme);
+        // uart_puts(UART0_ID, deneme);
+        printf("%s", deneme);
         readENUART();
 #endif
 
@@ -1014,7 +950,8 @@ void vADCReadTask()
         snprintf(deneme, 34, "vrmsAc: %f\n", vrms_accumulator);
         deneme[35] = '\0';
         writeENUART();
-        uart_puts(UART0_ID, deneme);
+        // uart_puts(UART0_ID, deneme);
+        printf("%s", deneme);
         readENUART();
 #endif
         vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
@@ -1025,7 +962,8 @@ void vADCReadTask()
         snprintf(x_array, 31, "VRMS: %d\n\n", (uint16_t)vrms);
         x_array[32] = '\0';
         writeENUART();
-        uart_puts(UART0_ID, x_array);
+        // uart_puts(UART0_ID, x_array);
+        printf("%s", deneme);
         readENUART();
 #endif
 
@@ -1054,8 +992,8 @@ void vADCReadTask()
             vrms_buffer_count = 0;
         }
 
-        // vTaskDelay(5000);
-        vTaskDelayUntil(&startTime, xFrequency);
+        vTaskDelay(5000);
+        // vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -1108,7 +1046,7 @@ void main()
 
     // ADC INIT
     adc_init();
-    adc_gpio_init(27);
+    adc_gpio_init(ADC_READ_PIN);
     adc_select_input(1);
     adc_set_clkdiv(CLOCK_DIV);
     adcCapture(sample_buffer, VRMS_SAMPLE);

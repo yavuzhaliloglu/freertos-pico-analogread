@@ -3886,8 +3886,23 @@ CMakeFiles/blink.dir/main.c.obj: ../main.c \
   /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/hardware_watchdog/include/hardware/watchdog.h \
   /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/watchdog.h \
   /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/watchdog.h \
-  ../header/rtc.h
+  ../header/rtc.h \
+  ../header/defines.h \
+  ../header/variables.h \
+  ../header/spiflash.h \
+  ../header/bcc.h \
+  ../header/defines.h \
+  ../header/bcc.h \
+  ../header/variables.h
 
+
+../header/bcc.h:
+
+../header/spiflash.h:
+
+../header/variables.h:
+
+../header/defines.h:
 
 ../header/rtc.h:
 
