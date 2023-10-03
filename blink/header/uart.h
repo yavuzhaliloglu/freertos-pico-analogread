@@ -35,6 +35,13 @@ void initUART()
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
+    uint8_t default_control[4] = {0x01, 0x52, 0x32, 0x02};
+
+    char reading_str[] = "P.01";
+    char timeset_str[] = "0.9.1";
+    char dateset_str[] = "0.9.2";
+    char production_str[] = "96.1.3";
+
     if (strncmp(reprogram, data_buffer, 4) == 0)
         return ReProgram;
 
@@ -45,19 +52,23 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     }
 
     // Default Control ([SOH]R2[STX])
-    if ((data_buffer[0] == 0x01) && (data_buffer[1] == 0x52) && (data_buffer[2] == 0x32) && (data_buffer[3] == 0x02))
+    if (strncmp(data_buffer, default_control, 4) == 0)
     {
         // Reading Control (P.01)
-        if ((data_buffer[4] == 0x50) && (data_buffer[5] == 0x2E) && (data_buffer[6] == 0x30) && (data_buffer[7] == 0x31))
+        if (strstr(data_buffer, reading_str) != NULL)
             return Reading;
 
         // Time Set Control (0.9.1)
-        if ((data_buffer[4] == 0x30) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x31))
+        if (strstr(data_buffer, timeset_str) != NULL)
             return TimeSet;
 
         // Date Set Control (0.9.2)
-        if ((data_buffer[4] == 0x30) && (data_buffer[6] == 0x39) && (data_buffer[8] == 0x32))
+        if (strstr(data_buffer, dateset_str) != NULL)
             return DateSet;
+
+        // Production Date Control (96.1.3)
+        if (strstr(data_buffer, production_str) != NULL)
+            return ProductionInfo;
     }
 
     return DataError;
@@ -348,12 +359,14 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
     uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};
 
     uint8_t reprogram_len = 8;
     uint8_t reading_len = 33;
     uint8_t reading_all_len = 13;
     uint8_t time_len = 19;
     uint8_t date_len = 19;
+    uint8_t production_len = 14;
 
     if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
         return 1;
@@ -363,8 +376,21 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
         return 1;
     if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
         return 1;
+    if ((len == production_len) && (strncmp(buffer, production, 10) == 0))
+        return 1;
 
     return 0;
+}
+
+void sendProductionInfo()
+{
+    char production_obis[22] = {0};
+    rtc_get_datetime(&current_time);
+
+    snprintf(production_obis, 21, "%c96.1.3(%02d-%02d-%02d)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
+    setBCC(production_obis, 21, 0x02);
+
+    uart_puts(UART0_ID, production_obis);
 }
 
 #endif

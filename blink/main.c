@@ -22,11 +22,11 @@
 #include "hardware/flash.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
-#include "header/rtc.h"
-#include "header/spiflash.h"
+#include "header/variables.h"
 #include "header/defines.h"
 #include "header/bcc.h"
-#include "header/variables.h"
+#include "header/rtc.h"
+#include "header/spiflash.h"
 #include "header/uart.h"
 #include "header/adc.h"
 
@@ -137,6 +137,10 @@ void vUARTTask(void *pvParameters)
 
                         case DateSet:
                             setDateFromUART(rx_buffer);
+                            break;
+                        
+                        case ProductionInfo:
+                            sendProductionInfo();
                             break;
 
                         default:

@@ -25,7 +25,8 @@ enum ListeningStates
     Reading = 0,
     TimeSet = 1,
     DateSet = 2,
-    ReProgram = 3
+    ReProgram = 3,
+    ProductionInfo = 4
 };
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
 enum States state = Greeting;
