@@ -1,5 +1,5 @@
 #include "stdio.h"
-#include <stdlib.h>
+// #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include "pico/stdlib.h"
@@ -29,6 +29,7 @@
 #include "header/spiflash.h"
 #include "header/uart.h"
 #include "header/adc.h"
+#include "header/md5.h"
 
 // UART TASK
 void vUARTTask(void *pvParameters)
@@ -63,13 +64,6 @@ void vUARTTask(void *pvParameters)
             {
                 rx_char = uart_getc(UART0_ID);
 
-                // char test[3];
-                // test[0] = rx_char;
-                // test[1] = '\n';
-                // test[2] = '\0';
-
-                // printf("%s", test);
-
                 if (state == WriteProgram)
                 {
                     xTimerReset(ResetBufferTimer, 0);
@@ -77,8 +71,10 @@ void vUARTTask(void *pvParameters)
                     xTimerStop(ResetBufferTimer, 0);
                     xTimerStop(ResetStateTimer, 0);
                     bool reprogram_is_done = writeProgramToFlash(rx_char);
+
                     if (reprogram_is_done)
                         rebootDevice();
+
                     continue;
                 }
                 // ENTER CONTROL
@@ -88,7 +84,6 @@ void vUARTTask(void *pvParameters)
                 }
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
-                    printf("\n");
 
                     rx_buffer[rx_buffer_len++] = rx_char;
                     vTaskDelay(pdMS_TO_TICKS(200));
@@ -112,7 +107,9 @@ void vUARTTask(void *pvParameters)
                         break;
 
                     case Listening:
+#if DEBUG
                         printf("listening state entered.\n");
+#endif
                         xTimerStart(ResetStateTimer, 0);
 
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
@@ -126,7 +123,9 @@ void vUARTTask(void *pvParameters)
                             break;
 
                         case Reading:
+#if DEBUG
                             printf("state is listening-reading.\n");
+#endif
                             parseReadingData(rx_buffer);
                             searchDataInFlash();
                             break;
@@ -138,7 +137,7 @@ void vUARTTask(void *pvParameters)
                         case DateSet:
                             setDateFromUART(rx_buffer);
                             break;
-                        
+
                         case ProductionInfo:
                             sendProductionInfo();
                             break;
@@ -167,80 +166,45 @@ void vADCReadTask()
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(60000);
     uint8_t vrms_buffer_count = 0;
-    double vrms_accumulator = 0.0;
-    const float conversion_factor = 1000 * (3.3f / (1 << 12));
     uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
     double vrms = 0.0;
+    TickType_t vaitingTime = 0;
 
     while (1)
     {
 
+#if !DEBUG
         if (adc_remaining_time > 0)
         {
             vTaskDelay(pdMS_TO_TICKS(60000) - adc_remaining_time);
             adc_remaining_time = 0;
         }
-
+#endif
         startTime = xTaskGetTickCount();
 
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+        
         printf("Alarm Fired At %s\n", datetime_str);
 
-        adcCapture(sample_buffer, VRMS_SAMPLE);
-
-#if DEBUG
-        char deneme[40] = {0};
-        for (uint8_t i = 0; i < 150; i++)
-        {
-            snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
-            deneme[21] = '\0';
-
-            printf("%s", deneme);
-            vTaskDelay(1);
-        }
-        printf("\n");
-#endif
-
-        float mean = 2050 * conversion_factor / 1000;
-
-#if DEBUG
-        snprintf(deneme, 30, "mean: %f\n", mean);
-        deneme[31] = '\0';
-        printf("%s", deneme);
-#endif
-
-        for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
-        {
-            double production = (double)(sample_buffer[i] * conversion_factor) / 1000;
-            vrms_accumulator += pow((production - mean), 2);
-        }
-
-#if DEBUG
-        snprintf(deneme, 34, "vrmsAc: %f\n", vrms_accumulator);
-        deneme[35] = '\0';
-        printf("%s", deneme);
-#endif
-        vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-        vrms = vrms * 75;
-
-        // printf("vrms: %d\n",(uint8_t)vrms);
+        vrms = calculateVRMS();
 
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
-        vrms_accumulator = 0.0;
+        // vrms_accumulator = 0.0;
         vrms = 0.0;
 
         if (time_change_flag)
         {
-            adc_remaining_time = pdMS_TO_TICKS((current_time.sec) * 1000);
+            vaitingTime = pdMS_TO_TICKS(60000 - ((current_time.sec) * 1000));
             if (current_time.min % 15 == 0)
             {
                 SPIWriteToFlash();
             }
             time_change_flag = 0;
-            vTaskDelay(60000 - adc_remaining_time);
-            adc_remaining_time = 0;
+            vTaskDelay(vaitingTime);
+            vaitingTime = 0;
+            continue;
         }
 
         if ((current_time.sec < 5 && current_time.min % 15 == 0))
@@ -251,8 +215,11 @@ void vADCReadTask()
             vrms_buffer_count = 0;
         }
 
-        // vTaskDelay(5000);
+#if DEBUG
+        vTaskDelay(5000);
+#else
         vTaskDelayUntil(&startTime, xFrequency);
+#endif
     }
 }
 
@@ -269,7 +236,7 @@ void vWriteDebugTask()
         vTaskDelayUntil(&startTime, xFrequency);
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-        printf("RTC Time:%s \r\n", datetime_str);
+        printf("The Time is:%s \r\n", datetime_str);
     }
 }
 

@@ -14,4 +14,53 @@ void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
     adc_fifo_drain();
 }
 
+double calculateVRMS()
+{
+    double vrms = 0.0;
+    double vrms_accumulator = 0.0;
+    const float conversion_factor = 1000 * (3.3f / (1 << 12));
+
+    adcCapture(sample_buffer, VRMS_SAMPLE);
+
+#if DEBUG
+    char deneme[40] = {0};
+    for (uint8_t i = 0; i < 150; i++)
+    {
+        snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
+        deneme[21] = '\0';
+
+        printf("%s", deneme);
+        vTaskDelay(1);
+    }
+    printf("\n");
+#endif
+
+    float mean = 2050 * conversion_factor / 1000;
+
+#if DEBUG
+    snprintf(deneme, 30, "mean: %f\n", mean);
+    deneme[31] = '\0';
+    printf("%s", deneme);
+#endif
+
+    for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
+    {
+        double production = (double)(sample_buffer[i] * conversion_factor) / 1000;
+        vrms_accumulator += pow((production - mean), 2);
+    }
+
+#if DEBUG
+    snprintf(deneme, 34, "vrmsAc: %f\n", vrms_accumulator);
+    deneme[35] = '\0';
+    printf("%s", deneme);
+#endif
+    vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
+    vrms = vrms * 75;
+#if DEBUG
+    printf("vrms: %d\n", (uint8_t)vrms);
+#endif
+
+    return vrms;
+}
+
 #endif

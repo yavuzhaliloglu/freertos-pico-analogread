@@ -9,7 +9,7 @@ uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
 uint16_t sample_buffer[VRMS_SAMPLE];
 TickType_t adc_remaining_time = 0;
-uint8_t time_change_flag;
+volatile uint8_t time_change_flag;
 
 // UART VARIABLES
 enum States
@@ -58,8 +58,8 @@ uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
 uint8_t data_pck[9] = {0};
 int rpb_len = 0;
 int ota_block_count = 0;
-uint8_t data_cnt = 0;
-uint32_t reprogram_size = 0;
+int data_cnt = 0;
+int reprogram_size = 0;
 
 // RTC VARIABLES
 char datetime_buffer[64];

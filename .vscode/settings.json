@@ -44,7 +44,8 @@
         "watchdog.h": "c",
         "stdint.h": "c",
         "spiflash.h": "c",
-        "variables.h": "c"
+        "variables.h": "c",
+        "random": "c"
     },
     "cmake.sourceDirectory": "/home/yavuz/pico/freertos-pico/FreeRTOS-Kernel",
     "python.analysis.typeCheckingMode": "basic"

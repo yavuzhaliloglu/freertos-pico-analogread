@@ -27,10 +27,8 @@ void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
     for (int i = 0; i < size; i++)
         xor ^= buffer[i];
 
-    printf("xor result in function is: %02X", xor);
 
     buffer[size - 1] = xor;
 }
-
 
 #endif

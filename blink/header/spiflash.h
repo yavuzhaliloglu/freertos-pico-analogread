@@ -5,6 +5,24 @@
 #include "variables.h"
 #include "bcc.h"
 
+void printBufferHex(uint8_t *buf, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        printf("%02X", buf[i]);
+        if (i % 16 == 15)
+            printf("\n");
+        else
+            printf(" ");
+
+        if (i % 256 == 0 && i != 0)
+        {
+            printf("\n\n");
+            printf("page %d\n", i / 256);
+        }
+    }
+}
+
 void writeBlock(uint8_t *buffer, uint8_t size)
 {
     uint8_t lsb_byte = buffer[size - 2];
@@ -36,9 +54,10 @@ bool writeProgramToFlash(uint8_t chr)
 
     if (data_cnt == 9 || reprogram_size == 0)
     {
-        // DEBUG
-        printf("Reprogram Size: %d\n", reprogram_size);
 
+#if DEBUG
+        printf("Reprogram Size: %d\n", reprogram_size);
+#endif
         uint8_t bcc_received = data_pck[data_cnt - 1];
         uint8_t bcc = bccCreate(data_pck, data_cnt - 1, 0x00) & 0x7F;
 
@@ -228,7 +247,9 @@ void searchDataInFlash()
     char load_profile_line[32] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
+#if DEBUG
     printf("rx buffer len: %d\n", rx_buffer_len);
+#endif
 
     if (rx_buffer_len == 14)
     {
@@ -236,7 +257,9 @@ void searchDataInFlash()
         {
             if ((start_index != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
             {
+#if DEBUG
                 printf("end index entered.\n");
+#endif
                 arrayToDatetime(&end, &flash_start_content[i - 16]);
                 end_index = i - 16;
                 break;
@@ -244,13 +267,17 @@ void searchDataInFlash()
 
             if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
             {
+#if DEBUG
                 printf("empty rec entered.\n");
+#endif
                 continue;
             }
 
             if (start_index == -1)
             {
+#if DEBUG
                 printf("start index entered.\n");
+#endif
                 arrayToDatetime(&start, &flash_start_content[i]);
                 start_index = i;
             }
@@ -313,19 +340,22 @@ void searchDataInFlash()
 
             if (start_addr == end_addr)
             {
-                printf("1\n");
-
                 if (!first_flag)
                 {
-                    printf("2\n");
-                    snprintf(load_profile_line, 31, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
+                    snprintf(load_profile_line, 31, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
                     first_flag = 1;
                     xor_result = bccCreate(load_profile_line, 32, xor_result);
                     load_profile_line[30] = xor_result;
+                    #if DEBUG
+                    for (int i = 0; i < 32; i++)
+                    {
+                        printf("%02X ", load_profile_line[i]);
+                    }
+                    printf("\n");
+                    #endif
                 }
                 else
                 {
-                    printf("3\n");
                     snprintf(load_profile_line, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
                     xor_result = bccCreate(load_profile_line, 32, xor_result);
                     load_profile_line[29] = xor_result;
@@ -333,23 +363,21 @@ void searchDataInFlash()
             }
             else
             {
-                printf("4\n");
                 if (!first_flag)
                 {
-                    printf("5\n");
                     snprintf(load_profile_line, 29, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
                     xor_result = bccCreate(load_profile_line, 29, xor_result);
                     first_flag = 1;
                 }
                 else
                 {
-                    printf("6\n");
                     snprintf(load_profile_line, 28, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
                     xor_result = bccCreate(load_profile_line, 28, xor_result);
                 }
             }
-
+#if DEBUG
             printf("data sent\n");
+#endif
             uart_puts(UART0_ID, load_profile_line);
 
             sleep_ms(15);
@@ -365,7 +393,9 @@ void searchDataInFlash()
     }
     else
     {
+#if DEBUG
         printf("data not found\n");
+#endif
         uart_putc(UART0_ID, 0x15);
     }
     memset(reading_state_start_time, 0, 10);

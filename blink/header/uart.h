@@ -1,6 +1,10 @@
 #ifndef UART_H
 #define UART_H
 
+#include "defines.h"
+#include "variables.h"
+#include "bcc.h"
+
 // UART FUNCTIONS
 void UARTReceive()
 {
@@ -47,7 +51,9 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 
     if (!(bccControl(data_buffer, size)))
     {
+#if DEBUG
         printf("bcc control error.");
+#endif
         return DataError;
     }
 
@@ -147,23 +153,16 @@ void __not_in_flash_func(rebootDevice)()
     uint8_t *ram_offset = (uint8_t *)(0x200000c0);
 
     uint32_t ints = save_and_disable_interrupts();
-    printf("1");
-    flash_range_erase(16 * 1024, 240 * 1024);
-    printf("2");
-
+    flash_range_erase(16 * 1024, 230 * 1024);
     for (int i = 0; i < ota_block_count; i++)
     {
         memcpy(rpb, new_prg_offset, FLASH_RPB_BLOCK_SIZE);
-        flash_range_program(16 * 1024 + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+        flash_range_program((16 * 1024) + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         new_prg_offset += FLASH_RPB_BLOCK_SIZE;
         sleep_ms(1);
     }
-    restore_interrupts(ints);
 
-    printf("old area:\n");
-    // printBufferHex(old_prg_offset, 2048);
-    printf("new area:\n");
-    // printBufferHex(new_prg_offset, 2048);
+    restore_interrupts(ints);
 
     hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
     watchdog_hw->scratch[5] = ENTRY_MAGIC;
@@ -189,14 +188,18 @@ void setReProgramSize(uint8_t *data_buffer)
         }
     }
     uart_putc(UART0_ID, 0x06);
+#if DEBUG
     printf("reprogram size: %u\n", reprogram_size);
+#endif
 }
 
 void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
+#if DEBUG
     printf("reset Buffer func!\n");
+#endif
 }
 
 void resetState()
@@ -205,30 +208,58 @@ void resetState()
     memset(rx_buffer, 0, 256);
     setProgramBaudRate(0);
     rx_buffer_len = 0;
+#if DEBUG
     printf("reset state func!\n");
+#endif
 }
 
 void greetingStateHandler(uint8_t *buffer, uint8_t size)
 {
+    uint8_t greeting_head[2] = {0x2F, 0x3F};
+    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50};
+    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};
+    uint8_t *buffer_tail = strchr(buffer, 0x21);
+    uint8_t *serial_num;
 
-    if (((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A)) || ((buffer[0] == 0x2F) && (buffer[1] == 0x3F) && (buffer[2] == 0x41) && (buffer[3] == 0x4C) && (buffer[4] == 0x50) && (buffer[5] == 0x36) && (buffer[6] == 0x30) && (buffer[size - 3] == 0x21) && (buffer[size - 2] == 0x0D) && (buffer[size - 1] == 0x0A)))
+    bool greeting_head_check = strncmp(greeting_head, buffer, 2) == 0 ? true : false;
+    bool greeting_head_new_check = strncmp(greeting_head_new, buffer, 5) == 0 ? true : false;
+
+    if ((greeting_head_check || greeting_head_new_check) && (strncmp(greeting_tail, buffer_tail, 3) == 0))
     {
+#if DEBUG
         printf("greeting entered.\n");
-        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
-        char greeting_uart_buffer[21] = {0};
+#endif
+        if (greeting_head_check)
+            serial_num = strchr(buffer, 0x3F) + 1;
+        if (greeting_head_new_check)
+            serial_num = strchr(buffer, 0x50) + 1;
 
-        snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+        // is serial num 8 character and is it the correct serial number
+        if (strncmp(serial_num, DEVICE_ID, 8) == 0 && (buffer_tail - serial_num == 8))
+        {
+            uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+            char greeting_uart_buffer[21] = {0};
 
-        uart_puts(UART0_ID, greeting_uart_buffer);
+            snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
 
-        state = Setting;
+            uart_puts(UART0_ID, greeting_uart_buffer);
+
+            state = Setting;
+        }
+        else
+            return;
+
+#if DEBUG
         printf("state is setting.\n");
+#endif
     }
 }
 
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
+#if DEBUG
     printf("setting state entered.\n");
+#endif
 
     uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
     uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
@@ -236,7 +267,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
     if ((strncmp(buffer, default_control, 2) == 0) && (size == 6))
     {
+#if DEBUG
         printf("default entered.\n");
+#endif
 
         uint8_t modem_baud_rate;
         uint8_t i;
@@ -258,7 +291,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                 }
                 else
                 {
+#if DEBUG
                     printf("modem baud rate = %d\n", modem_baud_rate);
+#endif
                     setProgramBaudRate(modem_baud_rate);
                 }
                 break;
@@ -273,26 +308,30 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         if (strncmp(load_profile, (buffer + 3), 3) == 0)
         {
             uint8_t ack_buff[17] = {0};
-            snprintf(ack_buff, 16, "%cP0%c(60616161)%c", 0x01, 0x02, 0x03);
+            snprintf(ack_buff, 16, "%cP0%c(%s)%c", 0x01, 0x02,DEVICE_ID, 0x03);
             setBCC(ack_buff, 16, 0x01);
 
             uart_puts(UART0_ID, ack_buff);
+#if DEBUG
             printf("ack sent.\n");
-
             printf("state is listening.\n");
+#endif
             state = Listening;
         }
 
         // Read Out ([ACK]0Z0[CR][LF])
         if (strncmp(meter_read, (buffer + 3), 3) == 0)
         {
+#if DEBUG
             printf("meter read entered.\n");
+#endif
             uint8_t mread_data_buff[55] = {0};
 
             snprintf(mread_data_buff, 55, "%c0.0.0(60616161)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n!%c", 0x02, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0X03);
             uint8_t bcc = bccCreate(mread_data_buff, 55, 0x02);
             mread_data_buff[54] = bcc;
 
+#if DEBUG
             for (int i = 0; i < 55; i++)
             {
                 printf("%02X ", mread_data_buff[i]);
@@ -300,6 +339,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                     printf("\n");
                 vTaskDelay(1);
             }
+#endif
 
             uart_puts(UART0_ID, mread_data_buff);
         }
@@ -327,6 +367,7 @@ void setTimeFromUART(uint8_t *buffer)
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
+    time_change_flag = 1;
 }
 
 void setDateFromUART(uint8_t *buffer)
@@ -387,7 +428,7 @@ void sendProductionInfo()
     char production_obis[22] = {0};
     rtc_get_datetime(&current_time);
 
-    snprintf(production_obis, 21, "%c96.1.3(%02d-%02d-%02d)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
+    snprintf(production_obis, 21, "%c96.1.3(22-10-05)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
     setBCC(production_obis, 21, 0x02);
 
     uart_puts(UART0_ID, production_obis);
