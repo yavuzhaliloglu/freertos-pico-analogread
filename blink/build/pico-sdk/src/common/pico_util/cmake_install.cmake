@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/pico/freertos-pico/pico-sdk/src/common/pico_util
+# Install script for directory: /home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

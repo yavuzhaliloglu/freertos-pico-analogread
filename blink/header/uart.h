@@ -39,13 +39,16 @@ void initUART()
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
-    uint8_t default_control[4] = {0x01, 0x52, 0x32, 0x02};
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
+    uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};
+    uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};
 
     char reading_str[] = "P.01";
     char timeset_str[] = "0.9.1";
     char dateset_str[] = "0.9.2";
     char production_str[] = "96.1.3";
 
+    // ReProgram Control (!!!!)
     if (strncmp(reprogram, data_buffer, 4) == 0)
         return ReProgram;
 
@@ -57,8 +60,12 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         return DataError;
     }
 
-    // Default Control ([SOH]R2[STX])
-    if (strncmp(data_buffer, default_control, 4) == 0)
+    // Password Control ([SOH]P1[STX])
+    if (strncmp(data_buffer, password, 4) == 0)
+        return Password;
+
+    // Reading Control ([SOH]R2[STX]) or Writing Control ([SOH]W2[STX])
+    if (strncmp(data_buffer, reading_control, 4) == 0 || strncmp(data_buffer, writing_control, 4) == 0)
     {
         // Reading Control (P.01)
         if (strstr(data_buffer, reading_str) != NULL)
@@ -80,19 +87,43 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     return DataError;
 }
 
+void deleteChar(uint8_t *str, uint8_t len, char chr)
+{
+    uint8_t i, j;
+    for (i = j = 0; i < len; i++)
+    {
+        if (str[i] != chr)
+            str[j++] = str[i];
+    }
+    str[j] = '\0';
+}
+
 void parseReadingData(uint8_t *buffer)
 {
-    for (uint i = 0; buffer[i] != '\0'; i++)
+    for (uint8_t i = 0; buffer[i] != '\0'; i++)
     {
         if (buffer[i] == 0x28)
         {
             uint8_t k;
 
             for (k = i + 1; buffer[k] != 0x3B; k++)
+            {
                 reading_state_start_time[k - (i + 1)] = buffer[k];
+            }
+            int lenend = strlen(reading_state_end_time);
+            int lenstart = strlen(reading_state_start_time);
+
+            deleteChar(reading_state_start_time, strlen(reading_state_start_time), '-');
+            deleteChar(reading_state_start_time, strlen(reading_state_start_time), ',');
+            deleteChar(reading_state_start_time, strlen(reading_state_start_time), ':');
 
             for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
+            {
                 reading_state_end_time[l - (k + 1)] = buffer[l];
+            }
+            deleteChar(reading_state_end_time, strlen(reading_state_end_time), '-');
+            deleteChar(reading_state_end_time, strlen(reading_state_end_time), ',');
+            deleteChar(reading_state_end_time, strlen(reading_state_end_time), ':');
 
             break;
         }
@@ -148,21 +179,29 @@ void setProgramBaudRate(uint8_t b_rate)
 
 void __not_in_flash_func(rebootDevice)()
 {
-    uint8_t *old_prg_offset = (uint8_t *)(XIP_BASE);
-    uint8_t *new_prg_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET);
-    uint8_t *ram_offset = (uint8_t *)(0x200000c0);
+    printf("reboot handler entered.\n");
 
-    uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(16 * 1024, 230 * 1024);
-    for (int i = 0; i < ota_block_count; i++)
+    // uint8_t *old_prg_offset = (uint8_t *)(XIP_BASE + FLASH_PROGRAM_OFFSET);
+    uint32_t epoch = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
+    uint32_t program_len = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 4));
+    uint8_t *md5_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 8);
+    uint8_t *program = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + FLASH_PAGE_SIZE);
+
+    unsigned char md5_local[MD5_DIGEST_LENGTH];
+    calculateMD5(program, program_len, md5_local);
+
+    printf("program len: %ld\n", program_len);
+
+    // TODO: epoch control
+    if (strncmp(md5_offset, md5_local, 16) == 0)
     {
-        memcpy(rpb, new_prg_offset, FLASH_RPB_BLOCK_SIZE);
-        flash_range_program((16 * 1024) + (i * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
-        new_prg_offset += FLASH_RPB_BLOCK_SIZE;
-        sleep_ms(1);
+        printf("md5 check is true.\n");
     }
-
-    restore_interrupts(ints);
+    else
+    {
+        printf("md5 check is false.\n");
+        flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
+    }
 
     hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
     watchdog_hw->scratch[5] = ENTRY_MAGIC;
@@ -235,12 +274,12 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
             serial_num = strchr(buffer, 0x50) + 1;
 
         // is serial num 8 character and is it the correct serial number
-        if (strncmp(serial_num, DEVICE_ID, 8) == 0 && (buffer_tail - serial_num == 8))
+        if (strncmp(serial_num, serial_number, 8) == 0 && (buffer_tail - serial_num == 8))
         {
             uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
             char greeting_uart_buffer[21] = {0};
 
-            snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+            snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
 
             uart_puts(UART0_ID, greeting_uart_buffer);
 
@@ -308,7 +347,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         if (strncmp(load_profile, (buffer + 3), 3) == 0)
         {
             uint8_t ack_buff[17] = {0};
-            snprintf(ack_buff, 16, "%cP0%c(%s)%c", 0x01, 0x02,DEVICE_ID, 0x03);
+            snprintf(ack_buff, 16, "%cP0%c(%s)%c", 0x01, 0x02, serial_number, 0x03);
             setBCC(ack_buff, 16, 0x01);
 
             uart_puts(UART0_ID, ack_buff);
@@ -348,16 +387,17 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
 void setTimeFromUART(uint8_t *buffer)
 {
-    uint8_t time_buffer[7];
+    uint8_t time_buffer[9] = {0};
     uint8_t hour;
     uint8_t min;
     uint8_t sec;
 
     char *start_ptr = strchr(buffer, '(');
     start_ptr++;
+    char *end_ptr = strchr(buffer, ')');
 
-    strncpy(time_buffer, start_ptr, 6);
-    time_buffer[6] = '\0';
+    strncpy(time_buffer, start_ptr, end_ptr - start_ptr);
+    deleteChar(time_buffer, strlen(time_buffer), ':');
 
     hour = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
     min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
@@ -372,20 +412,21 @@ void setTimeFromUART(uint8_t *buffer)
 
 void setDateFromUART(uint8_t *buffer)
 {
-    uint8_t time_buffer[7];
+    uint8_t date_buffer[9] = {0};
     uint8_t year;
     uint8_t month;
     uint8_t day;
 
     char *start_ptr = strchr(buffer, '(');
     start_ptr++;
+    char *end_ptr = strchr(buffer, ')');
 
-    strncpy(time_buffer, start_ptr, 6);
-    time_buffer[6] = '\0';
+    strncpy(date_buffer, start_ptr, end_ptr - start_ptr);
+    deleteChar(date_buffer, strlen(date_buffer), '-');
 
-    year = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
-    month = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
-    day = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
+    year = (date_buffer[0] - '0') * 10 + (date_buffer[1] - '0');
+    month = (date_buffer[2] - '0') * 10 + (date_buffer[3] - '0');
+    day = (date_buffer[4] - '0') * 10 + (date_buffer[5] - '0');
 
     rtc_get_datetime(&current_time);
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
@@ -395,32 +436,36 @@ void setDateFromUART(uint8_t *buffer)
 
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
-    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
-    uint8_t time[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
-    uint8_t date[9] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
 
-    uint8_t reprogram_len = 8;
-    uint8_t reading_len = 33;
-    uint8_t reading_all_len = 13;
-    uint8_t time_len = 19;
-    uint8_t date_len = 19;
+    uint8_t time_len = 21;
+    uint8_t date_len = 21;
+    uint8_t reading_len = 41;
+    uint8_t reprogram_len = 4;
+    uint8_t password_len = 16;
     uint8_t production_len = 14;
+    uint8_t reading_all_len = 13;
 
+    if ((len == password_len) && (strncmp(buffer, password, 4) == 0))
+        return true;
     if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
-        return 1;
+        return true;
     if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
-        return 1;
+        return true;
     if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
-        return 1;
+        return true;
     if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
-        return 1;
+        return true;
     if ((len == production_len) && (strncmp(buffer, production, 10) == 0))
-        return 1;
+        return true;
 
-    return 0;
+    return false;
 }
 
 void sendProductionInfo()
@@ -428,10 +473,45 @@ void sendProductionInfo()
     char production_obis[22] = {0};
     rtc_get_datetime(&current_time);
 
-    snprintf(production_obis, 21, "%c96.1.3(22-10-05)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
+    snprintf(production_obis, 21, "%c96.1.3(23-10-05)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
     setBCC(production_obis, 21, 0x02);
 
     uart_puts(UART0_ID, production_obis);
+}
+
+void passwordHandler(uint8_t *buffer, uint8_t len)
+{
+    char *ptr = strchr(buffer, '(');
+    ptr++;
+
+    if (strncmp(ptr, DEVICE_PASSWORD, 8) == 0)
+        uart_putc(UART0_ID, 0x06);
+    else
+        uart_putc(UART0_ID, 0x15);
+}
+
+void ReProgramHandler(uint8_t *buffer, uint8_t len)
+{
+    uart_putc(UART0_ID, 0x06);
+    state = WriteProgram;
+    vTaskDelete(xADCHandle);
+    flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
+    return;
+}
+
+void RebootHandler()
+{
+    printf("reboot handler entered.\n");
+    printf("rpb_len: %d\n", rpb_len);
+    printf("data_cnt: %d\n", data_cnt);
+
+    if ((rpb_len > 0) || (data_cnt > 0))
+        is_program_end = true;
+
+    printf("1\n");
+    writeProgramToFlash(0x00);
+    printf("16\n");
+    rebootDevice();
 }
 
 #endif

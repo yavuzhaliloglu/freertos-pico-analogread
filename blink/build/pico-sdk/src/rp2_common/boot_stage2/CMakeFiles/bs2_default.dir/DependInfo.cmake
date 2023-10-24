@@ -8,7 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_ASM
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/boot_stage2/compile_time_choice.S" "/home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default.dir/compile_time_choice.S.obj"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/boot_stage2/compile_time_choice.S" "/home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default.dir/compile_time_choice.S.obj"
   )
 set(CMAKE_ASM_COMPILER_ID "GNU")
 
@@ -22,14 +22,14 @@ set(CMAKE_TARGET_DEFINITIONS_ASM
 
 # The include file search paths:
 set(CMAKE_ASM_TARGET_INCLUDE_PATH
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/boot_stage2/asminclude"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2040/hardware_regs/include"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/hardware_base/include"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/common/pico_base/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/boot_stage2/asminclude"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2040/hardware_regs/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_base/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_base/include"
   "generated/pico_base"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/boards/include"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/pico_platform/include"
-  "/home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/boot_stage2/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/boards/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/include"
+  "/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/boot_stage2/include"
   )
 
 # The set of dependency files which are needed:

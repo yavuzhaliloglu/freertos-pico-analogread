@@ -25,8 +25,10 @@ add_executable(blink main.c
                     )
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
+pico_set_binary_type(blink copy_to_ram)
+pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
+# set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall")
 
-# pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
 
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
@@ -44,9 +46,9 @@ target_link_libraries(blink pico_stdlib
                     hardware_flash
                     hardware_irq
                     hardware_sync
+                    hardware_timer
                     )
 
-set(PICO_COPY_TO_RAM,1)
 # Enable/disable STDIO via USB and UART
 # We use UART1 as a debug port because UART0 is attached to RS485
 pico_enable_stdio_usb(blink 1)

@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/pico_stdio_usb
+# Install script for directory: /home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

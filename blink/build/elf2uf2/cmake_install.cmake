@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/pico/freertos-pico/pico-sdk/tools/elf2uf2
+# Install script for directory: /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

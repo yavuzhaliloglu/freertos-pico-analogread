@@ -23,23 +23,32 @@ void printBufferHex(uint8_t *buf, size_t len)
     }
 }
 
-void writeBlock(uint8_t *buffer, uint8_t size)
+void convertTo8Bit(uint8_t *buffer, uint8_t len)
 {
-    uint8_t lsb_byte = buffer[size - 2];
+    uint8_t debug[4] = {0};
+    uint8_t lsb_byte = buffer[len - 1];
 
-    for (uint8_t i = 0; i < size - 2; i++)
+    for (uint8_t i = 0; i < len - 1; i++)
     {
         buffer[i] = (buffer[i] << 1);
         uint8_t lsb = lsb_byte & 0x01;
         buffer[i] += lsb;
         lsb_byte = (lsb_byte >> 1);
     }
+}
 
-    memcpy(rpb + (rpb_len), buffer, size - 2);
+void writeBlock(uint8_t *buffer, uint8_t size)
+{
+    convertTo8Bit(buffer, size);
+
+    if (data_cnt != 0)
+        memcpy(rpb + (rpb_len), buffer, size - 1);
+
     rpb_len += 7;
-
-    if (rpb_len == FLASH_RPB_BLOCK_SIZE || reprogram_size == 0)
+    if (rpb_len == FLASH_RPB_BLOCK_SIZE || is_program_end)
     {
+        printf("rpb len is equal to block size. Programming...\n");
+        // TODO: Reprogram offset silinmesi
         flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         ota_block_count++;
         memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);
@@ -47,38 +56,18 @@ void writeBlock(uint8_t *buffer, uint8_t size)
     }
 }
 
-bool writeProgramToFlash(uint8_t chr)
+void writeProgramToFlash(uint8_t chr)
 {
-    data_pck[data_cnt++] = chr;
-    reprogram_size--;
+    if (!is_program_end)
+        data_pck[data_cnt++] = chr;
 
-    if (data_cnt == 9 || reprogram_size == 0)
+    if (data_cnt == 8 || is_program_end)
     {
+        writeBlock(data_pck, data_cnt);
 
-#if DEBUG
-        printf("Reprogram Size: %d\n", reprogram_size);
-#endif
-        uint8_t bcc_received = data_pck[data_cnt - 1];
-        uint8_t bcc = bccCreate(data_pck, data_cnt - 1, 0x00) & 0x7F;
-
-        if (bcc == bcc_received)
-        {
-            uart_putc(UART0_ID, 0x06);
-            writeBlock(data_pck, data_cnt);
-        }
-        else
-        {
-            uart_putc(UART0_ID, 0x15);
-        }
-
+        memset(data_pck, 0, 8);
         data_cnt = 0;
-        memset(data_pck, 0, 9);
     }
-
-    if (reprogram_size == 0)
-        return true;
-    else
-        return false;
 }
 
 void __not_in_flash_func(getFlashContents)()
@@ -87,13 +76,12 @@ void __not_in_flash_func(getFlashContents)()
     sector_data = *(uint8_t *)flash_sector_content;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
-    flash_range_erase(FLASH_REPROGRAM_OFFSET, 256 * 1024);
     restore_interrupts(ints);
 }
 
 void __not_in_flash_func(setSectorData)()
 {
-    uint8_t sector_buffer[FLASH_SECTOR_SIZE / sizeof(uint8_t)] = {0};
+    uint8_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint8_t)] = {0};
     sector_buffer[0] = sector_data;
 
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
@@ -244,7 +232,7 @@ void searchDataInFlash()
     datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    char load_profile_line[32] = {0};
+    char load_profile_line[36] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
 #if DEBUG
@@ -342,37 +330,37 @@ void searchDataInFlash()
             {
                 if (!first_flag)
                 {
-                    snprintf(load_profile_line, 31, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
+                    snprintf(load_profile_line, 35, "%c(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
                     first_flag = 1;
-                    xor_result = bccCreate(load_profile_line, 32, xor_result);
-                    load_profile_line[30] = xor_result;
-                    #if DEBUG
+                    xor_result = bccCreate(load_profile_line, 36, xor_result);
+                    load_profile_line[34] = xor_result;
+#if DEBUG
                     for (int i = 0; i < 32; i++)
                     {
                         printf("%02X ", load_profile_line[i]);
                     }
                     printf("\n");
-                    #endif
+#endif
                 }
                 else
                 {
-                    snprintf(load_profile_line, 30, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
-                    xor_result = bccCreate(load_profile_line, 32, xor_result);
-                    load_profile_line[29] = xor_result;
+                    snprintf(load_profile_line, 34, "(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
+                    xor_result = bccCreate(load_profile_line, 36, xor_result);
+                    load_profile_line[33] = xor_result;
                 }
             }
             else
             {
                 if (!first_flag)
                 {
-                    snprintf(load_profile_line, 29, "%c(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
-                    xor_result = bccCreate(load_profile_line, 29, xor_result);
+                    snprintf(load_profile_line, 33, "%c(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
+                    xor_result = bccCreate(load_profile_line, 33, xor_result);
                     first_flag = 1;
                 }
                 else
                 {
-                    snprintf(load_profile_line, 28, "(%s%s%s%s%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
-                    xor_result = bccCreate(load_profile_line, 28, xor_result);
+                    snprintf(load_profile_line, 32, "(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
+                    xor_result = bccCreate(load_profile_line, 32, xor_result);
                 }
             }
 #if DEBUG

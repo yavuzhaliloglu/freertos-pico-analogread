@@ -2,13 +2,18 @@
 #define DEFINES_H
 
 // FLASH DEFINES
+
+// this is the start offset of the program
+#define FLASH_PROGRAM_OFFSET 36 * 1024
 // this is the start offset of sector information that load profile records will written
 #define FLASH_SECTOR_OFFSET 512 * 1024
+// this is the start offset of device serial number information
+#define FLASH_SERIAL_OFFSET 512 * 1024 - FLASH_SECTOR_SIZE
 // this is the start offset of OTA program will written
 #define FLASH_REPROGRAM_OFFSET 256 * 1024
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
-// this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
+// this is the count of total sectors in flash expect first 512kB + 8kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
 #define FLASH_TOTAL_SECTORS 382
 // this is the start offset of load profile records will written
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
@@ -16,6 +21,8 @@
 #define FLASH_RECORD_SIZE 16
 // this is the count of total records can be kept in a flash
 #define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
+
+#define MD5_DIGEST_LENGTH 16
 
 // UART DEFINES
 #define ENTRY_MAGIC 0xb105f00d
@@ -27,8 +34,8 @@
 #define STOP_BITS 1
 #define PARITY UART_PARITY_EVEN
 #define UART_TASK_PRIORITY 3
-#define UART_TASK_STACK_SIZE (1024 * 3)
-#define DEVICE_ID "62616161"
+#define UART_TASK_STACK_SIZE (1024 * 12)
+#define DEVICE_PASSWORD "12345678"
 
 // RESET PIN DEFINE
 #define RESET_PULSE_PIN 2
