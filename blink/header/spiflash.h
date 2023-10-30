@@ -5,6 +5,21 @@
 #include "variables.h"
 #include "bcc.h"
 
+void printBinary(uint8_t value)
+{
+    uint8_t debug2[4] = {0};
+    snprintf(debug2, 4, "%02X ", value);
+    printf("%s", debug2);
+
+    for (int i = 7; i >= 0; i--)
+    {
+        uint8_t debug[2] = {0};
+        snprintf(debug, 2, "%d", (value & (1 << i)) ? 1 : 0);
+        printf("%s", debug);
+    }
+    printf("\n");
+}
+
 void printBufferHex(uint8_t *buf, size_t len)
 {
     for (size_t i = 0; i < len; ++i)
@@ -74,6 +89,7 @@ void __not_in_flash_func(getFlashContents)()
 {
     uint32_t ints = save_and_disable_interrupts();
     sector_data = *(uint8_t *)flash_sector_content;
+    printf("sector data is: %d\n", sector_data);
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
@@ -388,6 +404,16 @@ void searchDataInFlash()
     }
     memset(reading_state_start_time, 0, 10);
     memset(reading_state_end_time, 0, 10);
+}
+
+void resetFlashSettings()
+{
+    uint8_t reset_flash[256] = {0};
+
+    flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
+
+    flash_range_erase(FLASH_DATA_OFFSET, 1024 * 1024);
 }
 
 #endif

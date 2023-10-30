@@ -179,10 +179,8 @@ void setProgramBaudRate(uint8_t b_rate)
 
 void __not_in_flash_func(rebootDevice)()
 {
-    printf("reboot handler entered.\n");
-
-    // uint8_t *old_prg_offset = (uint8_t *)(XIP_BASE + FLASH_PROGRAM_OFFSET);
-    uint32_t epoch = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
+    uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
+    uint32_t epoch_current = *((uint32_t *)(XIP_BASE + FLASH_PROGRAM_OFFSET));
     uint32_t program_len = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 4));
     uint8_t *md5_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 8);
     uint8_t *program = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + FLASH_PAGE_SIZE);
@@ -190,46 +188,19 @@ void __not_in_flash_func(rebootDevice)()
     unsigned char md5_local[MD5_DIGEST_LENGTH];
     calculateMD5(program, program_len, md5_local);
 
-    printf("program len: %ld\n", program_len);
-
-    // TODO: epoch control
-    if (strncmp(md5_offset, md5_local, 16) == 0)
+    if ((strncmp(md5_offset, md5_local, 16) == 0) && (epoch_new > epoch_current))
     {
-        printf("md5 check is true.\n");
+        printf("md5 check is true and new program's epoch is bigger.\n");
+        hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+        watchdog_hw->scratch[5] = ENTRY_MAGIC;
+        watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+        watchdog_reboot(0, 0, 0);
     }
     else
     {
-        printf("md5 check is false.\n");
+        printf("md5 check is false or new program's epoch is smaller or equal.\n");
         flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
     }
-
-    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-    watchdog_hw->scratch[5] = ENTRY_MAGIC;
-    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
-    watchdog_reboot(0, 0, 0);
-}
-
-void setReProgramSize(uint8_t *data_buffer)
-{
-    uint8_t lsb_byte = data_buffer[7];
-
-    for (int i = 4; i < 7; i++)
-    {
-        uint8_t lsb = lsb_byte & 0x01;
-        data_buffer[i] = (data_buffer[i] << 1);
-        data_buffer[i] += lsb;
-        lsb_byte = (lsb_byte >> 1);
-
-        reprogram_size += data_buffer[i];
-        if (i != 6)
-        {
-            reprogram_size = (reprogram_size << 8);
-        }
-    }
-    uart_putc(UART0_ID, 0x06);
-#if DEBUG
-    printf("reprogram size: %u\n", reprogram_size);
-#endif
 }
 
 void resetRxBuffer()
@@ -495,22 +466,16 @@ void ReProgramHandler(uint8_t *buffer, uint8_t len)
     uart_putc(UART0_ID, 0x06);
     state = WriteProgram;
     vTaskDelete(xADCHandle);
-    flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
+    flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
     return;
 }
 
 void RebootHandler()
 {
-    printf("reboot handler entered.\n");
-    printf("rpb_len: %d\n", rpb_len);
-    printf("data_cnt: %d\n", data_cnt);
-
     if ((rpb_len > 0) || (data_cnt > 0))
         is_program_end = true;
 
-    printf("1\n");
     writeProgramToFlash(0x00);
-    printf("16\n");
     rebootDevice();
 }
 

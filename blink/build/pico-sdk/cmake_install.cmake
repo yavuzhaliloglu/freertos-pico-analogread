@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/Desktop/test/pico/pico-sdk
+# Install script for directory: /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

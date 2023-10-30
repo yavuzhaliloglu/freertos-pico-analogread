@@ -53,7 +53,7 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2
+CMAKE_SOURCE_DIR = /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2
 
 # The top-level build directory on which CMake was run.
 CMAKE_BINARY_DIR = /home/yavuz/pico/freertos-pico/blink/build/elf2uf2
@@ -70,18 +70,18 @@ include CMakeFiles/elf2uf2.dir/progress.make
 include CMakeFiles/elf2uf2.dir/flags.make
 
 CMakeFiles/elf2uf2.dir/main.cpp.o: CMakeFiles/elf2uf2.dir/flags.make
-CMakeFiles/elf2uf2.dir/main.cpp.o: /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2/main.cpp
+CMakeFiles/elf2uf2.dir/main.cpp.o: /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2/main.cpp
 CMakeFiles/elf2uf2.dir/main.cpp.o: CMakeFiles/elf2uf2.dir/compiler_depend.ts
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/elf2uf2/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/elf2uf2.dir/main.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/elf2uf2.dir/main.cpp.o -MF CMakeFiles/elf2uf2.dir/main.cpp.o.d -o CMakeFiles/elf2uf2.dir/main.cpp.o -c /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2/main.cpp
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/elf2uf2.dir/main.cpp.o -MF CMakeFiles/elf2uf2.dir/main.cpp.o.d -o CMakeFiles/elf2uf2.dir/main.cpp.o -c /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2/main.cpp
 
 CMakeFiles/elf2uf2.dir/main.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/elf2uf2.dir/main.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2/main.cpp > CMakeFiles/elf2uf2.dir/main.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2/main.cpp > CMakeFiles/elf2uf2.dir/main.cpp.i
 
 CMakeFiles/elf2uf2.dir/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/elf2uf2.dir/main.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2/main.cpp -o CMakeFiles/elf2uf2.dir/main.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2/main.cpp -o CMakeFiles/elf2uf2.dir/main.cpp.s
 
 # Object files for target elf2uf2
 elf2uf2_OBJECTS = \
@@ -105,6 +105,6 @@ CMakeFiles/elf2uf2.dir/clean:
 .PHONY : CMakeFiles/elf2uf2.dir/clean
 
 CMakeFiles/elf2uf2.dir/depend:
-	cd /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2 /home/yavuz/Desktop/test/pico/pico-sdk/tools/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2/CMakeFiles/elf2uf2.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2 /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/tools/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2 /home/yavuz/pico/freertos-pico/blink/build/elf2uf2/CMakeFiles/elf2uf2.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/elf2uf2.dir/depend
 

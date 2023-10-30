@@ -231,1629 +231,1629 @@ header/md5.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/header/md5.c.s
 .PHONY : header/md5.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.obj: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.i: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.s: home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.i: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.s: home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.s
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj
 
 # target to build an object file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i
 
 # target to preprocess a source file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i
 
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s: home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s: home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s
 
 # target to generate assembly for a file
-home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
-.PHONY : home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
+home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/blink.dir/build.make CMakeFiles/blink.dir/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
+.PHONY : home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.s
 
 home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.obj: home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.c.obj
 .PHONY : home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.obj
@@ -2113,209 +2113,209 @@ help:
 	@echo "... header/md5.obj"
 	@echo "... header/md5.i"
 	@echo "... header/md5.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/lib/tinyusb/src/tusb.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/critical_section.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/lock_core.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/mutex.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_sync/sem.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/time.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_time/timeout_helper.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/datetime.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/pheap.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/common/pico_util/queue.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_math.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_math.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_platform/platform.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_printf/printf.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i"
-	@echo "... home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/audio/audio_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/hid/hid_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/midi/midi_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/msc/msc_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/net/ncm_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/class/video/video_device.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/common/tusb_fifo.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/device/usbd_control.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/lib/tinyusb/src/tusb.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/critical_section.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/lock_core.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/mutex.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_sync/sem.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/time.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_time/timeout_helper.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/datetime.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/pheap.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/pico_util/queue.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_adc/adc.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_claim/claim.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_clocks/clocks.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_divider/divider.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_dma/dma.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_exception/exception.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_flash/flash.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_gpio/gpio.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_i2c/i2c.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_pll/pll.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_rtc/rtc.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi/spi.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_sync/sync.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_timer/timer.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_uart/uart.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_vreg/vreg.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_xosc/xosc.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_bootrom/bootrom.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_divider/divider.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_aeabi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_init_rom.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_math.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_aeabi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_init_rom.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_math.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_multicore/multicore.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_platform/platform.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_printf/printf.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_runtime/runtime.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/binary_info.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/crt0.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_standard_link/new_delete.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio/stdio.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_stdlib/stdlib.s"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.obj"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.i"
+	@echo "... home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/pico_unique_id/unique_id.s"
 	@echo "... home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.obj"
 	@echo "... home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.i"
 	@echo "... home/yavuz/pico/freertos-pico/FreeRTOS-Kernel/croutine.s"

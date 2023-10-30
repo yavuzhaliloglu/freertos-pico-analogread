@@ -14,7 +14,7 @@ void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
     adc_fifo_drain();
 }
 
-double calculateVRMS()
+double calculateVRMS(double bias)
 {
     double vrms = 0.0;
     double vrms_accumulator = 0.0;
@@ -35,7 +35,7 @@ double calculateVRMS()
     printf("\n");
 #endif
 
-    float mean = 2050 * conversion_factor / 1000;
+    float mean = bias * conversion_factor / 1000;
 
 #if DEBUG
     snprintf(deneme, 30, "mean: %f\n", mean);
@@ -61,6 +61,17 @@ double calculateVRMS()
 #endif
 
     return vrms;
+}
+
+double getMean(uint16_t *buffer, size_t size)
+{
+    double total = 0;
+
+    for (size_t i = 0; i < size; i++)
+        total += buffer[i];
+
+    printf("total: %lf\n", total);
+    return (total / size);
 }
 
 #endif

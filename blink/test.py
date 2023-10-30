@@ -77,17 +77,6 @@ seri = serial.Serial(
 
 md5_hash = hashlib.md5()
 
-# dt = bytearray(b"Hello World!")
-# md5_csum = hashlib.md5(dt).digest()
-
-# csum_bytearray = bytearray(md5_csum)
-# # md5_hash.update(dt)
-# # checksum = md5_hash.digest()
-
-# print("MD5 CHECKSUM: ", csum_bytearray)
-# print(type(csum_bytearray))
-
-
 meeting_message = bytearray(b"/?60616161!\r\n")
 seri.write(meeting_message)
 time.sleep(0.2)
@@ -157,127 +146,67 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                 file = open(
                     "/home/yavuz/pico/freertos-pico/blink/build/blink.bin", "rb"
                 )
-                message = bytearray(file.read())
+                reprogram_bin = bytearray(file.read())
 
-                # message = bytearray(b"\x01\x23\x45")
-                # print("\nmessage: ")
-                # printArrayHexBinary(message)
+                # reprogram_bin = bytearray(b"\x01\x23\x45")
+                # print("\nreprogram_bin: ")
+                # printArrayHexBinary(reprogram_bin)
 
-                # inilialize the reprogram array and convert it to 7 bit message
-                reprogram_msg = bytearray()
-                reprogram_msg = conversionTo7Bit(message)
-                print("\nreprogram_msg: ")
-                printArrayHexBinary(reprogram_msg)
+                # initialize the binary header
+                binary_header = bytearray()
 
-                # get the converted program len
-                message_len = len(reprogram_msg)
+                # add vector address to start program to binary header
+                start_address = 0x10009100.to_bytes(8,"little")
+                binary_header = start_address + binary_header
 
-                # debug
-                print("\nmessage len:")
-                printArrayHexBinary(message_len.to_bytes(3, byteorder="big"))
-
-                # convert the message len to 7-bit version
-                converted_prg_len = bytearray(
-                    reversed(messageLengthConversion(message_len))
-                )
-
-                # debug
-                print("\nmessage len converted:")
-                printArrayHexBinary(converted_prg_len)
-
-                # initialize the program header and add the converted message len (4 Bytes)
-                program_header = bytearray()
-                program_header = converted_prg_len + program_header
-                print(
-                    "\nprogram header after adding converted program len: ",
-                    program_header,
-                )
-
-                # calculate the md5 checksum for NOT CONVERTED program and add the program header array (16 Bytes)
-                md5_csum = hashlib.md5(message).digest()
+                # calculate the md5 checksum for the binary and add the binary header array (16 Bytes)
+                md5_csum = hashlib.md5(reprogram_bin).digest()
                 csum_bytearray = bytearray(md5_csum)
                 print("\nMD5 CHECKSUM: ", csum_bytearray)
-                program_header = csum_bytearray + program_header
-                print("\nprogram header after adding md5 checksum: ", program_header)
+                binary_header = csum_bytearray + binary_header
+                print("\nbinary header after adding md5 checksum: ", binary_header)
 
-                # add the NOT CONVERTED PPROGRAM'S program len to the program header array (4 Bytes)
-                program_len = len(message)
-                program_header = (
-                    bytearray(reversed(bytearray(program_len.to_bytes(4, "big"))))
-                    + program_header
+                # add the binary len to the binary header array (4 Bytes)
+                binary_len = len(reprogram_bin)
+                binary_header = (
+                    bytearray(reversed(bytearray(binary_len.to_bytes(4, "big"))))
+                    + binary_header
                 )
-                print("\nNOT CONVERTED program's program len: ", program_len)
-                print("\nNOT CONVERTED program's program len as bytes:")
-                printArrayHexBinary(program_len.to_bytes(4, "big"))
-                print(program_header)
+                print("\nbinary len: ", binary_len)
+                print("\nbinary len as bytes:")
+                printArrayHexBinary(binary_len.to_bytes(4, "big"))
+                print(binary_header)
 
                 # add epoch unix time value (4 Bytes)
                 current_epoch = int(time.time())
                 print("\nepoch value: ", current_epoch)
-                program_header = (
+                binary_header = (
                     bytearray(reversed(current_epoch.to_bytes(4, "big")))
-                    + program_header
+                    + binary_header
                 )
-                print("\nprogram header after adding epoch: ", program_header)
+                print("\nbinary header after adding epoch: ", binary_header)
 
-                # add padding to program header (should be 256 bytes)
-                program_header = program_header + bytearray(256 - len(program_header))
-                print("\nprogram header after padding: ")
-                printArrayHexBinary(program_header)
-                print("\nlength of program header", len(program_header))
+                # add padding to binary header (should be 256 bytes)
+                binary_header = binary_header + bytearray(256 - len(binary_header))
+                print("\nbinary header after padding: ")
+                printArrayHexBinary(binary_header)
+                print("\nlength of binary header", len(binary_header))
 
-                message = program_header + message
-                print("\nprogram header + message: ")
-                # printArrayHexBinary(message)
+                # add binary header to binary file
+                reprogram_bin = binary_header + reprogram_bin
 
-                reprogram_msg2 = conversionTo7Bit(message)
-                print("\nconverted program header + message : ")
-                # printArrayHexBinary(reprogram_msg2)
+                # convert new binary file to 7-bit format
+                reprogram_msg2 = conversionTo7Bit(reprogram_bin)
 
+                # send file
                 print("sending data...")
                 seri.write(reprogram_msg2)
                 print("data sent.")
 
-            # if res[0] == 0x06:
-            #     error_count = 0
-            #     while len(reprogram_msg) != 0:
-            #         msg_pack = reprogram_msg[:9]
-
-            #         print("sent msg pack bytes: ", len(msg_pack))
-            #         # printArrayHexBinary(msg_pack)
-
-            #         del reprogram_msg[:9]
-
-            #         print("remaining reporgram msg bytes: ", len(reprogram_msg))
-            #         # printArrayHexBinary(reprogram_msg)
-
-            #         seri.write(msg_pack)
-            #         res = bytearray(seri.readline(1))
-            #         print(res)
-
-            #         print("1")
-
-            #         if not reprogram_msg:
-            #             break
-            #         print("2")
-            #         if res[0] == 0x06:
-            #             print("3")
-            #             continue
-            #         elif res[0] == 0x15:
-            #             print("4")
-            #             error_count += 1
-            #             print("error occured")
-            #             reprogram_msg = msg_pack + reprogram_msg
-            #             if error_count == 3:
-            #                 print("5")
-            #                 break
-            #     print("6")
-            # print("7")
-
             # bcc = 0x01
             # # tüketim sorgusu
             # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-10-17,14:00;23-10-18,15:00\x29\x03"
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-10-26,14:00;23-10-30,18:00\x29\x03"
             # )
             # for b in loadFormat:
             #     bcc ^= b
@@ -311,7 +240,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             #     print(seri.readline())
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2813:00:40\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2816:43:00\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
@@ -340,7 +269,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 
             # bcc_date = 0x01
             # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-10-17\x29\x03"
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-10-26\x29\x03"
             # )
             # for b in dateSet:
             #     bcc_date ^= b

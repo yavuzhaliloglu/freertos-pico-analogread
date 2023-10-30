@@ -72,8 +72,6 @@ void vUARTTask(void *pvParameters)
             while (uart_is_readable(UART0_ID))
             {
                 rx_char = uart_getc(UART0_ID);
-                // printBinary(rx_char);
-                // stdio_flush();
 
                 if (state == WriteProgram)
                 {
@@ -188,13 +186,18 @@ void vADCReadTask()
         }
 #endif
         startTime = xTaskGetTickCount();
-
         printf("Alarm Fired At %s\n", datetime_str);
 
-        vrms = calculateVRMS();
+        // CALCULATE BIAS VOLTAGE
+        adc_select_input(ADC_BIAS_INPUT);
+        adcCapture(bias_buffer,BIAS_SAMPLE);
+        double bias_voltage = getMean(bias_buffer,BIAS_SAMPLE);
+        printf("bias voltage is: %lf\n", bias_voltage);
+        
+        adc_select_input(ADC_SELECT_INPUT);
+        vrms = calculateVRMS(bias_voltage);
         vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
-        // vrms_accumulator = 0.0;
         vrms = 0.0;
 
         if (time_change_flag)
@@ -260,8 +263,7 @@ bool repeating_timer_callback(struct repeating_timer *rt)
 {
     rtc_get_datetime(&current_time);
     datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-    printf("The Time for the mustafa abi:%s \r\n", datetime_str);
-
+    printf("RTC Time is: %s \r\n", datetime_str);
     return true;
 }
 
@@ -269,15 +271,6 @@ void main()
 {
     stdio_init_all();
     sleep_ms(1000);
-
-    // uint8_t *ptr = (uint8_t *)(XIP_BASE);
-    // printBufferHex(ptr, 12 * 4096);
-
-    // while (true)
-    // {
-    //     printf("hello world!\n");
-    //     sleep_us(1000000);
-    // }
 
     // UART INIT
     uart_init(UART0_ID, BAUD_RATE);
@@ -294,7 +287,9 @@ void main()
     // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
+    adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
+
     adc_set_clkdiv(CLOCK_DIV);
     adcCapture(sample_buffer, VRMS_SAMPLE);
     sleep_ms(1);
@@ -308,32 +303,19 @@ void main()
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
     // FLASH CONTENTS
+    // resetFlashSettings();
+
     getFlashContents();
     // SPIWriteToFlash();
 
-    // char helloworld[] = "Hello World!";
-    // int size = strlen(helloworld);
-    // unsigned char md5sum[MD5_DIGEST_LENGTH];
-
-    // calculateMD5(helloworld, size, md5sum);
-
-    // printf("MD5 Checksum for %s string is:", helloworld);
-    // for (int i = 0; i < MD5_DIGEST_LENGTH; i++)
-    // {
-    //     printf("%02x", md5sum[i]);
-    // }
-    // printf("\n");
-
     // serial number addition
-
     uint8_t s_number[256] = "60616161";
-    // printBufferHex(s_number, 256);
 
     flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
-    // printf("%s", serial_number);
 
-    // printBufferHex((uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET), 256);
+    uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 
     // RTC
     getTimePt7c4338(&current_time);

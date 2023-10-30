@@ -1,4 +1,4 @@
-# Install script for directory: /home/yavuz/Desktop/test/pico/pico-sdk/src/rp2_common/hardware_spi
+# Install script for directory: /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/hardware_spi
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
