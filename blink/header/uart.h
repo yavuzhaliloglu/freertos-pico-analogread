@@ -225,12 +225,11 @@ void resetState()
 
 void greetingStateHandler(uint8_t *buffer, uint8_t size)
 {
-    uint8_t greeting_head[2] = {0x2F, 0x3F};
-    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50};
-    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};
-    uint8_t *buffer_tail = strchr(buffer, 0x21);
     uint8_t *serial_num;
-
+    uint8_t greeting_head[2] = {0x2F, 0x3F};
+    uint8_t *buffer_tail = strchr(buffer, 0x21);
+    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};
+    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50};
     bool greeting_head_check = strncmp(greeting_head, buffer, 2) == 0 ? true : false;
     bool greeting_head_new_check = strncmp(greeting_head_new, buffer, 5) == 0 ? true : false;
 
@@ -241,6 +240,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 #endif
         if (greeting_head_check)
             serial_num = strchr(buffer, 0x3F) + 1;
+
         if (greeting_head_new_check)
             serial_num = strchr(buffer, 0x50) + 1;
 
@@ -251,7 +251,6 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
             char greeting_uart_buffer[21] = {0};
 
             snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
-
             uart_puts(UART0_ID, greeting_uart_buffer);
 
             state = Setting;

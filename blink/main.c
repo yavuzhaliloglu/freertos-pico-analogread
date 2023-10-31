@@ -1,5 +1,4 @@
 #include "stdio.h"
-// #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include "pico/stdlib.h"
@@ -33,14 +32,16 @@
 #include "header/uart.h"
 #include "header/adc.h"
 
-// UART TASK
+// UART TASK: This task gets uart characters and handles them
 void vUARTTask(void *pvParameters)
 {
+    // Confugiration parameters
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
 
+    // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
@@ -48,6 +49,7 @@ void vUARTTask(void *pvParameters)
         NULL,
         resetRxBuffer);
 
+    // This timer sets state to Greeting(Initial) if there is no request or message in 30 seconds.
     TimerHandle_t ResetStateTimer = xTimerCreate(
         "StateTimer",
         pdMS_TO_TICKS(30000),
@@ -55,6 +57,7 @@ void vUARTTask(void *pvParameters)
         NULL,
         resetState);
 
+    // This timer handles to reboot device if there is no character coming in WriteProgram state. When this timer executes, it means that program data coming from UART is over or cut off
     TimerHandle_t ReprogramTimer = xTimerCreate(
         "ReprogramTimer",
         pdMS_TO_TICKS(5000),
@@ -67,12 +70,16 @@ void vUARTTask(void *pvParameters)
         xTimerStart(ResetBufferTimer, 0);
         UARTReceive();
         ulNotificationValue = ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // If a character comes, this block is going to be executed
         if (ulNotificationValue == 1)
         {
+            // Check if UART port is readable
             while (uart_is_readable(UART0_ID))
             {
+                // Get character from UART
                 rx_char = uart_getc(UART0_ID);
 
+                // If state is WriteProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
                 if (state == WriteProgram)
                 {
                     xTimerReset(ReprogramTimer, 0);
@@ -80,49 +87,57 @@ void vUARTTask(void *pvParameters)
                     continue;
                 }
 
-                // ENTER CONTROL
+                // CR/LF control for the message, also this is the end character control for the message
                 if (rx_char != '\n')
                 {
                     rx_buffer[rx_buffer_len++] = rx_char;
                 }
+                // The end of the message could be '\n' character or a BCC, so this if block checks if the character is '\n' or the whole message is request message according to its length and order of characters
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
+                    // Get the last character of the message and wait for 200 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
                     printf("entered\n");
                     rx_buffer[rx_buffer_len++] = rx_char;
                     vTaskDelay(pdMS_TO_TICKS(200));
 
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
-                    char *ptr = strchr(rx_buffer, 0x2F);
 
                     switch (state)
                     {
+                    // This is the Initial state in device. In this state, modem and device will handshake.
                     case Greeting:
-                        if (ptr != NULL)
-                            greetingStateHandler(ptr, rx_buffer_len - ((uint8_t *)ptr - rx_buffer));
+                        // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
+                        char *st_chr_msg = strchr(rx_buffer, 0x2F);
+                        greetingStateHandler(ptr, rx_buffer_len - ((uint8_t *)st_chr_msg - rx_buffer));
 
                         xTimerStart(ResetStateTimer, 0);
                         break;
 
+                    // This state sets baud rate or sends readout message.
                     case Setting:
                         xTimerStart(ResetStateTimer, 0);
                         settingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
+                    // This state handles the request messages for load profile, set date and time, send production info and also before entering WriteProgram state.
                     case Listening:
                         xTimerStart(ResetStateTimer, 0);
 
+                        // This switch block checks the request message for the which state is going to handled according to message.
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
                         case DataError:
                             uart_putc(UART0_ID, 0x15);
                             break;
 
+                        // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
                             parseReadingData(rx_buffer);
                             searchDataInFlash();
                             break;
 
+                        // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
                         case ReProgram:
                             ReProgramHandler(rx_buffer, rx_buffer_len);
                             printf("state is writeprogram.\n");
@@ -131,31 +146,34 @@ void vUARTTask(void *pvParameters)
                             xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
                             break;
 
+                        // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.
                         case Password:
                             passwordHandler(rx_buffer, rx_buffer_len);
                             break;
 
+                        // This state changes time of this device.
                         case TimeSet:
                             setTimeFromUART(rx_buffer);
                             break;
 
+                        // This state changes date of this device.
                         case DateSet:
                             setDateFromUART(rx_buffer);
                             break;
 
+                        // This state sends production info for this device.
                         case ProductionInfo:
                             sendProductionInfo();
                             break;
 
+                        // If the message is not correct, device sends a NACK message (0x15) to modem.
                         default:
                             uart_putc(UART0_ID, 0x15);
                             break;
                         }
                         break;
-                    default:
-                        uart_putc(UART0_ID, 0x15);
-                        break;
                     }
+                    // After a request or message, buffers and index variables will be set to zero.
                     memset(rx_buffer, 0, 256);
                     rx_buffer_len = 0;
                 }
@@ -164,16 +182,17 @@ void vUARTTask(void *pvParameters)
     }
 }
 
-// ADC CONVERTER TASK
-
+// ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask()
 {
+    // Set the parameters for this task.
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(60000);
     static uint8_t vrms_buffer_count = 0;
     uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
     double vrms = 0.0;
     TickType_t vaitingTime = 0;
+    double bias_voltage;
 
     while (1)
     {
@@ -188,31 +207,39 @@ void vADCReadTask()
         startTime = xTaskGetTickCount();
         printf("Alarm Fired At %s\n", datetime_str);
 
-        // CALCULATE BIAS VOLTAGE
+        // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
-        adcCapture(bias_buffer,BIAS_SAMPLE);
-        double bias_voltage = getMean(bias_buffer,BIAS_SAMPLE);
+        adcCapture(bias_buffer, BIAS_SAMPLE);
+        bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
         printf("bias voltage is: %lf\n", bias_voltage);
-        
+
+        // Select the ADC input to voltage PIN and calculate VRMS value
         adc_select_input(ADC_SELECT_INPUT);
         vrms = calculateVRMS(bias_voltage);
-        vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
 
+        // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
+        vrms_buffer[vrms_buffer_count++] = (uint8_t)vrms;
         vrms = 0.0;
 
+        // If time of this device is changed, this block will be executed. This task executes periodically and when time changes, the period of this task is going to slip.
+        // This block aligns the period to beginning of the minute and if the current minute is aligned to 15.period, writes the record to flash and wait until beginning of the minute and continues.
         if (time_change_flag)
-        {
+        {   
+            // Calculate waiting time to align the task to beginning of the minute.
             vaitingTime = pdMS_TO_TICKS(60000 - ((current_time.sec) * 1000));
+            
+            // Check to current minute value.
             if (current_time.min % 15 == 0)
-            {
                 SPIWriteToFlash();
-            }
+
+            // Set the parameters for this block to zero and wait until beginning of the minute.
             time_change_flag = 0;
             vTaskDelay(vaitingTime);
             vaitingTime = 0;
             continue;
         }
 
+        // Write a record to the flash memory periodically
         if ((current_time.sec < 5 && current_time.min % 15 == 0))
         {
             vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
@@ -246,8 +273,7 @@ void vADCReadTask()
 //     }
 // }
 
-// RESET TASK
-
+// RESET TASK: This task sends a pulse to reset PIN.
 void vResetTask()
 {
     while (1)
@@ -259,6 +285,7 @@ void vResetTask()
     }
 }
 
+// TIME TASK: This task gets current time value in RP2040's RTC chip and sets the current_time value.
 bool repeating_timer_callback(struct repeating_timer *rt)
 {
     rtc_get_datetime(&current_time);
@@ -302,20 +329,21 @@ void main()
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
-    // FLASH CONTENTS
+    // // Reset Record Settings
     // resetFlashSettings();
 
+    // FLASH CONTENTS
     getFlashContents();
-    // SPIWriteToFlash();
 
-    // serial number addition
+    // // FLASH RECORD AREA DEBUG
+    // uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    // printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
+
+    // SERIAL NUMBER ADDITION
     uint8_t s_number[256] = "60616161";
 
     flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
-
-    uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 
     // RTC
     getTimePt7c4338(&current_time);
@@ -323,6 +351,7 @@ void main()
     sleep_us(64);
     adc_remaining_time = pdMS_TO_TICKS((current_time.sec) * 1000);
 
+    // REPEATING TIMER
     struct repeating_timer timer;
     add_repeating_timer_us(1000000, repeating_timer_callback, NULL, &timer);
 

@@ -206,7 +206,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # bcc = 0x01
             # # tüketim sorgusu
             # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-10-26,14:00;23-10-30,18:00\x29\x03"
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-10-26,14:00;23-10-31,19:00\x29\x03"
             # )
             # for b in loadFormat:
             #     bcc ^= b

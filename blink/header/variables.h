@@ -13,8 +13,7 @@ TickType_t adc_remaining_time = 0;
 volatile uint8_t time_change_flag;
 
 // UART VARIABLES
-enum States
-{
+enum States {
     Greeting = 0,
     Setting = 1,
     Listening = 2,
@@ -67,7 +66,7 @@ bool is_program_end = false;
 char datetime_buffer[64];
 char *datetime_str = &datetime_buffer[0];
 datetime_t current_time = {
-    .year = 2020,
+    .year = 2023,
     .month = 06,
     .day = 05,
     .dotw = 5, // 0 is Sunday, so 5 is Friday

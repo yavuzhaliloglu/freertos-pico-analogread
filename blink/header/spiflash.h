@@ -40,7 +40,6 @@ void printBufferHex(uint8_t *buf, size_t len)
 
 void convertTo8Bit(uint8_t *buffer, uint8_t len)
 {
-    uint8_t debug[4] = {0};
     uint8_t lsb_byte = buffer[len - 1];
 
     for (uint8_t i = 0; i < len - 1; i++)
@@ -60,10 +59,10 @@ void writeBlock(uint8_t *buffer, uint8_t size)
         memcpy(rpb + (rpb_len), buffer, size - 1);
 
     rpb_len += 7;
+
     if (rpb_len == FLASH_RPB_BLOCK_SIZE || is_program_end)
     {
         printf("rpb len is equal to block size. Programming...\n");
-        // TODO: Reprogram offset silinmesi
         flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         ota_block_count++;
         memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);

@@ -19,11 +19,14 @@ double calculateVRMS(double bias)
     double vrms = 0.0;
     double vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
+    double adc_lookup[8][2] = {
+        {0.00, 0}, {0.03, 3}, {0.18, 12}, {0.23, 15}, {0.27, 18}, {0.36, 24}, {0.45, 30}, {0.55, 36}};
 
     adcCapture(sample_buffer, VRMS_SAMPLE);
 
 #if DEBUG
     char deneme[40] = {0};
+
     for (uint8_t i = 0; i < 150; i++)
     {
         snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
@@ -32,14 +35,16 @@ double calculateVRMS(double bias)
         printf("%s", deneme);
         vTaskDelay(1);
     }
+
     printf("\n");
 #endif
 
     float mean = bias * conversion_factor / 1000;
 
 #if DEBUG
-    snprintf(deneme, 30, "mean: %f\n", mean);
     deneme[31] = '\0';
+
+    snprintf(deneme, 30, "mean: %f\n", mean);
     printf("%s", deneme);
 #endif
 
@@ -54,11 +59,46 @@ double calculateVRMS(double bias)
     deneme[35] = '\0';
     printf("%s", deneme);
 #endif
+
     vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-    vrms = vrms * 75;
-#if DEBUG
-    printf("vrms: %d\n", (uint8_t)vrms);
-#endif
+
+    int temp = (int)(vrms * 100);
+    vrms = (double)(temp / 100.0);
+    printf("vrms int: %d vrms double: %lf\n", (uint8_t)vrms, vrms);
+
+    double min[2] = {0};
+    double max[2] = {0};
+    bool equal_flag = false;
+
+    for (int i = 0; i < 8; i++)
+    {
+        if (adc_lookup[i][0] >= vrms)
+        {
+            if (adc_lookup[i][0] == vrms)
+            {
+                equal_flag = true;
+                vrms = adc_lookup[i][1];
+            }
+
+            max[0] = adc_lookup[i][0];
+            max[1] = adc_lookup[i][1];
+            break;
+        }
+        else
+        {
+            min[0] = adc_lookup[i][0];
+            min[1] = adc_lookup[i][1];
+        }
+    }
+
+    if (!equal_flag)
+    {
+        double bevel = (max[1] - min[1]) / (max[0] - min[0]);
+        vrms = vrms * bevel;
+    }
+
+    printf("max: %lf\tmin: %lf\n", max[1], min[1]);
+    printf("vrms int: %d vrms double: %lf\n", (uint8_t)vrms, vrms);
 
     return vrms;
 }
