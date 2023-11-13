@@ -24,42 +24,69 @@
 // this is the count of total records can be kept in a flash
 #define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
 
-#define MD5_DIGEST_LENGTH 16
 
 // UART DEFINES
+
+// MD5 checksum length
+#define MD5_DIGEST_LENGTH 16
+// This is the required number for the watchdog timer.
 #define ENTRY_MAGIC 0xb105f00d
-#define UART0_ID uart0 // UART0 for RS485
+// UART ID for communication
+#define UART0_ID uart0
+// Baud Rate for UART. 300 bits per second.
 #define BAUD_RATE 300
+// Those are TX (Transmit) and RX (Receiver) pins for UART
 #define UART0_TX_PIN 0
 #define UART0_RX_PIN 1
+// Data format to send UART includes 7 data bit (ASCII)
 #define DATA_BITS 7
+// 1 Stop bit for transfer format
 #define STOP_BITS 1
+// Even parity bit for transfer format (Check 1's in data)
 #define PARITY UART_PARITY_EVEN
+// UART Task priority for the FreeRTOS Kernel
 #define UART_TASK_PRIORITY 3
+// Stack size for UART Task
 #define UART_TASK_STACK_SIZE (1024 * 3)
+// Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 
-// RESET PIN DEFINE
+// RESET REFINES
+
+// Reset Pin Select
 #define RESET_PULSE_PIN 2
+// Standby Time for the Task
 #define INTERVAL_MS 60000
 
 // ADC DEFINES
+
+// samples to collect from ADC Pin
 #define VRMS_SAMPLE 500
+// VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 15
-#define VRMS_SAMPLING_PERIOD 60000
+// 
 #define CLOCK_DIV 4 * 9600
+// ADC Voltage Pin
 #define ADC_READ_PIN 26
+// ADC BIAS Voltage Pin
 #define ADC_BIAS_PIN 27
+// ADC Voltage Input
 #define ADC_SELECT_INPUT 0
+// ADC BIAS Input
 #define ADC_BIAS_INPUT 1
-#define DEBUG 1
+// Debugs
+#define DEBUG 0
+// BIAS Sample count
 #define BIAS_SAMPLE 100
 
 // RTC DEFINES
+
 #define PT7C4338_REG_SECONDS 0x00
-#define RTC_SET_PERIOD_MIN 10
+// I2C Port Select
 #define I2C_PORT i2c0
+// I2C Address
 #define I2C_ADDRESS 0x68
+// SDA and SCL pins for I2C
 #define RTC_I2C_SDA_PIN 20
 #define RTC_I2C_SCL_PIN 21
 

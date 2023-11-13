@@ -40,6 +40,7 @@ void vUARTTask(void *pvParameters)
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
+    char *st_chr_msg;
 
     // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
@@ -108,8 +109,8 @@ void vUARTTask(void *pvParameters)
                     // This is the Initial state in device. In this state, modem and device will handshake.
                     case Greeting:
                         // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
-                        char *st_chr_msg = strchr(rx_buffer, 0x2F);
-                        greetingStateHandler(ptr, rx_buffer_len - ((uint8_t *)st_chr_msg - rx_buffer));
+                        st_chr_msg = strchr(rx_buffer, 0x2F);
+                        greetingStateHandler(st_chr_msg, rx_buffer_len - ((uint8_t *)st_chr_msg - rx_buffer));
 
                         xTimerStart(ResetStateTimer, 0);
                         break;
@@ -205,13 +206,13 @@ void vADCReadTask()
         }
 #endif
         startTime = xTaskGetTickCount();
+        // rtc_get_datetime(&current_time);
         printf("Alarm Fired At %s\n", datetime_str);
 
         // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
         bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
-        printf("bias voltage is: %lf\n", bias_voltage);
 
         // Select the ADC input to voltage PIN and calculate VRMS value
         adc_select_input(ADC_SELECT_INPUT);
@@ -224,10 +225,10 @@ void vADCReadTask()
         // If time of this device is changed, this block will be executed. This task executes periodically and when time changes, the period of this task is going to slip.
         // This block aligns the period to beginning of the minute and if the current minute is aligned to 15.period, writes the record to flash and wait until beginning of the minute and continues.
         if (time_change_flag)
-        {   
+        {
             // Calculate waiting time to align the task to beginning of the minute.
             vaitingTime = pdMS_TO_TICKS(60000 - ((current_time.sec) * 1000));
-            
+
             // Check to current minute value.
             if (current_time.min % 15 == 0)
                 SPIWriteToFlash();
@@ -258,20 +259,20 @@ void vADCReadTask()
 
 // DEBUG TASK
 
-// void vWriteDebugTask()
-// {
-//     TickType_t startTime;
-//     const TickType_t xFrequency = pdMS_TO_TICKS(1000);
-//     startTime = xTaskGetTickCount();
+void vWriteDebugTask()
+{
+    TickType_t startTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    startTime = xTaskGetTickCount();
 
-//     while (true)
-//     {
-//         vTaskDelayUntil(&startTime, xFrequency);
-//         rtc_get_datetime(&current_time);
-//         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-//         printf("The Time is:%s \r\n", datetime_str);
-//     }
-// }
+    while (true)
+    {
+        vTaskDelayUntil(&startTime, xFrequency);
+        rtc_get_datetime(&current_time);
+        datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+        printf("The Time is:%s \r\n", datetime_str);
+    }
+}
 
 // RESET TASK: This task sends a pulse to reset PIN.
 void vResetTask()
@@ -285,14 +286,14 @@ void vResetTask()
     }
 }
 
-// TIME TASK: This task gets current time value in RP2040's RTC chip and sets the current_time value.
-bool repeating_timer_callback(struct repeating_timer *rt)
-{
-    rtc_get_datetime(&current_time);
-    datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-    printf("RTC Time is: %s \r\n", datetime_str);
-    return true;
-}
+// // // TIME TASK: This task gets current time value in RP2040's RTC chip and sets the current_time value.
+// bool repeating_timer_callback(struct repeating_timer *rt)
+// {
+//     rtc_get_datetime(&current_time);
+//     datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+//     printf("RTC Time is: %s \r\n", datetime_str);
+//     return true;
+// }
 
 void main()
 {
@@ -335,29 +336,32 @@ void main()
     // FLASH CONTENTS
     getFlashContents();
 
-    // // FLASH RECORD AREA DEBUG
-    // uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    // printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
+    // FLASH RECORD AREA DEBUG
+    uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 
-    // SERIAL NUMBER ADDITION
-    uint8_t s_number[256] = "60616161";
+    // // SERIAL NUMBER ADDITION
+    // uint8_t s_number[256] = "60616161";
 
-    flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
+    // flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
+    // flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
 
-    // RTC
+    // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
     sleep_us(64);
-    adc_remaining_time = pdMS_TO_TICKS((current_time.sec) * 1000);
+    // Align itself to beginning of the minute
+    adc_remaining_time = pdMS_TO_TICKS(((current_time.sec + 1) * 1000) - 100);
+    printf("adc remaining time is: %d\n", adc_remaining_time);
+    // // REPEATING TIMER
+    // struct repeating_timer timer;
+    // add_repeating_timer_us(1000000, repeating_timer_callback, NULL, &timer);
 
-    // REPEATING TIMER
-    struct repeating_timer timer;
-    add_repeating_timer_us(1000000, repeating_timer_callback, NULL, &timer);
+    // printf("flash total records is: %d\n", FLASH_TOTAL_RECORDS);
 
-    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 2, &xADCHandle);
+    xTaskCreate(vADCReadTask, "ADCReadTask", 256, NULL, 3, &xADCHandle);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    // xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 2, NULL);
+    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
     xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
 
     vTaskStartScheduler();

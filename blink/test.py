@@ -1,6 +1,5 @@
 #!/bin/python
 
-import struct
 import serial
 from bitarray import bitarray
 import time
@@ -130,104 +129,110 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         print("information response bcc result: ", hex(bcc))
 
         if bcc_received == bcc:
-            # initlialize the program info
-            reprogram_info = bytearray(b"!!!!")
+            # # initlialize the program info
+            # reprogram_info = bytearray(b"!!!!")
 
-            print("repogram info : ", reprogram_info)
-            # send to reporgram info message and wait for ack message
-            seri.write(reprogram_info)
-            rpg_res = bytearray(seri.readline())
-            time.sleep(0.2)
+            # print("repogram info : ", reprogram_info)
+            # # send to reporgram info message and wait for ack message
+            # seri.write(reprogram_info)
+            # rpg_res = bytearray(seri.readline())
+            # time.sleep(0.2)
 
-            if rpg_res[0] == 0x06:
-                print("ACK message received.")
+            # if rpg_res[0] == 0x06:
+            #     print("ACK message received.")
 
-                # open the file
-                file = open(
-                    "/home/yavuz/pico/freertos-pico/blink/build/blink.bin", "rb"
-                )
-                reprogram_bin = bytearray(file.read())
+            #     # open the file
+            #     file = open(
+            #         "/home/yavuz/pico/freertos-pico/blink/build/blink.bin", "rb"
+            #     )
+            #     reprogram_bin = bytearray(file.read())
 
-                # reprogram_bin = bytearray(b"\x01\x23\x45")
-                # print("\nreprogram_bin: ")
-                # printArrayHexBinary(reprogram_bin)
+            #     # reprogram_bin = bytearray(b"\x01\x23\x45")
+            #     # print("\nreprogram_bin: ")
+            #     # printArrayHexBinary(reprogram_bin)
 
-                # initialize the binary header
-                binary_header = bytearray()
+            #     # initialize the binary header
+            #     binary_header = bytearray()
 
-                # add vector address to start program to binary header
-                start_address = 0x10009100.to_bytes(8,"little")
-                binary_header = start_address + binary_header
+            #     # add vector address to start program to binary header
+            #     start_address = 0x10009100.to_bytes(8,"little")
+            #     binary_header = start_address + binary_header
 
-                # calculate the md5 checksum for the binary and add the binary header array (16 Bytes)
-                md5_csum = hashlib.md5(reprogram_bin).digest()
-                csum_bytearray = bytearray(md5_csum)
-                print("\nMD5 CHECKSUM: ", csum_bytearray)
-                binary_header = csum_bytearray + binary_header
-                print("\nbinary header after adding md5 checksum: ", binary_header)
+            #     # calculate the md5 checksum for the binary and add the binary header array (16 Bytes)
+            #     md5_csum = hashlib.md5(reprogram_bin).digest()
+            #     csum_bytearray = bytearray(md5_csum)
+            #     print("\nMD5 CHECKSUM: ", csum_bytearray)
+            #     binary_header = csum_bytearray + binary_header
+            #     print("\nbinary header after adding md5 checksum: ", binary_header)
 
-                # add the binary len to the binary header array (4 Bytes)
-                binary_len = len(reprogram_bin)
-                binary_header = (
-                    bytearray(reversed(bytearray(binary_len.to_bytes(4, "big"))))
-                    + binary_header
-                )
-                print("\nbinary len: ", binary_len)
-                print("\nbinary len as bytes:")
-                printArrayHexBinary(binary_len.to_bytes(4, "big"))
-                print(binary_header)
+            #     # add the binary len to the binary header array (4 Bytes)
+            #     binary_len = len(reprogram_bin)
+            #     binary_header = (
+            #         bytearray(reversed(bytearray(binary_len.to_bytes(4, "big"))))
+            #         + binary_header
+            #     )
+            #     print("\nbinary len: ", binary_len)
+            #     print("\nbinary len as bytes:")
+            #     printArrayHexBinary(binary_len.to_bytes(4, "big"))
+            #     print(binary_header)
 
-                # add epoch unix time value (4 Bytes)
-                current_epoch = int(time.time())
-                print("\nepoch value: ", current_epoch)
-                binary_header = (
-                    bytearray(reversed(current_epoch.to_bytes(4, "big")))
-                    + binary_header
-                )
-                print("\nbinary header after adding epoch: ", binary_header)
+            #     # add epoch unix time value (4 Bytes)
+            #     current_epoch = int(time.time())
+            #     print("\nepoch value: ", current_epoch)
+            #     binary_header = (
+            #         bytearray(reversed(current_epoch.to_bytes(4, "big")))
+            #         + binary_header
+            #     )
+            #     print("\nbinary header after adding epoch: ", binary_header)
 
-                # add padding to binary header (should be 256 bytes)
-                binary_header = binary_header + bytearray(256 - len(binary_header))
-                print("\nbinary header after padding: ")
-                printArrayHexBinary(binary_header)
-                print("\nlength of binary header", len(binary_header))
+            #     # add padding to binary header (should be 256 bytes)
+            #     binary_header = binary_header + bytearray(256 - len(binary_header))
+            #     print("\nbinary header after padding: ")
+            #     printArrayHexBinary(binary_header)
+            #     print("\nlength of binary header", len(binary_header))
 
-                # add binary header to binary file
-                reprogram_bin = binary_header + reprogram_bin
+            #     # add binary header to binary file
+            #     reprogram_bin = binary_header + reprogram_bin
 
-                # convert new binary file to 7-bit format
-                reprogram_msg2 = conversionTo7Bit(reprogram_bin)
+            #     # convert new binary file to 7-bit format
+            #     reprogram_msg2 = conversionTo7Bit(reprogram_bin)
 
-                # send file
-                print("sending data...")
-                seri.write(reprogram_msg2)
-                print("data sent.")
+            #     # send file
+            #     print("sending data...")
+            #     seri.write(reprogram_msg2)
+            #     print("data sent.")
 
-            # bcc = 0x01
+            bcc = 0x01
+            # tüketim sorgusu
+            loadFormat = bytearray(
+                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-11-12,18:00;23-11-15,23:45\x29\x03"
+            )
+            
             # # tüketim sorgusu
             # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-10-26,14:00;23-10-31,19:00\x29\x03"
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
             # )
-            # for b in loadFormat:
-            #     bcc ^= b
-            # loadFormat.append(bcc)
-            # print("data to send device: ", loadFormat)
-            # seri.write(loadFormat)
 
-            # xor_check = 0x02
-            # for i in range(500):
-            #     data = bytearray(seri.readline())
-            #     if len(data) == 0:
-            #         break
-            #     print(data)
-            #     if len(data) != 3:
-            #         for b in data:
-            #             xor_check ^= b
-            #     else:
-            #         xor_check ^= data[0]
-            #         xor_check ^= data[1]
-            #         print("xor check:", hex(xor_check))
-            #         print(xor_check)
+            for b in loadFormat:
+                bcc ^= b
+            loadFormat.append(bcc)
+            print("data to send device: ", loadFormat)
+            seri.write(loadFormat)
+
+            xor_check = 0x02
+            for i in range(500):
+                data = bytearray(seri.readline())
+                if len(data) == 0:
+                    break
+                print(data)
+                if len(data) != 3:
+                    for b in data:
+                        xor_check ^= b
+                else:
+                    xor_check ^= data[0]
+                    xor_check ^= data[1]
+                    print("xor check:", hex(xor_check))
+                    print(xor_check)
 
             # loadFormat2 = bytearray(b'\x01\x52\x32\x02\x50\x2E\x30\x31\x282308102315;2308110100\x29\x03')
             # bcc2= 0x01
@@ -240,7 +245,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             #     print(seri.readline())
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2816:43:00\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2808:44:00\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
@@ -269,7 +274,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 
             # bcc_date = 0x01
             # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-10-26\x29\x03"
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-11-13\x29\x03"
             # )
             # for b in dateSet:
             #     bcc_date ^= b
