@@ -65,6 +65,8 @@ uint8_t rx_buffer_len = 0;
 uint8_t reading_state_start_time[14] = {0};
 // this buffer stores end time for load profile data
 uint8_t reading_state_end_time[14] = {0};
+// this is a flag that controls if password is correct
+bool password_correct_flag = false;
 
 // SPI VARIABLES
 

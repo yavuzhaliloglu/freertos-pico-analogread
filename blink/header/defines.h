@@ -5,6 +5,7 @@
 
 // this is the start offset of the program
 #define FLASH_PROGRAM_OFFSET 36 * 1024
+// this is the size of reprogram area
 #define FLASH_PROGRAM_SIZE 220 * 1024
 // this is the start offset of sector information that load profile records will written
 #define FLASH_SECTOR_OFFSET 512 * 1024
@@ -75,7 +76,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // Debugs
-#define DEBUG 0
+#define DEBUG 1
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 

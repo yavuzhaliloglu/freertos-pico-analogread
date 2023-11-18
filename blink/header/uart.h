@@ -1,12 +1,6 @@
 #ifndef UART_H
 #define UART_H
 
-#include "defines.h"
-#include "variables.h"
-#include "bcc.h"
-
-// UART FUNCTIONS
-
 // UART Receiver function
 void UARTReceive()
 {
@@ -62,35 +56,65 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     if (!(bccControl(data_buffer, size)))
     {
 #if DEBUG
-        printf("bcc control error.");
+        printf("CHECKLISTENINGDATA: bcc control error.\n");
 #endif
         return DataError;
     }
 
     // Password Control ([SOH]P1[STX])
     if (strncmp(data_buffer, password, 4) == 0)
+    {
+#if DEBUG
+        printf("CHECKLISTENINGDATA: Password state is accepted in checklisteningdata\n");
+#endif
         return Password;
+    }
 
     // Reading Control ([SOH]R2[STX]) or Writing Control ([SOH]W2[STX])
     if (strncmp(data_buffer, reading_control, 4) == 0 || strncmp(data_buffer, writing_control, 4) == 0)
     {
+#if DEBUG
+        printf("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
+#endif
         // Reading Control (P.01)
         if (strstr(data_buffer, reading_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Reading state is accepted in checklisteningdata\n");
+#endif
             return Reading;
+        }
 
         // Time Set Control (0.9.1)
         if (strstr(data_buffer, timeset_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
+#endif
             return TimeSet;
+        }
 
         // Date Set Control (0.9.2)
         if (strstr(data_buffer, dateset_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
+#endif
             return DateSet;
+        }
 
         // Production Date Control (96.1.3)
         if (strstr(data_buffer, production_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
+#endif
             return ProductionInfo;
+        }
     }
-
+#if DEBUG
+    printf("CHECKLISTENINGDATA: dataerror state is accepted in checklisteningdata\n");
+#endif
     return DataError;
 }
 
@@ -123,27 +147,33 @@ void parseReadingData(uint8_t *buffer)
             }
 
             // Delete the characters from start date array
-            deleteChar(reading_state_start_time, strlen(reading_state_start_time), '-');
-            deleteChar(reading_state_start_time, strlen(reading_state_start_time), ',');
-            deleteChar(reading_state_start_time, strlen(reading_state_start_time), ':');
+            if (rx_buffer_len == 41)
+            {
+                deleteChar(reading_state_start_time, strlen(reading_state_start_time), '-');
+                deleteChar(reading_state_start_time, strlen(reading_state_start_time), ',');
+                deleteChar(reading_state_start_time, strlen(reading_state_start_time), ':');
+            }
 
             // add end time to array
             for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
             {
                 reading_state_end_time[l - (k + 1)] = buffer[l];
             }
-
-            // Delete the characters from end date array
-            deleteChar(reading_state_end_time, strlen(reading_state_end_time), '-');
-            deleteChar(reading_state_end_time, strlen(reading_state_end_time), ',');
-            deleteChar(reading_state_end_time, strlen(reading_state_end_time), ':');
+            if (rx_buffer_len == 41)
+            {
+                // Delete the characters from end date array
+                deleteChar(reading_state_end_time, strlen(reading_state_end_time), '-');
+                deleteChar(reading_state_end_time, strlen(reading_state_end_time), ',');
+                deleteChar(reading_state_end_time, strlen(reading_state_end_time), ':');
+            }
 
             break;
         }
     }
-
-    printf("parsed start time: %s\n",reading_state_start_time);
-    printf("parsed end time: %s\n",reading_state_end_time);
+#if DEBUG
+    printf("PARSEREADINGDATA: parsed start time: %s\n", reading_state_start_time);
+    printf("PARSEREADINGDATA: parsed end time: %s\n", reading_state_end_time);
+#endif
 }
 
 // This function gets the baud rate number like 1,2,3,4,5
@@ -212,19 +242,18 @@ void __not_in_flash_func(rebootDevice)()
     calculateMD5(program, program_len, md5_local);
 
     // check if MD5 is true and program's epochs. If epoch is bigger it means the program is newer
-    if ((strncmp(md5_offset, md5_local, 16) == 0) && (epoch_new > epoch_current))
+    if (!(strncmp(md5_offset, md5_local, 16) == 0) || !(epoch_new > epoch_current))
     {
-        printf("md5 check is true and new program's epoch is bigger.\n");
-        hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-        watchdog_hw->scratch[5] = ENTRY_MAGIC;
-        watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
-        watchdog_reboot(0, 0, 0);
-    }
-    else
-    {
-        printf("md5 check is false or new program's epoch is smaller or equal.\n");
+#if DEBUG
+        printf("REBOOTDEVICE: md5 check is false or new program's epoch is smaller or equal.\n");
+#endif
         flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
     }
+
+    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+    watchdog_hw->scratch[5] = ENTRY_MAGIC;
+    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+    watchdog_reboot(0, 0, 0);
 }
 
 // This function resets rx_buffer content
@@ -261,50 +290,72 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
     bool greeting_head_check = strncmp(greeting_head, buffer, 2) == 0 ? true : false;
     bool greeting_head_new_check = strncmp(greeting_head_new, buffer, 5) == 0 ? true : false;
     bool greeting_tail_check = strncmp(greeting_tail, buffer_tail, 3) == 0 ? true : false;
+    uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+    char greeting_uart_buffer[20] = {0};
 
     // check greeting head, greeting head new strings and greeting tail. If these checks are true, the message format is true and this block will be executed
     if ((greeting_head_check || greeting_head_new_check) && greeting_tail_check)
     {
 #if DEBUG
-        printf("greeting entered.\n");
+        printf("GREETINGSTATEHANDLER: greeting default control passed.\n");
 #endif
         // if greeting head does not include [ALP] characters, then serial number beginning offset is just after 0x3F character
         if (greeting_head_check)
             serial_num = strchr(buffer, 0x3F) + 1;
 
-        // if greeting head includes ALP characters, then serial number beginning offset is just after 0x50 character
+        // if greeting head includes [ALP] characters, then serial number beginning offset is just after 0x50 character
         if (greeting_head_new_check)
             serial_num = strchr(buffer, 0x50) + 1;
 
-        // is serial num 8 character and is it the correct serial number
-        if (strncmp(serial_num, serial_number, 8) == 0 && (buffer_tail - serial_num == 8))
+        if (serial_num[0] != 0x21)
         {
-            uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
-            char greeting_uart_buffer[21] = {0};
+#if DEBUG
+            printf("GREETINGSTATEHANDLER: request came with serial number.\n");
+#endif
+            // is serial num 8 character and is it the correct serial number
+            if (strncmp(serial_num, serial_number, 8) == 0 && (buffer_tail - serial_num == 8))
+            {
+#if DEBUG
+                printf("GREETINGSTATEHANDLER: serial number is true.\n");
+#endif
+                // send handshake message
+                snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+                uart_puts(UART0_ID, greeting_uart_buffer);
 
+                state = Setting;
+#if DEBUG
+                printf("GREETINGSTATEHANDLER: handshake message sent.\n");
+#endif
+            }
+            // if the message is not correct, do nothing
+            else
+            {
+#if DEBUG
+                printf("GREETINGSTATEHANDLER: serial number is false.\n");
+#endif
+                return;
+            }
+        }
+        else
+        {
+#if DEBUG
+            printf("GREETINGSTATEHANDLER: request came without serial number.\n");
+#endif
             // send handshake message
-            snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
+            snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
             uart_puts(UART0_ID, greeting_uart_buffer);
 
             state = Setting;
-        }
-        // if the message is not correct, do nothing
-        else
-            return;
-
 #if DEBUG
-        printf("state is setting.\n");
+            printf("GREETINGSTATEHANDLER: handshake message sent.\n");
 #endif
+        }
     }
 }
 
 // This function handles in Setting State. It sets the baud rate and if the message is requested to readout data, it gives readout message
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
-#if DEBUG
-    printf("setting state entered.\n");
-#endif
-
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
     uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
     uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
@@ -314,9 +365,8 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     if ((strncmp(buffer, default_control, 2) == 0) && (size == 6))
     {
 #if DEBUG
-        printf("default entered.\n");
+        printf("SETTINGSTATEHANDLER: default control is passed.\n");
 #endif
-
         uint8_t modem_baud_rate;
         uint8_t i;
         uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
@@ -327,7 +377,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             if (buffer[i] == '0')
             {
                 modem_baud_rate = buffer[i + 1] - '0';
-
+#if DEBUG
+                printf("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
+#endif
                 // if modem's baud rate bigger than 5 or smaller than 0, it means modem's baud rate not
                 if (modem_baud_rate > 5 || modem_baud_rate < 0)
                 {
@@ -336,12 +388,15 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
                 }
                 if (modem_baud_rate > max_baud_rate)
                 {
+#if DEBUG
+                    printf("SETTINGSTATEHANDLER: modem's baud rate is not acceptable value.\n");
+#endif
                     uart_putc(UART0_ID, 0x15);
                 }
                 else
                 {
 #if DEBUG
-                    printf("modem baud rate = %d\n", modem_baud_rate);
+                    printf("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
 #endif
                     setProgramBaudRate(modem_baud_rate);
                 }
@@ -350,49 +405,49 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         }
         if (i == size)
         {
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: no baud rate value.\n");
+#endif
             uart_putc(UART0_ID, 0x15);
         }
 
-        // Load Profile ([ACK]0Z1[CR][LF])
+        // Load Profile ([ACK]0Z1[CR][LF]) -> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF]
         if (strncmp(load_profile, (buffer + 3), 3) == 0)
         {
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: programming mode accepted.\n");
+#endif
             // Generate the message to send UART
             uint8_t ack_buff[17] = {0};
             snprintf(ack_buff, 16, "%cP0%c(%s)%c", 0x01, 0x02, serial_number, 0x03);
             // Set BCC to add the message
-            setBCC(ack_buff, 16, 0x01);
-
+            setBCC(ack_buff, 15, 0x01);
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: ack message to send:\n");
+            printBufferHex(ack_buff, 17);
+            printf("\n");
+#endif
             // SEND Message
             uart_puts(UART0_ID, ack_buff);
-#if DEBUG
-            printf("ack sent.\n");
-            printf("state is listening.\n");
-#endif
+
             // Change state
             state = Listening;
         }
 
-        // Read Out ([ACK]0Z0[CR][LF])
+        // Read Out ([ACK]0Z0[CR][LF]) -> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF]
         if (strncmp(meter_read, (buffer + 3), 3) == 0)
         {
 #if DEBUG
-            printf("meter read entered.\n");
+            printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[55] = {0};
-            snprintf(mread_data_buff, 55, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n!%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0X03);
-            // Generate a BCC and add to end of the message
-            uint8_t bcc = bccCreate(mread_data_buff, 55, 0x02);
-            mread_data_buff[54] = bcc;
-
+            uint8_t mread_data_buff[58] = {0};
+            snprintf(mread_data_buff, 57, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0x03);
+            setBCC(mread_data_buff, 56, 0x02);
 #if DEBUG
-            for (int i = 0; i < 55; i++)
-            {
-                printf("%02X ", mread_data_buff[i]);
-                if (i % 18 == 0 && i != 0)
-                    printf("\n");
-                vTaskDelay(1);
-            }
+            printf("SETTINGSTATEHANDLER: readout message to send:\n");
+            printBufferHex(mread_data_buff, 58);
+            printf("\n");
 #endif
             // Send the readout data
             uart_puts(UART0_ID, mread_data_buff);
@@ -416,7 +471,7 @@ void setTimeFromUART(uint8_t *buffer)
 
     // copy time data to buffer and delete the ":" character. First two characters of the array is hour info, next 2 character is minute info, last 2 character is the second info. Also there are two ":" characters to seperate informations.
     strncpy(time_buffer, start_ptr, end_ptr - start_ptr);
-    deleteChar(time_buffer, strlen(time_buffer), ':');
+    // deleteChar(time_buffer, strlen(time_buffer), ':');
 
     // set hour,min and sec variables to change time.
     hour = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
@@ -448,7 +503,7 @@ void setDateFromUART(uint8_t *buffer)
 
     // copy date data to buffer and delete the "-" character. First two characters of the array is year info, next 2 character is month info, last 2 character is the day info. Also there are two "-" characters to seperate informations.
     strncpy(date_buffer, start_ptr, end_ptr - start_ptr);
-    deleteChar(date_buffer, strlen(date_buffer), '-');
+    // deleteChar(date_buffer, strlen(date_buffer), '-');
 
     // set year,month and day variables to change date.
     year = (date_buffer[0] - '0') * 10 + (date_buffer[1] - '0');
@@ -464,7 +519,7 @@ void setDateFromUART(uint8_t *buffer)
 
 //  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
-{   
+{
     // message formats like password request, reprogram request, reading (load profile) request etc.
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
@@ -478,6 +533,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
+    uint8_t reading_len2 = 33;
     uint8_t reprogram_len = 4;
     uint8_t password_len = 16;
     uint8_t production_len = 14;
@@ -485,31 +541,63 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 
     // controls for the message
     if ((len == password_len) && (strncmp(buffer, password, 4) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is password request.\n");
+#endif
         return true;
+    }
     if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is reprogram request.\n");
+#endif
         return true;
-    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
+    }
+    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)) || ((len == reading_len2) && (strncmp(buffer, reading, 8) == 0) && (strchr(buffer, 0x2D) == NULL)))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
+#endif
         return true;
+    }
     if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is time change request.\n");
+#endif
         return true;
+    }
     if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is date change request.\n");
+#endif
         return true;
+    }
     if ((len == production_len) && (strncmp(buffer, production, 10) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is production info request.\n");
+#endif
         return true;
+    }
 
     return false;
 }
 
 // This function generates a product,on info message and sends it to UART
 void sendProductionInfo()
-{   
+{
     // initialize the buffer and get the current time
     char production_obis[22] = {0};
 
     // generate the message and add BCC to the message
     snprintf(production_obis, 21, "%c96.1.3(23-10-05)\r\n%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
     setBCC(production_obis, 21, 0x02);
-
+#if DEBUG
+    printf("SENDPRODUCTIONINFO: production info message to send: %s.\n", production_obis);
+#endif
     // send the message to UART
     uart_puts(UART0_ID, production_obis);
 }
@@ -521,28 +609,46 @@ void passwordHandler(uint8_t *buffer, uint8_t len)
     ptr++;
 
     if (strncmp(ptr, DEVICE_PASSWORD, 8) == 0)
+    {
         uart_putc(UART0_ID, 0x06);
+        password_correct_flag = true;
+    }
     else
         uart_putc(UART0_ID, 0x15);
 }
 
 // This functiın handles to request for reprogramming
 void ReProgramHandler(uint8_t *buffer, uint8_t len)
-{   
+{
     // send ACK message to UART
     uart_putc(UART0_ID, 0x06);
+#if DEBUG
+    printf("REPROGRAMHANDLER: ACK send from reprogram handler.\n");
+#endif
     // change the state to reprogram
     state = WriteProgram;
+#if DEBUG
+    printf("REPROGRAMHANDLER: state changed from reprogram handler.\n");
+#endif
     // delete ADCRead Task. This task also reaches flash so due to prevent conflict, this task is deleted
     vTaskDelete(xADCHandle);
+#if DEBUG
+    printf("REPROGRAMHANDLER: adcread task deleted from reprogram handler.\n");
+#endif
     // delete the reprogram area to write new program
     flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+#if DEBUG
+    printf("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
+#endif
     return;
 }
 
 // This function handles to reboot device. This function executes when there is no coming character in 5 second in WriteProgram state.
 void RebootHandler()
-{   
+{
+#if DEBUG
+    printf("REBOOTHANDLER: reboot Handler entered.\n");
+#endif
     // if there is any content in buffers, is_program_end flag is set
     if ((rpb_len > 0) || (data_cnt > 0))
         is_program_end = true;
