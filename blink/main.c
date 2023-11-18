@@ -290,6 +290,9 @@ void vADCReadTask()
 #if DEBUG
             printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
 #endif
+            if (vrms_buffer_count > 15)
+                vrms_buffer_count = 15;
+
             vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
 #if DEBUG
             printf("ADC READ TASK: calculated VRMS values.\n");
@@ -299,7 +302,7 @@ void vADCReadTask()
 #if DEBUG
             printf("ADC READ TASK: writing flash memory process is completed.\n");
 #endif
-            memset(vrms_buffer, 0, 15);
+            memset(vrms_buffer, 0, VRMS_BUFFER_SIZE);
             vrms_buffer_count = 0;
 #if DEBUG
             printf("ADC READ TASK: buffer content is deleted\n");

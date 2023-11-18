@@ -19,7 +19,7 @@ seri = serial.Serial(
 
 md5_hash = hashlib.md5()
 
-meeting_message = bytearray(b"/?64616161!\r\n")
+meeting_message = bytearray(b"/?60616161!\r\n")
 seri.write(meeting_message)
 time.sleep(0.25)
 meeting_response = bytearray(seri.readline())
@@ -33,7 +33,7 @@ mbr_int = int(mbr_str)
 baud_rates = [300, 600, 1200, 2400, 4800, 9600]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
-    information_message = bytearray(b"\x0601\r\n")
+    information_message = bytearray(b"\x0606\r\n")
     information_message[2:2] = max_baud_rate
     print(information_message)
 
@@ -72,17 +72,17 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         print("information response bcc result: ", hex(bcc))
 
         if bcc_received == bcc:
+            # # bcc = 0x01
+            # # # tüketim sorgusu
+            # # loadFormat = bytearray(
+            # #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x282311160000;2311170000\x29\x03"
+            # # )
+            
             bcc = 0x01
             # tüketim sorgusu
             loadFormat = bytearray(
-                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x282311160000;2311170000\x29\x03"
+                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
             )
-            
-            # bcc = 0x01
-            # # tüketim sorgusu
-            # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
-            # )
 
             for b in loadFormat:
                 bcc ^= b
@@ -124,7 +124,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(bytearray(seri.readline()))
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x28151030\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x28101800\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
@@ -144,7 +144,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 
             # bcc_date = 0x01
             # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x28231114\x29\x03"
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x28231118\x29\x03"
             # )
             # for b in dateSet:
             #     bcc_date ^= b

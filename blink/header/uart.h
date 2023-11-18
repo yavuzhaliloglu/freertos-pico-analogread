@@ -34,6 +34,43 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
+void sendFlashContents()
+{
+    uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
+    uint8_t *flash_serial_number_content = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+    uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    int offset;
+
+    char debug_uart_buffer[64] = {0};
+    sprintf(debug_uart_buffer, "sector content is: %d\r\n\0", flash_sector_content[0]);
+    uart_puts(UART0_ID, debug_uart_buffer);
+
+    sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", flash_serial_number_content);
+    uart_puts(UART0_ID, debug_uart_buffer);
+
+    for (offset = 0;; offset += 16)
+    {
+        if (flash_records[offset] == 0xFF)
+            break;
+
+        char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
+        char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
+        char day[3] = {flash_records[offset + 4], flash_records[offset + 5], 0x00};
+        char hour[3] = {flash_records[offset + 6], flash_records[offset + 7], 0x00};
+        char minute[3] = {flash_records[offset + 8], flash_records[offset + 9], 0x00};
+        char sec[3] = {flash_records[offset + 10], flash_records[offset + 11], 0x00};
+        uint8_t max = flash_records[offset + 12];
+        uint8_t min = flash_records[offset + 13];
+        uint8_t mean = flash_records[offset + 14];
+
+        sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s:%s;%d,%d,%d\r\n\0", year, month, day, hour, minute, sec, max, min, mean);
+        uart_puts(UART0_ID, debug_uart_buffer);
+    }
+
+    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes\r\n\0", offset, PICO_FLASH_SIZE_BYTES);
+    uart_puts(UART0_ID, debug_uart_buffer);
+}
+
 // This function check the data which comes when State is Listening, and compares the message to defined strings, and returns a ListeningState value to process the request
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
@@ -359,6 +396,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
     uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
     uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
+    uint8_t debug_mode[3] = {0x36, 0x0D, 0x0A};
     uint8_t default_control[2] = {0x06, 0x30};
 
     // if default control is true and size of message is 6, it means the message format is true.
@@ -451,6 +489,15 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 #endif
             // Send the readout data
             uart_puts(UART0_ID, mread_data_buff);
+        }
+
+        // Debug Mode ([ACK]0Z6[CR][LF])-> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF] OR 6[CR][LF]
+        if (strncmp(debug_mode, (buffer + 3), 3) == 0)
+        {
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: debug mode accepted.\n");
+#endif
+            sendFlashContents();
         }
     }
 }
