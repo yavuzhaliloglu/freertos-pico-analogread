@@ -9,6 +9,9 @@
 uint8_t vrms_max = 0;
 uint8_t vrms_min = 0;
 uint8_t vrms_mean = 0;
+uint8_t vrms_max_dec = 0;
+uint8_t vrms_min_dec = 0;
+uint8_t vrms_mean_dec = 0;
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
 uint16_t sample_buffer[VRMS_SAMPLE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
@@ -84,11 +87,12 @@ struct FlashData
     char day[2];
     char hour[2];
     char min[2];
-    char sec[2];
     uint8_t max_volt;
+    uint8_t max_volt_dec;
     uint8_t min_volt;
+    uint8_t min_volt_dec;
     uint8_t mean_volt;
-    uint8_t eod_character;
+    uint8_t mean_volt_dec;
 };
 // This is a buffer that keeps record contents. When a record should be written in flash, current sector content is copied to this buffer, new record adds after last record, and this buffer is written to flash again.
 struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};

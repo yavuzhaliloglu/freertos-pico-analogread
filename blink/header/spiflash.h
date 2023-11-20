@@ -110,13 +110,22 @@ void setDateToCharArray(int value, char *array)
     }
 }
 
-// This function gets a buffer which includes VRMS values, and calculate the max, min and mean values of this buffer and sets the variables.
-void vrmsSetMinMaxMean(uint8_t *buffer, uint8_t size)
+uint8_t doubleFloatingToUint8t(double double_value)
 {
-    uint8_t buffer_max = buffer[0];
-    uint8_t buffer_min = buffer[0];
-    uint16_t buffer_sum = buffer[0];
-    uint8_t buffer_size = size;
+    uint8_t floating_value = (double_value - floor(double_value)) * 10;
+#if DEBUG
+    printf("double value after subtraction: %lf\n", double_value);
+    printf("floating value after floor and uint8_t: %d\n\n", floating_value);
+#endif
+    return floating_value;
+}
+
+// This function gets a buffer which includes VRMS values, and calculate the max, min and mean values of this buffer and sets the variables.
+void vrmsSetMinMaxMean(double *buffer, uint8_t size)
+{
+    double buffer_max = buffer[0];
+    double buffer_min = buffer[0];
+    double buffer_sum = buffer[0];
 
     for (uint8_t i = 1; i < size; i++)
     {
@@ -129,9 +138,18 @@ void vrmsSetMinMaxMean(uint8_t *buffer, uint8_t size)
         buffer_sum += buffer[i];
     }
 
-    vrms_max = buffer_max;
-    vrms_min = buffer_min;
-    vrms_mean = (uint8_t)(buffer_sum / buffer_size);
+    vrms_max = (uint8_t)floor(buffer_max);
+    vrms_min = (uint8_t)floor(buffer_min);
+    vrms_mean = (uint8_t)(buffer_sum / size);
+    vrms_max_dec = doubleFloatingToUint8t(buffer_max);
+    vrms_min_dec = doubleFloatingToUint8t(buffer_min);
+    vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
+
+#if DEBUG
+    printf("buffer max: %lf,vrms_max: %d,vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
+    printf("buffer min: %lf,vrms_min: %d,vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
+    printf("buffer mean: %lf,vrms_mean: %d,vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
+#endif
 }
 
 // This function sets the current time values which are 16 bytes total and calculated VRMS values to flash
@@ -148,16 +166,20 @@ void setFlashData()
     setDateToCharArray(current_time.day, data.day);
     setDateToCharArray(current_time.hour, data.hour);
     setDateToCharArray(current_time.min, data.min);
-    setDateToCharArray(current_time.sec, data.sec);
     data.max_volt = vrms_max;
     data.min_volt = vrms_min;
     data.mean_volt = vrms_mean;
-    data.eod_character = 0x04;
+    data.max_volt_dec = vrms_max_dec;
+    data.min_volt_dec = vrms_min_dec;
+    data.mean_volt_dec = vrms_mean_dec;
 
     // reset VRMS values
     vrms_max = 0;
     vrms_min = 0;
     vrms_mean = 0;
+    vrms_max_dec = 0;
+    vrms_min_dec = 0;
+    vrms_mean_dec = 0;
 
     // find the last offset of flash records and write current values to last offset of flash_data buffer
     for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
@@ -165,7 +187,7 @@ void setFlashData()
         if (flash_target_contents[offset] == '\0' || flash_target_contents[offset] == 0xff)
         {
 #if DEBUG
-            if(offset == 0)
+            if (offset == 0)
                 printf("SETFLASHDATA: last record is not found.\n");
             else
                 printf("SETFLASHDATA: last record is in %d offset\n", offset - 16);
@@ -346,7 +368,7 @@ void searchDataInFlash()
     datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    char load_profile_line[32] = {0};
+    char load_profile_line[42] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     uint8_t *date_start = strchr(rx_buffer, '(');
     uint8_t *date_end = strchr(rx_buffer, ')');
@@ -399,27 +421,30 @@ void searchDataInFlash()
             char day[3] = {flash_start_content[start_addr + 4], flash_start_content[start_addr + 5], 0x00};
             char hour[3] = {flash_start_content[start_addr + 6], flash_start_content[start_addr + 7], 0x00};
             char minute[3] = {flash_start_content[start_addr + 8], flash_start_content[start_addr + 9], 0x00};
-            uint8_t min = flash_start_content[start_addr + 13];
-            uint8_t max = flash_start_content[start_addr + 12];
+            uint8_t max = flash_start_content[start_addr + 10];
+            uint8_t max_dec = flash_start_content[start_addr + 11];
+            uint8_t min = flash_start_content[start_addr + 12];
+            uint8_t min_dec = flash_start_content[start_addr + 13];
             uint8_t mean = flash_start_content[start_addr + 14];
+            uint8_t mean_dec = flash_start_content[start_addr + 15];
 
             // if start address equals to end address, it means there is just one record to send or this record is the last record to send
             if (start_addr == end_addr)
             {
                 // if this is the first record, it means there is just one record to send so thsi string include STX and BCC together
                 if (!first_flag)
-                {
-                    snprintf(load_profile_line, 35, "%c(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, max, mean, 0x03);
+                { // 17               19                  4
+                    snprintf(load_profile_line, 41, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
                     first_flag = 1;
-                    xor_result = bccGenerate(load_profile_line, 36, xor_result);
-                    load_profile_line[34] = xor_result;
+                    xor_result = bccGenerate(load_profile_line, 40, xor_result);
+                    load_profile_line[40] = xor_result;
                 }
                 // if this is the not first record, it measn this is the last record to send
                 else
-                {
-                    snprintf(load_profile_line, 34, "(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n\r%c", year, month, day, hour, minute, min, max, mean, 0x03);
-                    xor_result = bccGenerate(load_profile_line, 36, xor_result);
-                    load_profile_line[33] = xor_result;
+                { // 16               19               4
+                    snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
+                    xor_result = bccGenerate(load_profile_line, 39, xor_result);
+                    load_profile_line[39] = xor_result;
                 }
             }
             // if start address not equals to end address, it means this is the start record or normal record
@@ -427,16 +452,16 @@ void searchDataInFlash()
             {
                 // if this record is start record, this string includes STX character
                 if (!first_flag)
-                {
-                    snprintf(load_profile_line, 33, "%c(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n", 0x02, year, month, day, hour, minute, min, max, mean);
-                    xor_result = bccGenerate(load_profile_line, 33, xor_result);
+                { // 17               19               2
+                    snprintf(load_profile_line, 39, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
+                    xor_result = bccGenerate(load_profile_line, 38, xor_result);
                     first_flag = 1;
                 }
                 // if this is not start record, this is the normal record
                 else
-                {
-                    snprintf(load_profile_line, 33, "(%s-%s-%s,%s:%s)(%03d,%03d,%03d)\r\n", year, month, day, hour, minute, min, max, mean);
-                    xor_result = bccGenerate(load_profile_line, 33, xor_result);
+                { // 16                   19               2
+                    snprintf(load_profile_line, 38, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
+                    xor_result = bccGenerate(load_profile_line, 37, xor_result);
                 }
             }
 #if DEBUG

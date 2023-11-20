@@ -235,7 +235,7 @@ void vADCReadTask()
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(60000);
     static uint8_t vrms_buffer_count = 0;
-    uint8_t vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+    double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
     double vrms = 0.0;
     TickType_t vaitingTime = 0;
     double bias_voltage;
@@ -263,7 +263,6 @@ void vADCReadTask()
         }
 
         startTime = xTaskGetTickCount();
-        // rtc_get_datetime(&current_time);
 #if DEBUG
         printf("ADC READ TASK: adc task entered at %s.\n", datetime_str);
 #endif
@@ -280,15 +279,16 @@ void vADCReadTask()
         printf("ADC READ TASK: calcualted vrms is: %lf\n", vrms);
 #endif
         // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
-        vrms_buffer[(vrms_buffer_count++) % 15] = (uint8_t)vrms;
+        vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
         vrms = 0.0;
 #if DEBUG
         printf("ADC READ TASK: now buffer content is: \n");
-        printBufferHex(vrms_buffer, 15);
+        for (int8_t i = 0; i < vrms_buffer_count; i++)
+            printf("%lf ", vrms_buffer[i]);
         printf("\n");
 #endif
         // Write a record to the flash memory periodically
-        if ((current_time.sec < 5 && current_time.min % 15 == 0))
+        if ((current_time.sec < 5 && current_time.min % 2 == 0))
         {
 #if DEBUG
             printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
@@ -299,7 +299,7 @@ void vADCReadTask()
             vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
 #if DEBUG
             printf("ADC READ TASK: calculated VRMS values.\n");
-            printf("ADC READ TASK: vrms max is: %d,vrms min is:%d,vrms mean is: %d\n", vrms_max, vrms_min, vrms_mean);
+            printf("ADC READ TASK: vrms max is: %d,vrms min is:%d,vrms mean is: %d,vrms max dec is: %d,vrms min dec is: %d,vrms mean dec is: %d\n", vrms_max, vrms_min, vrms_mean, vrms_max_dec, vrms_min_dec, vrms_mean_dec);
 #endif
             SPIWriteToFlash();
 #if DEBUG

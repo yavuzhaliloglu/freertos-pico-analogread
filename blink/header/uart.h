@@ -395,9 +395,9 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
-    uint8_t load_profile_short[3] = {0x36, 0x0D, 0x0A};
+    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};
     uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};
-    uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
+    uint8_t readout[3] = {0x30, 0x0D, 0x0A};
     uint8_t debug_mode[3] = {0x38, 0x0D, 0x0A};
     uint8_t default_control[2] = {0x06, 0x30};
 
@@ -437,8 +437,8 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             setProgramBaudRate(modem_baud_rate);
         }
 
-        // Load Profile ([ACK]0Z1[CR][LF]) or ([ACK]0Z6[CR][LF])
-        if ((strncmp(programming_mode, (buffer + 3), 3) == 0) || strncmp(load_profile_short, (buffer + 3), 3) == 0)
+        // Load Profile ([ACK]0Z1[CR][LF])
+        if (strncmp(programming_mode, (buffer + 3), 3) == 0)
         {
 #if DEBUG
             printf("SETTINGSTATEHANDLER: programming mode accepted.\n");
@@ -460,19 +460,20 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             state = Listening;
         }
 
-        // Read Out ([ACK]0Z0[CR][LF])
-        if (strncmp(meter_read, (buffer + 3), 3) == 0)
+        // Read Out ([ACK]0Z0[CR][LF]) or ([ACK]0Z6[CR][LF])
+        if (strncmp(readout, (buffer + 3), 3) == 0 || strncmp(short_read, (buffer + 3), 3) == 0)
         {
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[58] = {0};
-            snprintf(mread_data_buff, 57, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0x03);
-            setBCC(mread_data_buff, 56, 0x02);
+            uint8_t mread_data_buff[76] = {0};
+            //                                   18                     17                      17                  22
+            snprintf(mread_data_buff, 75, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0x03);
+            setBCC(mread_data_buff, 74, 0x02);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 58);
+            printBufferHex(mread_data_buff, 76);
             printf("\n");
 #endif
             // Send the readout data

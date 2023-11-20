@@ -34,7 +34,7 @@ mbr_int = int(mbr_str)
 baud_rates = [300, 600, 1200, 2400, 4800, 9600]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
-    information_message = bytearray(b"\x0601\r\n")
+    information_message = bytearray(b"\x0600\r\n")
     # information_message[2:2] = b"6"
     information_message[2:2] = max_baud_rate
     print(information_message)
@@ -56,7 +56,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
     if information_message[3] == 0x30:
         print("entered readout mode")
 
-        for i in range(5):
+        for i in range(6):
             res = bytearray(seri.readline())
             print(res)
 
