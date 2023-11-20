@@ -27,17 +27,20 @@ double calculateVRMS(double bias)
 
 #if DEBUG
     char deneme[40] = {0};
-    for (uint8_t i = 0; i < 150; i++)
-    {
-        snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
-        deneme[21] = '\0';
-
-        printf("%s", deneme);
-        vTaskDelay(1);
-    }
-
-    printf("\n");
 #endif
+
+    // #if DEBUG
+    //     for (uint8_t i = 0; i < 150; i++)
+    //     {
+    //         snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
+    //         deneme[21] = '\0';
+
+    //         printf("%s", deneme);
+    //         vTaskDelay(1);
+    //     }
+
+    //     printf("\n");
+    // #endif
 
     float mean = bias * conversion_factor / 1000;
 

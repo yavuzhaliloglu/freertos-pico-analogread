@@ -1,4 +1,4 @@
-#include "stdio.h"
+#include <stdio.h>
 #include <time.h>
 #include <string.h>
 #include "pico/stdlib.h"
@@ -88,6 +88,9 @@ void vUARTTask(void *pvParameters)
                     writeProgramToFlash(rx_char);
                     continue;
                 }
+#if DEBUG
+                printf("%02X\n", rx_char);
+#endif
                 // CR/LF control for the message, also this is the end character control for the message
                 if (rx_char != '\n')
                 {
@@ -393,7 +396,7 @@ void main()
     // resetFlashSettings();
 
     // // SERIAL NUMBER ADDITION
-    // uint8_t s_number[256] = "64616161";
+    // uint8_t s_number[256] = "60616161";
 
     // flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
     // flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);

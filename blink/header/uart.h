@@ -66,8 +66,8 @@ void sendFlashContents()
         sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s:%s;%d,%d,%d\r\n\0", year, month, day, hour, minute, sec, max, min, mean);
         uart_puts(UART0_ID, debug_uart_buffer);
     }
-
-    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes\r\n\0", offset, PICO_FLASH_SIZE_BYTES);
+    double usage_percent = (offset / (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET)) * 100;
+    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes - %%%lf\r\n\0", offset, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET), usage_percent);
     uart_puts(UART0_ID, debug_uart_buffer);
 }
 
@@ -344,6 +344,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
         if (greeting_head_new_check)
             serial_num = strchr(buffer, 0x50) + 1;
 
+        // check if greeting message received with serial number
         if (serial_num[0] != 0x21)
         {
 #if DEBUG
@@ -356,7 +357,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
                 printf("GREETINGSTATEHANDLER: serial number is true.\n");
 #endif
                 // send handshake message
-                snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+                snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
                 uart_puts(UART0_ID, greeting_uart_buffer);
 
                 state = Setting;
@@ -379,7 +380,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
             printf("GREETINGSTATEHANDLER: request came without serial number.\n");
 #endif
             // send handshake message
-            snprintf(greeting_uart_buffer, 20, "/ALP%d<1>MAVIALPV2\r\n", program_baud_rate);
+            snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
             uart_puts(UART0_ID, greeting_uart_buffer);
 
             state = Setting;
@@ -394,9 +395,10 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
-    uint8_t load_profile[3] = {0x31, 0x0D, 0x0A};
+    uint8_t load_profile_short[3] = {0x36, 0x0D, 0x0A};
+    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};
     uint8_t meter_read[3] = {0x30, 0x0D, 0x0A};
-    uint8_t debug_mode[3] = {0x36, 0x0D, 0x0A};
+    uint8_t debug_mode[3] = {0x38, 0x0D, 0x0A};
     uint8_t default_control[2] = {0x06, 0x30};
 
     // if default control is true and size of message is 6, it means the message format is true.
@@ -405,52 +407,38 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 #if DEBUG
         printf("SETTINGSTATEHANDLER: default control is passed.\n");
 #endif
-        uint8_t modem_baud_rate;
-        uint8_t i;
         uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
+        uint8_t modem_baud_rate = buffer[2] - '0';
+#if DEBUG
+        printf("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
+#endif
 
-        for (i = 0; i < size; i++)
-        {
-            // if there is a 0 character in message, it means next character is baud rate which modem sends
-            if (buffer[i] == '0')
-            {
-                modem_baud_rate = buffer[i + 1] - '0';
-#if DEBUG
-                printf("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
-#endif
-                // if modem's baud rate bigger than 5 or smaller than 0, it means modem's baud rate not
-                if (modem_baud_rate > 5 || modem_baud_rate < 0)
-                {
-                    i = size;
-                    break;
-                }
-                if (modem_baud_rate > max_baud_rate)
-                {
-#if DEBUG
-                    printf("SETTINGSTATEHANDLER: modem's baud rate is not acceptable value.\n");
-#endif
-                    uart_putc(UART0_ID, 0x15);
-                }
-                else
-                {
-#if DEBUG
-                    printf("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
-#endif
-                    setProgramBaudRate(modem_baud_rate);
-                }
-                break;
-            }
-        }
-        if (i == size)
+        if (modem_baud_rate < 0 || modem_baud_rate > 5)
         {
 #if DEBUG
-            printf("SETTINGSTATEHANDLER: no baud rate value.\n");
+            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than 5 or smaller than 0.\n");
 #endif
             uart_putc(UART0_ID, 0x15);
+            return;
+        }
+        else if (modem_baud_rate > program_baud_rate)
+        {
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than baud rate that device can support.\n");
+#endif
+            uart_putc(UART0_ID, 0x15);
+            return;
+        }
+        else
+        {
+#if DEBUG
+            printf("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
+#endif
+            setProgramBaudRate(modem_baud_rate);
         }
 
-        // Load Profile ([ACK]0Z1[CR][LF]) -> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF]
-        if (strncmp(load_profile, (buffer + 3), 3) == 0)
+        // Load Profile ([ACK]0Z1[CR][LF]) or ([ACK]0Z6[CR][LF])
+        if ((strncmp(programming_mode, (buffer + 3), 3) == 0) || strncmp(load_profile_short, (buffer + 3), 3) == 0)
         {
 #if DEBUG
             printf("SETTINGSTATEHANDLER: programming mode accepted.\n");
@@ -472,7 +460,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             state = Listening;
         }
 
-        // Read Out ([ACK]0Z0[CR][LF]) -> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF]
+        // Read Out ([ACK]0Z0[CR][LF])
         if (strncmp(meter_read, (buffer + 3), 3) == 0)
         {
 #if DEBUG
@@ -491,7 +479,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             uart_puts(UART0_ID, mread_data_buff);
         }
 
-        // Debug Mode ([ACK]0Z6[CR][LF])-> buffer + 3 is beginning of 0[CR][LF] or 1[CR][LF] OR 6[CR][LF]
+        // Debug Mode ([ACK]0Z8[CR][LF])
         if (strncmp(debug_mode, (buffer + 3), 3) == 0)
         {
 #if DEBUG
@@ -518,7 +506,7 @@ void setTimeFromUART(uint8_t *buffer)
 
     // copy time data to buffer and delete the ":" character. First two characters of the array is hour info, next 2 character is minute info, last 2 character is the second info. Also there are two ":" characters to seperate informations.
     strncpy(time_buffer, start_ptr, end_ptr - start_ptr);
-    // deleteChar(time_buffer, strlen(time_buffer), ':');
+    deleteChar(time_buffer, strlen(time_buffer), ':');
 
     // set hour,min and sec variables to change time.
     hour = (time_buffer[0] - '0') * 10 + (time_buffer[1] - '0');
@@ -550,7 +538,7 @@ void setDateFromUART(uint8_t *buffer)
 
     // copy date data to buffer and delete the "-" character. First two characters of the array is year info, next 2 character is month info, last 2 character is the day info. Also there are two "-" characters to seperate informations.
     strncpy(date_buffer, start_ptr, end_ptr - start_ptr);
-    // deleteChar(date_buffer, strlen(date_buffer), '-');
+    deleteChar(date_buffer, strlen(date_buffer), '-');
 
     // set year,month and day variables to change date.
     year = (date_buffer[0] - '0') * 10 + (date_buffer[1] - '0');
@@ -580,7 +568,6 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
-    uint8_t reading_len2 = 33;
     uint8_t reprogram_len = 4;
     uint8_t password_len = 16;
     uint8_t production_len = 14;
@@ -601,7 +588,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 #endif
         return true;
     }
-    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)) || ((len == reading_len2) && (strncmp(buffer, reading, 8) == 0) && (strchr(buffer, 0x2D) == NULL)))
+    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
