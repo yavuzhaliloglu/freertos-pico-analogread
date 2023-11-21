@@ -1,6 +1,16 @@
 #ifndef UART_H
 #define UART_H
 
+void resetVRMSValues()
+{
+    vrms_max = 0;
+    vrms_min = 0;
+    vrms_mean = 0;
+    vrms_max_dec = 0;
+    vrms_max_dec = 0;
+    vrms_max_dec = 0;
+}
+
 // UART Receiver function
 void UARTReceive()
 {
@@ -48,10 +58,10 @@ void sendFlashContents()
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", flash_serial_number_content);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    for (offset = 0;; offset += 16)
+    for (offset = 0; offset < 1556480; offset += 16)
     {
         if (flash_records[offset] == 0xFF)
-            break;
+            continue;
 
         char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
         char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
@@ -80,6 +90,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
     uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};
+    uint8_t reading_control2[4] = {0x01, 0x52, 0x35, 0x02};
     uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};
 
     char reading_str[] = "P.01";
@@ -106,8 +117,8 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         return Password;
     }
 
-    // Reading Control ([SOH]R2[STX]) or Writing Control ([SOH]W2[STX])
-    if (strncmp(data_buffer, reading_control, 4) == 0 || strncmp(data_buffer, writing_control, 4) == 0)
+    // Reading Control ([SOH]R2[STX])([SOH]R5[STX]), or Writing Control ([SOH]W2[STX])
+    if (strncmp(data_buffer, reading_control, 4) == 0 || strncmp(data_buffer, writing_control, 4) == 0 || strncmp(data_buffer, reading_control2, 4) == 0)
     {
 #if DEBUG
         printf("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
@@ -474,13 +485,15 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[76] = {0};
-            //                                   18                     17                      17                  22
-            snprintf(mread_data_buff, 75, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, 0x03);
-            setBCC(mread_data_buff, 74, 0x02);
+            uint8_t mread_data_buff[133] = {0};
+            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+            resetVRMSValues();
+            //                                   18                     17                      17                  18            13            15                  15                  15              4
+            snprintf(mread_data_buff, 133, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n32.7.0(%03d.%d)\r\n52.7.0(%03d.%d)\r\n72.7.0(%03d.%d)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, vrms_min, vrms_min_dec, vrms_max, vrms_max_dec, vrms_mean, vrms_mean_dec, 0x03);
+            setBCC(mread_data_buff, 132, 0x02);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 76);
+            printBufferHex(mread_data_buff, 133);
             printf("\n");
 #endif
             // Send the readout data
@@ -567,6 +580,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
     uint8_t reprogram[10] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
+    uint8_t reading2[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};
     uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
     uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};
@@ -596,7 +610,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 #endif
         return true;
     }
-    if (((len == reading_len) && (strncmp(buffer, reading, 8) == 0)) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
+    if (((len == reading_len) && ((strncmp(buffer, reading, 8) == 0) || (strncmp(buffer, reading2, 8) == 0))) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");

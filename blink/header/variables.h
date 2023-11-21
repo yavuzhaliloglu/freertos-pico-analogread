@@ -21,6 +21,9 @@ TickType_t adc_remaining_time = 0;
 // this flag variable is used to detect if time is changed. If time is changed in device, that flag provides to align the task's execution time to beginning of next minute again
 volatile uint8_t time_change_flag;
 
+uint8_t vrms_buffer_count = 0;
+double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+
 // UART VARIABLES
 
 // States type keeps 4 value and these values are meaning like:

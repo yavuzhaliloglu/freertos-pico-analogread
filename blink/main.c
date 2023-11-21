@@ -233,9 +233,7 @@ void vADCReadTask()
 {
     // Set the parameters for this task.
     TickType_t startTime;
-    TickType_t xFrequency = pdMS_TO_TICKS(3000);
-    static uint8_t vrms_buffer_count = 0;
-    double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+    TickType_t xFrequency = pdMS_TO_TICKS(60000);
     double vrms = 0.0;
     TickType_t vaitingTime = 0;
     double bias_voltage;
@@ -288,7 +286,7 @@ void vADCReadTask()
         printf("\n");
 #endif
         // Write a record to the flash memory periodically
-        if ((current_time.sec < 5 && current_time.min % 2 == 0))
+        if ((current_time.sec < 5 && current_time.min % 15 == 0))
         {
 #if DEBUG
             printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");

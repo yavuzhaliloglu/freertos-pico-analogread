@@ -51,6 +51,8 @@
 #define UART_TASK_STACK_SIZE (1024 * 3)
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
+// Device software version number
+#define SOFTWARE_VERSION "V0.9"
 
 // RESET REFINES
 

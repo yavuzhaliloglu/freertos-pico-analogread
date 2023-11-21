@@ -510,7 +510,6 @@ void resetFlashSettings()
 #endif
 
     uint16_t reset_flash[256] = {0};
-    reset_flash[0] = 254;
 
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
