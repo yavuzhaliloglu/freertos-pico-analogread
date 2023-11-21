@@ -17,7 +17,7 @@
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the count of total sectors in flash expect first 512kB + 8kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
-#define FLASH_TOTAL_SECTORS 382
+#define FLASH_TOTAL_SECTORS 380
 // this is the start offset of load profile records will written
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
 // this is the size of one load profile record

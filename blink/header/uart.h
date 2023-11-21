@@ -58,12 +58,14 @@ void sendFlashContents()
         char day[3] = {flash_records[offset + 4], flash_records[offset + 5], 0x00};
         char hour[3] = {flash_records[offset + 6], flash_records[offset + 7], 0x00};
         char minute[3] = {flash_records[offset + 8], flash_records[offset + 9], 0x00};
-        char sec[3] = {flash_records[offset + 10], flash_records[offset + 11], 0x00};
-        uint8_t max = flash_records[offset + 12];
-        uint8_t min = flash_records[offset + 13];
+        uint8_t max = flash_records[offset + 10];
+        uint8_t max_dec = flash_records[offset + 11];
+        uint8_t min = flash_records[offset + 12];
+        uint8_t min_dec = flash_records[offset + 13];
         uint8_t mean = flash_records[offset + 14];
+        uint8_t mean_dec = flash_records[offset + 15];
 
-        sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s:%s;%d,%d,%d\r\n\0", year, month, day, hour, minute, sec, max, min, mean);
+        sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s;%d.%d,%d.%d,%d.%d\r\n\0", year, month, day, hour, minute, max, max_dec, min, min_dec, mean, mean_dec);
         uart_puts(UART0_ID, debug_uart_buffer);
     }
     double usage_percent = (offset / (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET)) * 100;
@@ -84,10 +86,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char timeset_str[] = "0.9.1";
     char dateset_str[] = "0.9.2";
     char production_str[] = "96.1.3";
-
-    // ReProgram Control (!!!!)
-    if (strncmp(reprogram, data_buffer, 4) == 0)
-        return ReProgram;
+    char reprogram_str[] = "!!!!";
 
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
@@ -147,6 +146,14 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
             printf("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
 #endif
             return ProductionInfo;
+        }
+        // ReProgram Control (!!!!)
+        if (strstr(data_buffer, reprogram_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
+#endif
+            return ReProgram;
         }
     }
 #if DEBUG
@@ -558,7 +565,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
-    uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
+    uint8_t reprogram[10] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
     uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
     uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
@@ -569,7 +576,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
-    uint8_t reprogram_len = 4;
+    uint8_t reprogram_len = 10;
     uint8_t password_len = 16;
     uint8_t production_len = 14;
     uint8_t reading_all_len = 13;
@@ -582,7 +589,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 #endif
         return true;
     }
-    if ((len == reprogram_len) && (strncmp(buffer, reprogram, 4) == 0))
+    if ((len == reprogram_len) && (strncmp(buffer, reprogram, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reprogram request.\n");

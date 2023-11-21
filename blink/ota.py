@@ -127,7 +127,11 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         
         if bcc_received == bcc:
             # initlialize the program info
-            reprogram_info = bytearray(b"!!!!")
+            bcc_repogram = 0x01
+            reprogram_info = bytearray(b"\x01\x57\x32\x02!!!!\x03")
+            for byte in reprogram_info:
+                bcc_repogram ^= byte
+            reprogram_info.append(bcc_repogram)
 
             print("repogram info : ", reprogram_info)
             # send to reporgram info message and wait for ack message

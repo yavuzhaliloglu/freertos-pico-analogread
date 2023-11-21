@@ -74,7 +74,7 @@ void __not_in_flash_func(getFlashContents)()
 {
     // disable interrupts and get the contents
     uint32_t ints = save_and_disable_interrupts();
-    sector_data = *(uint8_t *)flash_sector_content;
+    sector_data = *(uint16_t *)flash_sector_content;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
     // enable interrupts
@@ -84,7 +84,7 @@ void __not_in_flash_func(getFlashContents)()
 // This function writes current sector data to flash.
 void __not_in_flash_func(setSectorData)()
 {
-    uint8_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint8_t)] = {0};
+    uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
     sector_buffer[0] = sector_data;
 #if DEBUG
     printf("SETSECTORDATA: sector data which is going to be written: %d\n", sector_data);
@@ -110,8 +110,10 @@ void setDateToCharArray(int value, char *array)
     }
 }
 
+// this function converts a double value's floating value to uint8_t value.
 uint8_t doubleFloatingToUint8t(double double_value)
 {
+    // get floating value of double value and multiply it with 10, so we can get the first digit. We set that value an uint8_t value because we don't want to get rest of the floating digits.
     uint8_t floating_value = (double_value - floor(double_value)) * 10;
 #if DEBUG
     printf("double value after subtraction: %lf\n", double_value);
@@ -190,11 +192,11 @@ void setFlashData()
             if (offset == 0)
                 printf("SETFLASHDATA: last record is not found.\n");
             else
-                printf("SETFLASHDATA: last record is in %d offset\n", offset - 16);
+                printf("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
 #endif
             flash_data[offset / FLASH_RECORD_SIZE] = data;
 #if DEBUG
-            printf("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset, FLASH_SECTOR_SIZE);
+            printf("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
 #endif
             break;
         }
@@ -507,7 +509,8 @@ void resetFlashSettings()
     printf("RESETFLASHSETTINGS: resetting records anad sector values\n");
 #endif
 
-    uint8_t reset_flash[256] = {0};
+    uint16_t reset_flash[256] = {0};
+    reset_flash[0] = 254;
 
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);

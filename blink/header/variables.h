@@ -78,7 +78,7 @@ uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 // this is the serial number variable in flash
 uint8_t *serial_number = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
 // sector data variable keeps current sector to write records to flash
-static uint8_t sector_data = 0;
+static uint16_t sector_data = 0;
 // Flash data structure is used to keep different formats of data. This struct includes character variables and also uint8_t integer variables to create a record for flash.
 struct FlashData
 {

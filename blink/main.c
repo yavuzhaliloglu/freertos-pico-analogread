@@ -233,7 +233,7 @@ void vADCReadTask()
 {
     // Set the parameters for this task.
     TickType_t startTime;
-    TickType_t xFrequency = pdMS_TO_TICKS(60000);
+    TickType_t xFrequency = pdMS_TO_TICKS(3000);
     static uint8_t vrms_buffer_count = 0;
     double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
     double vrms = 0.0;
@@ -389,9 +389,6 @@ void main()
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
-    // FLASH CONTENTS
-    getFlashContents();
-
     // // Reset Record Settings
     // resetFlashSettings();
 
@@ -400,6 +397,9 @@ void main()
 
     // flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
     // flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
+
+    // FLASH CONTENTS
+    getFlashContents();
 
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
