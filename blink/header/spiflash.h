@@ -439,14 +439,12 @@ void searchDataInFlash()
                     snprintf(load_profile_line, 41, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
                     first_flag = 1;
                     xor_result = bccGenerate(load_profile_line, 40, xor_result);
-                    load_profile_line[40] = xor_result;
                 }
                 // if this is the not first record, it measn this is the last record to send
                 else
                 { // 16               19               4
                     snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
                     xor_result = bccGenerate(load_profile_line, 39, xor_result);
-                    load_profile_line[39] = xor_result;
                 }
             }
             // if start address not equals to end address, it means this is the start record or normal record
@@ -471,6 +469,9 @@ void searchDataInFlash()
 #endif
             // send the record to UART and wait
             uart_puts(UART0_ID, load_profile_line);
+            if (start_addr == end_addr)
+                uart_putc(UART0_ID, xor_result);
+
             sleep_ms(15);
 
             // last sector and record control

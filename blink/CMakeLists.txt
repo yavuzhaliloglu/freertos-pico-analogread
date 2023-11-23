@@ -34,7 +34,7 @@ pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
                     pico_stdlib_headers
-                    hardware_structs    
+                    hardware_structs
                     hardware_watchdog
                     FreeRTOS-Kernel
                     FreeRTOS-Kernel-Heap4

@@ -416,7 +416,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     uint8_t short_read[3] = {0x36, 0x0D, 0x0A};
     uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};
     uint8_t readout[3] = {0x30, 0x0D, 0x0A};
-    uint8_t debug_mode[3] = {0x38, 0x0D, 0x0A};
+    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};
     uint8_t default_control[2] = {0x06, 0x30};
 
     // if default control is true and size of message is 6, it means the message format is true.
@@ -500,7 +500,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             uart_puts(UART0_ID, mread_data_buff);
         }
 
-        // Debug Mode ([ACK]0Z8[CR][LF])
+        // Debug Mode ([ACK]0Z4[CR][LF])
         if (strncmp(debug_mode, (buffer + 3), 3) == 0)
         {
 #if DEBUG

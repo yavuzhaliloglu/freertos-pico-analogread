@@ -282,7 +282,7 @@ void vADCReadTask()
 #if DEBUG
         printf("ADC READ TASK: now buffer content is: \n");
         for (int8_t i = 0; i < vrms_buffer_count; i++)
-            printf("%lf ", vrms_buffer[i]);
+            printf("%lf\n", vrms_buffer[i]);
         printf("\n");
 #endif
         // Write a record to the flash memory periodically

@@ -34,7 +34,7 @@ mbr_int = int(mbr_str)
 baud_rates = [300, 600, 1200, 2400, 4800, 9600]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
-    information_message = bytearray(b"\x0600\r\n")
+    information_message = bytearray(b"\x0601\r\n")
     # information_message[2:2] = b"6"
     information_message[2:2] = max_baud_rate
     print(information_message)
@@ -53,10 +53,10 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
     )
     print("port opened again. new baudrate is: ", seri.baudrate)
 
-    if information_message[3] == 0x30:
+    if (information_message[3] == 0x30 or information_message[3] == 0x36):
         print("entered readout mode")
 
-        for i in range(6):
+        for i in range(10):
             res = bytearray(seri.readline())
             print(res)
 
@@ -105,7 +105,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                 else:
                     xor_check ^= data[0]
                     xor_check ^= data[1]
-            #         print("xor check:", hex(xor_check))
+                    print("xor check:", hex(xor_check))
 
             # loadFormat2 = bytearray(b'\x01\x52\x32\x02\x50\x2E\x30\x31\x282308102315;2308110100\x29\x03')
             # bcc2= 0x01
@@ -127,7 +127,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(bytearray(seri.readline()))
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2811:10:30\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2808:18:20\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
@@ -147,7 +147,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 
             # bcc_date = 0x01
             # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-11-18\x29\x03"
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-11-23\x29\x03"
             # )
             # for b in dateSet:
             #     bcc_date ^= b
