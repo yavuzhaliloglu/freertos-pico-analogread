@@ -399,6 +399,8 @@ void main()
     // FLASH CONTENTS
     getFlashContents();
 
+
+
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
@@ -408,11 +410,12 @@ void main()
 
 #if DEBUG
     // FLASH RECORD AREA DEBUG
+
     uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 
     printf("MAIN: flash sector is: %d\n", sector_data);
-    printf("MAIN: adc_remaining_ time is %ld\n", adc_remaining_time);
+    printf("MAIN: adc_remaining_time is %ld\n", adc_remaining_time);
 #endif
 
     // // REPEATING TIMER

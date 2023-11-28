@@ -50,6 +50,7 @@ void sendFlashContents()
     uint8_t *flash_serial_number_content = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     int offset;
+    uint16_t record_count = 0;
 
     char debug_uart_buffer[64] = {0};
     sprintf(debug_uart_buffer, "sector content is: %d\r\n\0", flash_sector_content[0]);
@@ -77,9 +78,9 @@ void sendFlashContents()
 
         sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s;%d.%d,%d.%d,%d.%d\r\n\0", year, month, day, hour, minute, max, max_dec, min, min_dec, mean, mean_dec);
         uart_puts(UART0_ID, debug_uart_buffer);
+        record_count++;
     }
-    double usage_percent = (offset / (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET)) * 100;
-    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes - %%%lf\r\n\0", offset, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET), usage_percent);
+    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes\nLast record offset is: %d\r\n\0", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET), offset);
     uart_puts(UART0_ID, debug_uart_buffer);
 }
 
@@ -485,15 +486,13 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[133] = {0};
-            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-            resetVRMSValues();
-            //                                   18                     17                      17                  18            13            15                  15                  15              4
-            snprintf(mread_data_buff, 133, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n32.7.0(%03d.%d)\r\n52.7.0(%03d.%d)\r\n72.7.0(%03d.%d)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, vrms_min, vrms_min_dec, vrms_max, vrms_max_dec, vrms_mean, vrms_mean_dec, 0x03);
-            setBCC(mread_data_buff, 132, 0x02);
+            uint8_t mread_data_buff[89] = {0};
+            //                                   18                     17                      17                  18            13          4
+            snprintf(mread_data_buff, 88, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, 0x03);
+            setBCC(mread_data_buff, 87, 0x02);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 133);
+            printBufferHex(mread_data_buff, 89);
             printf("\n");
 #endif
             // Send the readout data
@@ -514,6 +513,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 // This function sets time via UART
 void setTimeFromUART(uint8_t *buffer)
 {
+    if (!password_correct_flag)
+        return;
+
     // initialize variables
     uint8_t time_buffer[9] = {0};
     uint8_t hour;
@@ -524,6 +526,9 @@ void setTimeFromUART(uint8_t *buffer)
     char *start_ptr = strchr(buffer, '(');
     start_ptr++;
     char *end_ptr = strchr(buffer, ')');
+
+    if (start_ptr == NULL & end_ptr == NULL)
+        return;
 
     // copy time data to buffer and delete the ":" character. First two characters of the array is hour info, next 2 character is minute info, last 2 character is the second info. Also there are two ":" characters to seperate informations.
     strncpy(time_buffer, start_ptr, end_ptr - start_ptr);
@@ -546,6 +551,9 @@ void setTimeFromUART(uint8_t *buffer)
 // This function sets date via UART
 void setDateFromUART(uint8_t *buffer)
 {
+    if (!password_correct_flag)
+        return;
+
     // initialize variables
     uint8_t date_buffer[9] = {0};
     uint8_t year;
@@ -556,6 +564,9 @@ void setDateFromUART(uint8_t *buffer)
     char *start_ptr = strchr(buffer, '(');
     start_ptr++;
     char *end_ptr = strchr(buffer, ')');
+
+    if (start_ptr == NULL & end_ptr == NULL)
+        return;
 
     // copy date data to buffer and delete the "-" character. First two characters of the array is year info, next 2 character is month info, last 2 character is the day info. Also there are two "-" characters to seperate informations.
     strncpy(date_buffer, start_ptr, end_ptr - start_ptr);

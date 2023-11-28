@@ -63,9 +63,7 @@ volatile TaskHandle_t xTaskToNotify_UART = NULL;
 enum States state = Greeting;
 // this variable is represent max baud rate that this device can reach.
 uint16_t max_baud_rate = 9600;
-// this is the buffer that can store data coming from UART
-uint8_t rx_buffer[256] = {};
-// this is the variable that keeps length of characters in rx_buffer,
+uint8_t rx_buffer[256] = {0};
 uint8_t rx_buffer_len = 0;
 // this buffer stores start time for load profile data
 uint8_t reading_state_start_time[14] = {0};

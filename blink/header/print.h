@@ -9,7 +9,7 @@ void printBinaryHex(uint8_t value)
     for (int i = 7; i >= 0; i--)
     {
         uint8_t binstr[2] = {0};
-        snprintf(binstr, 2, "%d", (value & (1 << i)) ? 1 : 0);
+        snprintf((char *)binstr, 2, "%d", (value & (1 << i)) ? 1 : 0);
         printf("%s", binstr);
     }
     printf("\n");

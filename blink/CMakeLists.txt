@@ -14,10 +14,10 @@ set(CMAKE_CXX_STANDARD 17)
 pico_sdk_init()
 
 add_executable(blink main.c
-                    header/rtc.h
-                    header/bcc.h
                     header/defines.h
                     header/variables.h
+                    header/rtc.h
+                    header/bcc.h
                     header/spiflash.h
                     header/uart.h
                     header/md5.c
@@ -48,6 +48,7 @@ target_link_libraries(blink pico_stdlib
                     hardware_irq
                     hardware_sync
                     hardware_timer
+                    pico_unique_id
                     )
 
 # Enable/disable STDIO via USB and UART
