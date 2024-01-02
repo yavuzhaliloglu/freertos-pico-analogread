@@ -48,7 +48,6 @@ target_link_libraries(blink pico_stdlib
                     hardware_irq
                     hardware_sync
                     hardware_timer
-                    pico_unique_id
                     )
 
 # Enable/disable STDIO via USB and UART

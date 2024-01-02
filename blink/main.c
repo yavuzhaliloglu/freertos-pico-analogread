@@ -390,16 +390,8 @@ void main()
     // // Reset Record Settings
     // resetFlashSettings();
 
-    // // SERIAL NUMBER ADDITION
-    // uint8_t s_number[256] = "60616161";
-
-    // flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
-    // flash_range_program(FLASH_SERIAL_OFFSET, s_number, FLASH_PAGE_SIZE);
-
     // FLASH CONTENTS
     getFlashContents();
-
-
 
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
@@ -410,7 +402,6 @@ void main()
 
 #if DEBUG
     // FLASH RECORD AREA DEBUG
-
     uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 

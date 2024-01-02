@@ -1,16 +1,6 @@
 #ifndef UART_H
 #define UART_H
 
-void resetVRMSValues()
-{
-    vrms_max = 0;
-    vrms_min = 0;
-    vrms_mean = 0;
-    vrms_max_dec = 0;
-    vrms_max_dec = 0;
-    vrms_max_dec = 0;
-}
-
 // UART Receiver function
 void UARTReceive()
 {
@@ -46,8 +36,6 @@ void initUART()
 
 void sendFlashContents()
 {
-    uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
-    uint8_t *flash_serial_number_content = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     int offset;
     uint16_t record_count = 0;
@@ -56,7 +44,7 @@ void sendFlashContents()
     sprintf(debug_uart_buffer, "sector content is: %d\r\n\0", flash_sector_content[0]);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", flash_serial_number_content);
+    sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
 
     for (offset = 0; offset < 1556480; offset += 16)
@@ -370,7 +358,7 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
             printf("GREETINGSTATEHANDLER: request came with serial number.\n");
 #endif
             // is serial num 8 character and is it the correct serial number
-            if (strncmp(serial_num, serial_number, 8) == 0 && (buffer_tail - serial_num == 8))
+            if (strncmp(serial_num, serial_number, 9) == 0 && (buffer_tail - serial_num == 9))
             {
 #if DEBUG
                 printf("GREETINGSTATEHANDLER: serial number is true.\n");
@@ -463,13 +451,13 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printf("SETTINGSTATEHANDLER: programming mode accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t ack_buff[17] = {0};
-            snprintf(ack_buff, 16, "%cP0%c(%s)%c", 0x01, 0x02, serial_number, 0x03);
+            uint8_t ack_buff[18] = {0};
+            snprintf(ack_buff, 17, "%cP0%c(%s)%c", 0x01, 0x02, serial_number, 0x03);
             // Set BCC to add the message
-            setBCC(ack_buff, 15, 0x01);
+            setBCC(ack_buff, 16, 0x01);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: ack message to send:\n");
-            printBufferHex(ack_buff, 17);
+            printBufferHex(ack_buff, 18);
             printf("\n");
 #endif
             // SEND Message
@@ -486,13 +474,13 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[89] = {0};
-            //                                   18                     17                      17                  18            13          4
-            snprintf(mread_data_buff, 88, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, 0x03);
-            setBCC(mread_data_buff, 87, 0x02);
+            uint8_t mread_data_buff[90] = {0};
+            //                                   19                     17                      17                  18            13          4
+            snprintf(mread_data_buff, 89, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, 0x03);
+            setBCC(mread_data_buff, 88, 0x02);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 89);
+            printBufferHex(mread_data_buff, 90);
             printf("\n");
 #endif
             // Send the readout data
