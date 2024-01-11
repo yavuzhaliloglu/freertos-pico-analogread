@@ -521,4 +521,26 @@ void resetFlashSettings()
 #endif
 }
 
+void checkSectorContent()
+{
+    uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
+    uint16_t ff_count = 0;
+
+    for (uint16_t i = 0; i < 256; i++)
+    {
+        if (flash_sector_content[i] == 0xFF)
+            ff_count++;
+    }
+
+    if (ff_count >= 255)
+    {
+        #if DEBUG
+                printf("CHECKSECTORCONTENT: sector content is going to set 0.\n");
+        #endif
+        uint16_t sector_buffer[256] = {0};
+        flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+    }
+}
+
 #endif

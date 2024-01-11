@@ -343,15 +343,6 @@ void vResetTask()
     }
 }
 
-// // TIME TASK: This task gets current time value in RP2040's RTC chip and sets the current_time value.
-// bool repeating_timer_callback(struct repeating_timer *rt)
-// {
-//     rtc_get_datetime(&current_time);
-//     datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-//     printf("RTC Time is: %s \r\n", datetime_str);
-//     return true;
-// }
-
 void main()
 {
     stdio_init_all();
@@ -387,6 +378,9 @@ void main()
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
+    // sector content control
+    checkSectorContent();
+
     // // Reset Record Settings
     // resetFlashSettings();
 
@@ -408,10 +402,6 @@ void main()
     printf("MAIN: flash sector is: %d\n", sector_data);
     printf("MAIN: adc_remaining_time is %ld\n", adc_remaining_time);
 #endif
-
-    // // REPEATING TIMER
-    // struct repeating_timer timer;
-    // add_repeating_timer_us(1000000, repeating_timer_callback, NULL, &timer);
 
     xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);

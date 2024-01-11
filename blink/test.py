@@ -127,7 +127,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(bytearray(seri.readline()))
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2812:16:00\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2812:10:00\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
@@ -136,7 +136,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 
             # bcc_date = 0x01
             # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-12-09\x29\x03"
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2824-01-06\x29\x03"
             # )
             # for b in dateSet:
             #     bcc_date ^= b

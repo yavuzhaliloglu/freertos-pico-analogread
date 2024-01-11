@@ -78,7 +78,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // Debugs
-#define DEBUG 1
+#define DEBUG 0
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 
