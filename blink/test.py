@@ -19,7 +19,7 @@ seri = serial.Serial(
 
 md5_hash = hashlib.md5()
 
-meeting_message = bytearray(b"/?60616161!\r\n")
+meeting_message = bytearray(b"/?!\r\n")
 seri.write(meeting_message)
 time.sleep(0.25)
 meeting_response = bytearray(seri.readline())
@@ -78,7 +78,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # bcc = 0x01
             # # tüketim sorgusu
             # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-11-18,10:00;23-11-18,13:00\x29\x03"
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-11-27,10:00;23-12-02,09:00\x29\x03"
             # )
             
             bcc = 0x01
@@ -127,11 +127,21 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(bytearray(seri.readline()))
 
             # bcc_time = 0x01
-            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2808:18:20\x29\x03')
+            # timeSet = bytearray(b'\x01\x57\x32\x02\x30\x2E\x39\x2E\x31\x2812:10:00\x29\x03')
             # for b in timeSet:
             #     bcc_time ^=b
             # timeSet.append(bcc_time)
             # seri.write(timeSet)
+            # print(seri.readline())
+
+            # bcc_date = 0x01
+            # dateSet = bytearray(
+            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2824-01-06\x29\x03"
+            # )
+            # for b in dateSet:
+            #     bcc_date ^= b
+            # dateSet.append(bcc_date)
+            # seri.write(dateSet)
             # print(seri.readline())
 
             # bcc_pw_hint = 0x01
@@ -144,16 +154,6 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(pw_hint_message)
             # seri.write(pw_hint_message)
             # print(bytearray(seri.readline()))
-
-            # bcc_date = 0x01
-            # dateSet = bytearray(
-            #     b"\x01\x57\x32\x02\x30\x2E\x39\x2E\x32\x2823-11-23\x29\x03"
-            # )
-            # for b in dateSet:
-            #     bcc_date ^= b
-            # dateSet.append(bcc_date)
-            # seri.write(dateSet)
-            # print(seri.readline())
 
             # production = bytearray(b"\x01R2\x0296.1.3()\x03")
             # bcc = 0x01

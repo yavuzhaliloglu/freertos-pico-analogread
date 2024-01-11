@@ -24,7 +24,7 @@
 /* Skip 16kB at the start of flash, that's where our bootloader is */
 MEMORY
 {
-    FLASH(rx) : ORIGIN = 0x10009100, LENGTH = 2048k - 36k - 256b
+    FLASH(rx) : ORIGIN = 0x10009100, LENGTH = 2048k - 40k
     RAM(rwx) : ORIGIN =  0x20000000, LENGTH = 256k
     SCRATCH_X(rwx) : ORIGIN = 0x20040000, LENGTH = 4k
     SCRATCH_Y(rwx) : ORIGIN = 0x20041000, LENGTH = 4k

@@ -63,7 +63,7 @@ double calculateVRMS(double bias)
 #endif
 
     vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-    vrms = vrms * 75;
+    vrms = vrms * 150;
 
     return vrms;
 }
