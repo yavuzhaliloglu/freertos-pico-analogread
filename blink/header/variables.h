@@ -20,6 +20,8 @@ uint16_t bias_buffer[BIAS_SAMPLE];
 TickType_t adc_remaining_time = 0;
 // this flag variable is used to detect if time is changed. If time is changed in device, that flag provides to align the task's execution time to beginning of next minute again
 volatile uint8_t time_change_flag;
+// vrms threshold value
+uint16_t vrms_threshold;
 
 uint8_t vrms_buffer_count = 0;
 double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
@@ -55,7 +57,9 @@ enum ListeningStates
     DateSet = 2,
     WriteProgram = 3,
     ProductionInfo = 4,
-    Password = 5
+    Password = 5,
+    SetThreshold = 6,
+    GetThreshold = 7
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;

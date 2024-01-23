@@ -74,9 +74,24 @@ void __not_in_flash_func(getFlashContents)()
 {
     // disable interrupts and get the contents
     uint32_t ints = save_and_disable_interrupts();
+
     sector_data = *(uint16_t *)flash_sector_content;
     uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
+
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    if (th_ptr[3] == 0xFF)
+    {
+        uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
+        th_arr[0] = 5;
+        flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+    }
+
+    vrms_threshold = th_ptr[0];
+#if DEBUG
+    printf("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
+#endif
     // enable interrupts
     restore_interrupts(ints);
 }
@@ -440,7 +455,7 @@ void searchDataInFlash()
                     first_flag = 1;
                     xor_result = bccGenerate(load_profile_line, 40, xor_result);
                 }
-                // if this is the not first record, it measn this is the last record to send
+                // if this is the not first record, it means this is the last record to send
                 else
                 { // 16               19               4
                     snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
@@ -534,9 +549,9 @@ void checkSectorContent()
 
     if (ff_count >= 255)
     {
-        #if DEBUG
-                printf("CHECKSECTORCONTENT: sector content is going to set 0.\n");
-        #endif
+#if DEBUG
+        printf("CHECKSECTORCONTENT: sector content is going to set 0.\n");
+#endif
         uint16_t sector_buffer[256] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);

@@ -13,10 +13,13 @@
 #define FLASH_SERIAL_OFFSET 512 * 1024 - FLASH_SECTOR_SIZE
 // this is the start offset of OTA program will written
 #define FLASH_REPROGRAM_OFFSET 256 * 1024
-#define FLASH_REPROGRAM_SIZE 256 * 1024 - FLASH_SECTOR_SIZE
+// threshold values offset
+#define FLASH_THRESHOLD_OFFSET 256 * 1024 - FLASH_SECTOR_SIZE
+// repgrogram area size
+#define FLASH_REPROGRAM_SIZE 256 * 1024 - (2 * FLASH_SECTOR_SIZE)
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
-// this is the count of total sectors in flash expect first 512kB + 8kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
+// this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
 #define FLASH_TOTAL_SECTORS 380
 // this is the start offset of load profile records will written
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
@@ -24,7 +27,6 @@
 #define FLASH_RECORD_SIZE 16
 // this is the count of total records can be kept in a flash
 #define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
-
 
 // UART DEFINES
 
@@ -78,7 +80,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // Debugs
-#define DEBUG 0
+#define DEBUG 1
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 

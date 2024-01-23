@@ -78,36 +78,36 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # bcc = 0x01
             # # tüketim sorgusu
             # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2823-11-27,10:00;23-12-02,09:00\x29\x03"
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2824-01-15,08:00;24-01-15,20:00\x29\x03"
             # )
             
-            bcc = 0x01
-            # tüketim sorgusu
-            loadFormat = bytearray(
-                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
-            )
+            # bcc = 0x01
+            # # tüketim sorgusu
+            # loadFormat = bytearray(
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
+            # )
 
-            for b in loadFormat:
-                bcc ^= b
-            loadFormat.append(bcc)
-            print("data to send device: ", loadFormat)
-            seri.write(loadFormat)
+            # for b in loadFormat:
+            #     bcc ^= b
+            # loadFormat.append(bcc)
+            # print("data to send device: ", loadFormat)
+            # seri.write(loadFormat)
 
-            xor_check = 0x02
-            for i in range(500):
-                data = bytearray(seri.readline())
-                if len(data) == 0:
-                    break
-                print(data)
-                if len(data) != 3:
-                    for b in data:
-                        xor_check ^= b
-                else:
-                    xor_check ^= data[0]
-                    xor_check ^= data[1]
-                    print("xor check:", hex(xor_check))
+            # xor_check = 0x02
+            # for i in range(500):
+            #     data = bytearray(seri.readline())
+            #     if len(data) == 0:
+            #         break
+            #     print(data)
+            #     if len(data) != 3:
+            #         for b in data:
+            #             xor_check ^= b
+            #     else:
+            #         xor_check ^= data[0]
+            #         xor_check ^= data[1]
+            #         print("xor check:", hex(xor_check))
 
-            # loadFormat2 = bytearray(b'\x01\x52\x32\x02\x50\x2E\x30\x31\x282308102315;2308110100\x29\x03')
+            # loadFormat2 = bytearray(b'\x01\x52\x32\x02\x50\x2E\x30\x31\x282401120800;2308110100\x29\x03')
             # bcc2= 0x01
             # for b in loadFormat2:
             #     bcc2 ^= b
@@ -143,6 +143,22 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # dateSet.append(bcc_date)
             # seri.write(dateSet)
             # print(seri.readline())
+
+            # bcc_threshold = 0x01
+            # threshold = bytearray(b'\x01\x57\x32\x02T.V.1(022)\x03')
+            # for b in threshold:
+            #     bcc_threshold ^=b
+            # threshold.append(bcc_threshold)
+            # seri.write(threshold)
+            # print(seri.readline())
+
+            bcc_threshold = 0x01
+            threshold = bytearray(b'\x01\x52\x32\x02T.R.1()\x03')
+            for b in threshold:
+                bcc_threshold ^=b
+            threshold.append(bcc_threshold)
+            seri.write(threshold)
+            print(seri.readline())
 
             # bcc_pw_hint = 0x01
             # pw_hint_message = bytearray(

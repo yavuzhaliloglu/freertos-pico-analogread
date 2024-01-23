@@ -34,14 +34,14 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
-void sendFlashContents()
+void sendDeviceInfo()
 {
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     int offset;
     uint16_t record_count = 0;
 
     char debug_uart_buffer[64] = {0};
-    sprintf(debug_uart_buffer, "sector content is: %d\r\n\0", flash_sector_content[0]);
+    sprintf(debug_uart_buffer, "sector count is: %d\r\n\0", flash_sector_content[0]);
     uart_puts(UART0_ID, debug_uart_buffer);
 
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", serial_number);
@@ -87,6 +87,8 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char dateset_str[] = "0.9.2";
     char production_str[] = "96.1.3";
     char reprogram_str[] = "!!!!";
+    char threshold_str[] = "T.V.1";
+    char get_threshold_str[] = "T.R.1";
 
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
@@ -154,6 +156,22 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
             printf("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
 #endif
             return ReProgram;
+        }
+        // Set Threshold control (T.V.1)
+        if (strstr(data_buffer, threshold_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
+#endif
+            return SetThreshold;
+        }
+        // Get Threshold control (T.R.1)
+        if (strstr(data_buffer, get_threshold_str) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
+#endif
+            return GetThreshold;
         }
     }
 #if DEBUG
@@ -493,7 +511,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 #if DEBUG
             printf("SETTINGSTATEHANDLER: debug mode accepted.\n");
 #endif
-            sendFlashContents();
+            sendDeviceInfo();
         }
     }
 }
@@ -584,6 +602,8 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
     uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};
     uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};
+    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};
 
     // length of mesasge that should be
     uint8_t time_len = 21;
@@ -593,6 +613,8 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t password_len = 16;
     uint8_t production_len = 14;
     uint8_t reading_all_len = 13;
+    uint8_t set_threshold_len = 16;
+    uint8_t get_threshold_len = 13;
 
     // controls for the message
     if ((len == password_len) && (strncmp(buffer, password, 4) == 0))
@@ -634,6 +656,20 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is production info request.\n");
+#endif
+        return true;
+    }
+    if ((len == set_threshold_len) && (strncmp(buffer, set_threshold_val, 9) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is set threshold value.\n");
+#endif
+        return true;
+    }
+    if ((len == get_threshold_len) && (strncmp(buffer, get_threshold_val, 9) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is get threshold value.\n");
 #endif
         return true;
     }
@@ -711,6 +747,100 @@ void RebootHandler()
     // write program execution with null variable and reboot device
     writeProgramToFlash(0x00);
     rebootDevice();
+}
+
+void concatenateAndPrintHex(uint16_t value, uint8_t *array, size_t arraySize, uint8_t *copy_buf)
+{
+    // Calculate total size (2 bytes for uint16_t + array size)
+    size_t totalSize = 2 + arraySize;
+
+    // Create a buffer to hold the combined data
+    uint8_t combined[totalSize];
+
+    // Place the uint16_t value into the combined array
+    combined[0] = value & 0xFF;        // High byte
+    combined[1] = (value >> 8) & 0xFF; // Low byte
+
+    // Copy the uint8_t array into the combined array
+    for (size_t i = 0; i < arraySize; ++i)
+    {
+        combined[2 + i] = array[i];
+    }
+#if DEBUG
+    // Print the combined array in hexadecimal format
+    for (size_t i = 0; i < totalSize; ++i)
+    {
+        printf("%02X ", combined[i]);
+    }
+    printf("\n");
+#endif
+    memcpy(copy_buf, combined, 34);
+}
+
+void setThresholdValue(uint8_t *data)
+{
+#if DEBUG
+    printf("threshold value before change is: %d\n", vrms_threshold);
+#endif
+
+    char *start_ptr = strchr(data, '(');
+    char *end_ptr = strchr(data, ')');
+
+    start_ptr++;
+    uint8_t threshold_val_str[3];
+
+    strncpy(threshold_val_str, start_ptr, end_ptr - start_ptr);
+
+    uint16_t threshold_val = atoi(threshold_val_str);
+
+#if DEBUG
+    printf("threshold value as string is: %s\n", threshold_val_str);
+    printf("threshold value as int is: %d\n", threshold_val);
+#endif
+    vrms_threshold = threshold_val;
+    uint8_t *th_record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + 2);
+    uint8_t th_record_buf[32];
+    uint8_t th_flash_buf[256] = {0};
+
+#if DEBUG
+    printf("threshold value after change is: %d\n", vrms_threshold);
+
+    printf("threshold record is: ");
+    for (int i = 0; th_record_ptr[i] != 0x00; i++)
+    {
+        printf("%02X ", th_record_ptr[i]);
+    }
+    printf("\n");
+#endif
+
+    memcpy(th_record_buf, th_record_ptr, 32);
+    concatenateAndPrintHex(vrms_threshold, th_record_buf, 32, th_flash_buf);
+
+    uint32_t ints = save_and_disable_interrupts();
+
+    flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_THRESHOLD_OFFSET, th_flash_buf, FLASH_PAGE_SIZE);
+
+    restore_interrupts(ints);
+
+    uint8_t *th_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    printBufferHex(th_ptr, 256);
+}
+
+void getThresholdRecord()
+{
+    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    uint8_t record_buf[32];
+
+    record_ptr += 2;
+    memcpy(record_buf, record_ptr, 32);
+
+#if DEBUG
+    printf("threshold record to send is: \n");
+    printBufferHex(record_buf, 32);
+#endif
+
+    uart_puts(UART0_ID, record_buf);
 }
 
 #endif

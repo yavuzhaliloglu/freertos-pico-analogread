@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
+#include <stdlib.h>
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
@@ -206,7 +207,21 @@ void vUARTTask(void *pvParameters)
                             sendProductionInfo();
                             break;
 
-                        // If the message is not correct, device sends a NACK message (0x15) to modem.
+                        case SetThreshold:
+#if DEBUG
+                            printf("UART TASK: entered listening-setthreshold\n");
+#endif
+                            setThresholdValue(rx_buffer);
+                            break;
+                            // If the message is not correct, device sends a NACK message (0x15) to modem.
+
+                        case GetThreshold:
+#if DEBUG
+                            printf("UART TASK: entered listening-getthreshold\n");
+#endif
+                            getThresholdRecord();
+                            break;
+
                         default:
 #if DEBUG
                             printf("UART TASK: entered listening-default\n");
@@ -276,6 +291,9 @@ void vADCReadTask()
         printf("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
         printf("ADC READ TASK: calcualted vrms is: %lf\n", vrms);
 #endif
+        // check if vrms value is bigger than threshold
+        checkVRMSThreshold(vrms);
+
         // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
         vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
         vrms = 0.0;
@@ -395,9 +413,9 @@ void main()
     adc_remaining_time = pdMS_TO_TICKS(((current_time.sec + 1) * 1000) - 100);
 
 #if DEBUG
-    // FLASH RECORD AREA DEBUG
-    uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
+    // // FLASH RECORD AREA DEBUG
+    // uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    // printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
 
     printf("MAIN: flash sector is: %d\n", sector_data);
     printf("MAIN: adc_remaining_time is %ld\n", adc_remaining_time);

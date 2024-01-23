@@ -29,19 +29,6 @@ double calculateVRMS(double bias)
     char deneme[40] = {0};
 #endif
 
-    // #if DEBUG
-    //     for (uint8_t i = 0; i < 150; i++)
-    //     {
-    //         snprintf(deneme, 20, "sample: %d\n", sample_buffer[i]);
-    //         deneme[21] = '\0';
-
-    //         printf("%s", deneme);
-    //         vTaskDelay(1);
-    //     }
-
-    //     printf("\n");
-    // #endif
-
     float mean = bias * conversion_factor / 1000;
 
 #if DEBUG
@@ -78,4 +65,41 @@ double getMean(uint16_t *buffer, size_t size)
     return (total / size);
 }
 
+void checkVRMSThreshold(double vrms)
+{
+    vrms = (uint16_t)vrms;
+#if DEBUG
+    printf("vrms value as uint16_t is: %d\n", vrms);
+#endif
+    if (vrms >= vrms_threshold)
+    {
+        int8_t day = current_time.day;
+        int8_t month = current_time.month;
+        int8_t year = current_time.year;
+        int8_t hour = current_time.hour;
+        int8_t min = current_time.min;
+
+        uint8_t threshold_buffer[32];
+        snprintf(threshold_buffer, 31, "%cT.R.1(%02d-%02d-%02d,%02d:%02d)(%03d)\r\n%c", 0x02, year, month, day, hour, min, (uint16_t)vrms, 0x03);
+        uint8_t bcc = bccGenerate(threshold_buffer, 30, 0x02);
+        threshold_buffer[30] = bcc;
+        threshold_buffer[31] = '\0';
+#if DEBUG
+        printf("threshold buffer as hexadecimal: \n");
+        printBufferHex(threshold_buffer, 32);
+#endif
+        uint8_t flash_th_buf[FLASH_PAGE_SIZE] = {0};
+        concatenateAndPrintHex(vrms_threshold, threshold_buffer, 32, flash_th_buf);
+#if DEBUG
+        printf("flash_th_buf as hexadecimal: \n");
+        printBufferHex(flash_th_buf, FLASH_PAGE_SIZE);
+#endif
+        uint32_t ints = save_and_disable_interrupts();
+
+        flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET, flash_th_buf, FLASH_PAGE_SIZE);
+
+        restore_interrupts(ints);
+    }
+}
 #endif
