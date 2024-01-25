@@ -84,6 +84,8 @@ uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 uint8_t *serial_number = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
 // sector data variable keeps current sector to write records to flash
 static uint16_t sector_data = 0;
+// // threshold records sector data
+// static uint16_t sector_th_data = 0;
 // Flash data structure is used to keep different formats of data. This struct includes character variables and also uint8_t integer variables to create a record for flash.
 struct FlashData
 {
@@ -113,6 +115,7 @@ int ota_block_count = 0;
 int data_cnt = 0;
 // this flag variable is used to write reamining contents in rpb buffer to flash
 bool is_program_end = false;
+uint8_t flash_th_buf[FLASH_SECTOR_SIZE] = {0};
 
 // RTC VARIABLES
 

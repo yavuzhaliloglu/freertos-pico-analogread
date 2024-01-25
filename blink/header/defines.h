@@ -1,6 +1,18 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+//    36kb                      256kB                      512kB                                                                                                                                     2048kB
+// |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+// |    |                      |  |                        | | |                                                                                                                                         |
+// | B  |      Main Program    |T |      OTA Program       |N|S|                                                            Records                                                                      |
+// |    |                      |  |                        | | |                                                                                                                                         |
+// |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+//                          240kB                       508kB  516kB
+//  B -> Bootloader
+//  T -> Threshold Contents
+//  N -> Serial Number Contents
+//  S -> Sector Contents
+
 // FLASH DEFINES
 
 // this is the start offset of the program
@@ -14,9 +26,9 @@
 // this is the start offset of OTA program will written
 #define FLASH_REPROGRAM_OFFSET 256 * 1024
 // threshold values offset
-#define FLASH_THRESHOLD_OFFSET 256 * 1024 - FLASH_SECTOR_SIZE
+#define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
 // repgrogram area size
-#define FLASH_REPROGRAM_SIZE 256 * 1024 - (2 * FLASH_SECTOR_SIZE)
+#define FLASH_REPROGRAM_SIZE 256 * 1024 - FLASH_SECTOR_SIZE
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
@@ -69,7 +81,7 @@
 #define VRMS_SAMPLE 500
 // VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 15
-// 
+//
 #define CLOCK_DIV 4 * 9600
 // ADC Voltage Pin
 #define ADC_READ_PIN 26

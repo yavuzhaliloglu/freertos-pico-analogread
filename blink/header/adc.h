@@ -16,6 +16,35 @@ void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
     adc_fifo_drain();
 }
 
+uint32_t calculateVariance(uint16_t *buffer, size_t size)
+{
+    uint32_t total = 0;
+    uint32_t mean;
+    uint32_t variance_total = 0;
+
+    for (int i = 0; i < size; i++)
+    {
+        total += buffer[i];
+    }
+
+    mean = total / size;
+
+    for (int i = 0; i < size; i++)
+    {
+        uint32_t mult = buffer[i] - mean;
+        variance_total += mult * mult;
+    }
+
+#if DEBUG
+    printf("\ntotal of samples is: %ld\n", total);
+    printf("\nmean of samples is: %ld\n", mean);
+    printf("\nvariance total of samples is: %ld\n", variance_total);
+    printf("\nvariance of samples is: %ld\n", (variance_total / (size - 1)));
+#endif
+
+    return variance_total / (size - 1);
+}
+
 double calculateVRMS(double bias)
 {
     // Initialize the variables for VRMS calculation
@@ -78,26 +107,49 @@ void checkVRMSThreshold(double vrms)
         int8_t year = current_time.year;
         int8_t hour = current_time.hour;
         int8_t min = current_time.min;
+        uint8_t *threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+        int l_offset;
+        uint8_t sector_count = 0;
 
-        uint8_t threshold_buffer[32];
-        snprintf(threshold_buffer, 31, "%cT.R.1(%02d-%02d-%02d,%02d:%02d)(%03d)\r\n%c", 0x02, year, month, day, hour, min, (uint16_t)vrms, 0x03);
-        uint8_t bcc = bccGenerate(threshold_buffer, 30, 0x02);
-        threshold_buffer[30] = bcc;
-        threshold_buffer[31] = '\0';
+        uint8_t threshold_buffer[16] = {0};
+        snprintf(threshold_buffer, 16, "%02d%02d%02d%02d%02d%03d", year, month, day, hour, min, (uint16_t)vrms);
+
 #if DEBUG
         printf("threshold buffer as hexadecimal: \n");
-        printBufferHex(threshold_buffer, 32);
+        printBufferHex(threshold_buffer, 16);
 #endif
-        uint8_t flash_th_buf[FLASH_PAGE_SIZE] = {0};
-        concatenateAndPrintHex(vrms_threshold, threshold_buffer, 32, flash_th_buf);
+
+        for (l_offset = 16; l_offset < 4 * FLASH_SECTOR_SIZE; l_offset += 16)
+        {
+            if (l_offset == FLASH_SECTOR_SIZE)
+            {
+                sector_count++;
+            }
+
+            if (threshold_recs[l_offset] == 0xFF || threshold_recs[l_offset] == 0x00)
+            {
+                break;
+            }
+        }
+
+        if (sector_count == 4 * FLASH_SECTOR_SIZE)
+        {
+            sector_count = 0;
+            l_offset = 16;
+        }
+
+        uint8_t *threshold_sector_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (sector_count * FLASH_SECTOR_SIZE));
+        memcpy(flash_th_buf, threshold_sector_recs, l_offset - (sector_count * FLASH_SECTOR_SIZE));
+        memcpy(flash_th_buf + l_offset - (sector_count * FLASH_SECTOR_SIZE), threshold_buffer, 16);
+
 #if DEBUG
         printf("flash_th_buf as hexadecimal: \n");
         printBufferHex(flash_th_buf, FLASH_PAGE_SIZE);
 #endif
         uint32_t ints = save_and_disable_interrupts();
 
-        flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_OFFSET, flash_th_buf, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_OFFSET + (sector_count * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET, flash_th_buf, FLASH_SECTOR_SIZE);
 
         restore_interrupts(ints);
     }

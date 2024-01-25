@@ -829,18 +829,44 @@ void setThresholdValue(uint8_t *data)
 
 void getThresholdRecord()
 {
-    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
-    uint8_t record_buf[32];
+    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + 16);
+    uint8_t xor_result = 0x00;
 
-    record_ptr += 2;
-    memcpy(record_buf, record_ptr, 32);
+    uint8_t buffer[23];
+    uart_putc(UART0_ID, 0x02);
+
+    for (int i = 0; i < 4 * FLASH_SECTOR_SIZE; i += 16)
+    {
+        if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
+        {
+            break;
+        }
+
+        uint8_t year[2] = {record_ptr[i], record_ptr[i + 1]};
+        uint8_t month[2] = {record_ptr[i + 2], record_ptr[i + 3]};
+        uint8_t day[2] = {record_ptr[i + 4], record_ptr[i + 5]};
+        uint8_t hour[2] = {record_ptr[i + 6], record_ptr[i + 7]};
+        uint8_t min[2] = {record_ptr[i + 8], record_ptr[i + 9]};
+        uint8_t voltage[3] = {record_ptr[i + 10], record_ptr[i + 11], record_ptr[i + 12]};
+
+        snprintf(buffer, 24, "(%s-%s-%s,%s:%s)(%s)\r\n", year, month, day, hour, min, voltage);
+        xor_result = bccGenerate(buffer, 23, xor_result);
 
 #if DEBUG
-    printf("threshold record to send is: \n");
-    printBufferHex(record_buf, 32);
+        printf("threshold record to send is: \n");
+        printBufferHex(buffer, 23);
+        printf("\n");
 #endif
 
-    uart_puts(UART0_ID, record_buf);
+        uart_puts(UART0_ID, buffer);
+    }
+
+    xor_result ^= '\r';
+    xor_result ^= 0x03;
+
+    uart_putc(UART0_ID, '\r');
+    uart_putc(UART0_ID, 0x03);
+    uart_putc(UART0_ID, xor_result);
 }
 
 #endif

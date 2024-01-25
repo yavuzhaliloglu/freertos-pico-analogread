@@ -80,18 +80,12 @@ void __not_in_flash_func(getFlashContents)()
     memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
 
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
-    if (th_ptr[3] == 0xFF)
-    {
-        uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
-        th_arr[0] = 5;
-        flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-    }
-
     vrms_threshold = th_ptr[0];
+
 #if DEBUG
     printf("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
 #endif
+
     // enable interrupts
     restore_interrupts(ints);
 }
@@ -555,6 +549,18 @@ void checkSectorContent()
         uint16_t sector_buffer[256] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+    }
+}
+
+void checkThresholdContent()
+{
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    if (th_ptr[0] == 0xFFFF)
+    {
+        uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
+        th_arr[0] = 5;
+        flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
     }
 }
 

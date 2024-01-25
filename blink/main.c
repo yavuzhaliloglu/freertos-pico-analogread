@@ -398,6 +398,7 @@ void main()
 
     // sector content control
     checkSectorContent();
+    checkThresholdContent();
 
     // // Reset Record Settings
     // resetFlashSettings();
