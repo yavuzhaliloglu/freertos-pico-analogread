@@ -1,17 +1,18 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//    36kb                      256kB                      512kB                                                                                                                                     2048kB
+//    36kb               236kB    256kB                      512kB                                                                                                                                     2048kB
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-// |    |                      |  |                        | | |                                                                                                                                         |
-// | B  |      Main Program    |T |      OTA Program       |N|S|                                                            Records                                                                      |
-// |    |                      |  |                        | | |                                                                                                                                         |
+// |    |                    | |  |                        | | |                                                                                                                                         |
+// | B  |      Main Program  |X|T |      OTA Program       |N|S|                                                            Records                                                                      |
+// |    |                    | |  |                        | | |                                                                                                                                         |
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 //                          240kB                       508kB  516kB
 //  B -> Bootloader
 //  T -> Threshold Contents
 //  N -> Serial Number Contents
 //  S -> Sector Contents
+//  X -> Threshold Sector and Variable Contents
 
 // FLASH DEFINES
 
@@ -27,6 +28,8 @@
 #define FLASH_REPROGRAM_OFFSET 256 * 1024
 // threshold values offset
 #define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
+// threshold values offset
+#define FLASH_THRESHOLD_INFO_OFFSET (256 * 1024) - (5 * FLASH_SECTOR_SIZE)
 // repgrogram area size
 #define FLASH_REPROGRAM_SIZE 256 * 1024 - FLASH_SECTOR_SIZE
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.

@@ -16,8 +16,6 @@ uint8_t vrms_mean_dec = 0;
 uint16_t sample_buffer[VRMS_SAMPLE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
 uint16_t bias_buffer[BIAS_SAMPLE];
-// this variable keeps a remaining value until beginning of next minute after program starts as system ticks
-TickType_t adc_remaining_time = 0;
 // this flag variable is used to detect if time is changed. If time is changed in device, that flag provides to align the task's execution time to beginning of next minute again
 volatile uint8_t time_change_flag;
 // vrms threshold value
@@ -85,7 +83,7 @@ uint8_t *serial_number = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
 // sector data variable keeps current sector to write records to flash
 static uint16_t sector_data = 0;
 // // threshold records sector data
-// static uint16_t sector_th_data = 0;
+static uint16_t th_sector_data = 0;
 // Flash data structure is used to keep different formats of data. This struct includes character variables and also uint8_t integer variables to create a record for flash.
 struct FlashData
 {

@@ -248,33 +248,15 @@ void vADCReadTask()
 {
     // Set the parameters for this task.
     TickType_t startTime;
-    TickType_t xFrequency = pdMS_TO_TICKS(60000);
+    TickType_t xFrequency = pdMS_TO_TICKS(1000);
     double vrms = 0.0;
     TickType_t vaitingTime = 0;
     double bias_voltage;
+    double vrms_values[60] = {0};
+    uint8_t vrms_values_count = 0;
 
     while (1)
     {
-        if (adc_remaining_time > 0)
-        {
-            vTaskDelay(pdMS_TO_TICKS(60000) - adc_remaining_time);
-            adc_remaining_time = 0;
-        }
-        // If time of this device is changed, this block will be executed. This task executes periodically and when time changes, the period of this task is going to slip.
-        // This block aligns the period to beginning of the minute and if the current minute is aligned to 15.period, writes the record to flash and wait until beginning of the minute and continues.
-        if (time_change_flag)
-        {
-#if DEBUG
-            printf("ADC READ TASK: time change flag - block is running...\n");
-#endif
-            // Calculate waiting time to align the task to beginning of the minute.
-            vaitingTime = pdMS_TO_TICKS(60000 - ((current_time.sec) * 1000) + 100);
-            // Set the parameters for this block to zero and wait until beginning of the minute.
-            time_change_flag = 0;
-            vTaskDelay(vaitingTime);
-            vaitingTime = 0;
-        }
-
         startTime = xTaskGetTickCount();
 #if DEBUG
         printf("ADC READ TASK: adc task entered at %s.\n", datetime_str);
@@ -289,22 +271,43 @@ void vADCReadTask()
         vrms = calculateVRMS(bias_voltage);
 #if DEBUG
         printf("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
-        printf("ADC READ TASK: calcualted vrms is: %lf\n", vrms);
+        printf("ADC READ TASK: calculated vrms is: %lf\n", vrms);
 #endif
-        // check if vrms value is bigger than threshold
-        checkVRMSThreshold(vrms);
+        // set the vrms value to vrms_values buffer
+        vrms_values[vrms_values_count++ % 60] = vrms;
 
-        // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
-        vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
-        vrms = 0.0;
+        // if time is beginning of a minute, set the vrms value to buffer
+        if (current_time.sec == 0)
+        {
+            // get mean of vrms values and if the mean of vrms values is bigger than threshold value, calculate variance
+            vrms = getMeanVarianceVRMSValues(vrms_values, vrms_values_count);
+
+            // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
+            vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
+            vrms = 0.0;
 #if DEBUG
-        printf("ADC READ TASK: now buffer content is: \n");
-        for (int8_t i = 0; i < vrms_buffer_count; i++)
-            printf("%lf\n", vrms_buffer[i]);
-        printf("\n");
+            printf("ADC READ TASK: VRMS_VALUES content is: \n");
+            for (int8_t i = 0; i < vrms_values_count; i++)
+            {
+                if (i % 8 == 0 && i != 0)
+                    printf("\n");
+
+                printf("%lf ", vrms_values[i]);
+            }
+            printf("\n");
+
+            printf("ADC READ TASK: VRMS_BUFFER content is: \n");
+            for (int8_t i = 0; i < vrms_buffer_count; i++)
+                printf("%lf\n", vrms_buffer[i]);
+            printf("\n");
 #endif
+
+            // reset the buffer
+            memset(vrms_values, 0, vrms_values_count);
+            vrms_values_count = 0;
+        }
         // Write a record to the flash memory periodically
-        if ((current_time.sec < 5 && current_time.min % 15 == 0))
+        if ((current_time.sec == 0 && current_time.min % 15 == 0))
         {
 #if DEBUG
             printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
@@ -410,17 +413,6 @@ void main()
     getTimePt7c4338(&current_time);
     rtc_set_datetime(&current_time);
     sleep_us(64);
-    // Align itself to beginning of the minute
-    adc_remaining_time = pdMS_TO_TICKS(((current_time.sec + 1) * 1000) - 100);
-
-#if DEBUG
-    // // FLASH RECORD AREA DEBUG
-    // uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    // printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
-
-    printf("MAIN: flash sector is: %d\n", sector_data);
-    printf("MAIN: adc_remaining_time is %ld\n", adc_remaining_time);
-#endif
 
     xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);

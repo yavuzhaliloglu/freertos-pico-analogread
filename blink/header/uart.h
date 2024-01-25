@@ -783,89 +783,105 @@ void setThresholdValue(uint8_t *data)
     printf("threshold value before change is: %d\n", vrms_threshold);
 #endif
 
+    // get value start and end pointers
     char *start_ptr = strchr(data, '(');
     char *end_ptr = strchr(data, ')');
-
-    start_ptr++;
+    // to keep string threshold value
     uint8_t threshold_val_str[3];
+    // converted threshold value from string
+    uint16_t threshold_val;
+    // array and pointer to write updated values to flash memory
+    uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
 
+    // inc start pointer
+    start_ptr++;
+
+    // get string threshold value
     strncpy(threshold_val_str, start_ptr, end_ptr - start_ptr);
 
-    uint16_t threshold_val = atoi(threshold_val_str);
+    // convert threshold value to uint16_t type
+    threshold_val = atoi(threshold_val_str);
 
 #if DEBUG
     printf("threshold value as string is: %s\n", threshold_val_str);
     printf("threshold value as int is: %d\n", threshold_val);
 #endif
+
+    // set the threshold value to use in program
     vrms_threshold = threshold_val;
-    uint8_t *th_record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + 2);
-    uint8_t th_record_buf[32];
-    uint8_t th_flash_buf[256] = {0};
 
-#if DEBUG
-    printf("threshold value after change is: %d\n", vrms_threshold);
+    // set array variables to updated values (just threshold changed)
+    th_arr[0] = vrms_threshold;
+    th_arr[1] = th_ptr[1];
 
-    printf("threshold record is: ");
-    for (int i = 0; th_record_ptr[i] != 0x00; i++)
-    {
-        printf("%02X ", th_record_ptr[i]);
-    }
-    printf("\n");
-#endif
-
-    memcpy(th_record_buf, th_record_ptr, 32);
-    concatenateAndPrintHex(vrms_threshold, th_record_buf, 32, th_flash_buf);
-
+    // write updated values to flash
     uint32_t ints = save_and_disable_interrupts();
-
-    flash_range_erase(FLASH_THRESHOLD_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_THRESHOLD_OFFSET, th_flash_buf, FLASH_PAGE_SIZE);
-
+    flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
     restore_interrupts(ints);
 
-    uint8_t *th_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
-    printBufferHex(th_ptr, 256);
+#if DEBUG
+    printf("threshold info content is:  \n");
+    printBufferHex((uint8_t *)th_ptr, FLASH_PAGE_SIZE);
+    printf("\n");
+#endif
 }
 
 void getThresholdRecord()
 {
-    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + 16);
+    // record area offset pointer
+    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    // xor result to send as bcc
     uint8_t xor_result = 0x00;
+    // buffer to format
+    uint8_t buffer[27];
 
-    uint8_t buffer[23];
+    // send STX character
     uart_putc(UART0_ID, 0x02);
 
+    // find the records and format it in a string buffer
     for (int i = 0; i < 4 * FLASH_SECTOR_SIZE; i += 16)
     {
+        // if beginning offset of a record starts with FF or 00, it means it is an empty record, so finish the formatting process
         if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
         {
             break;
         }
 
-        uint8_t year[2] = {record_ptr[i], record_ptr[i + 1]};
-        uint8_t month[2] = {record_ptr[i + 2], record_ptr[i + 3]};
-        uint8_t day[2] = {record_ptr[i + 4], record_ptr[i + 5]};
-        uint8_t hour[2] = {record_ptr[i + 6], record_ptr[i + 7]};
-        uint8_t min[2] = {record_ptr[i + 8], record_ptr[i + 9]};
-        uint8_t voltage[3] = {record_ptr[i + 10], record_ptr[i + 11], record_ptr[i + 12]};
+        // set the date and values to variables
+        uint8_t year[3] = {record_ptr[i], record_ptr[i + 1], 0x00};
+        uint8_t month[3] = {record_ptr[i + 2], record_ptr[i + 3], 0x00};
+        uint8_t day[3] = {record_ptr[i + 4], record_ptr[i + 5], 0x00};
+        uint8_t hour[3] = {record_ptr[i + 6], record_ptr[i + 7], 0x00};
+        uint8_t min[3] = {record_ptr[i + 8], record_ptr[i + 9], 0x00};
+        uint8_t voltage[4] = {record_ptr[i + 10], record_ptr[i + 11], record_ptr[i + 12], 0x00};
+        uint8_t variance[4] = {record_ptr[i + 13], record_ptr[i + 14], record_ptr[i + 15], 0x00};
 
-        snprintf(buffer, 24, "(%s-%s-%s,%s:%s)(%s)\r\n", year, month, day, hour, min, voltage);
-        xor_result = bccGenerate(buffer, 23, xor_result);
+        // format the variables in a buffer
+        snprintf(buffer, 28, "(%s-%s-%s,%s:%s)(%s,%s)\r\n", year, month, day, hour, min, voltage);
+        // xor all bytes of formatted array
+        xor_result = bccGenerate(buffer, 27, xor_result);
 
 #if DEBUG
         printf("threshold record to send is: \n");
-        printBufferHex(buffer, 23);
+        printBufferHex(buffer, 27);
         printf("\n");
 #endif
 
+        // send the record
         uart_puts(UART0_ID, buffer);
     }
 
+    // xor last bits of data
     xor_result ^= '\r';
     xor_result ^= 0x03;
 
+    // send last \r character
     uart_putc(UART0_ID, '\r');
+    // send ETX character
     uart_putc(UART0_ID, 0x03);
+    // send BCC character
     uart_putc(UART0_ID, xor_result);
 }
 
