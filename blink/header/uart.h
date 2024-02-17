@@ -40,7 +40,7 @@ void sendDeviceInfo()
     int offset;
     uint16_t record_count = 0;
 
-    char debug_uart_buffer[64] = {0};
+    char debug_uart_buffer[44] = {0};
     sprintf(debug_uart_buffer, "sector count is: %d\r\n\0", flash_sector_content[0]);
     uart_puts(UART0_ID, debug_uart_buffer);
 
@@ -68,7 +68,8 @@ void sendDeviceInfo()
         uart_puts(UART0_ID, debug_uart_buffer);
         record_count++;
     }
-    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes\nLast record offset is: %d\r\n\0", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET), offset);
+
+    sprintf(debug_uart_buffer, "usage of flash is: %d/%ld bytes\n\0", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET));
     uart_puts(UART0_ID, debug_uart_buffer);
 }
 
@@ -549,6 +550,10 @@ void setTimeFromUART(uint8_t *buffer)
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
     getTimePt7c4338(&current_time);
+
+    if (current_time.dotw < 0 || current_time.dotw > 6)
+        current_time.dotw = 2;
+
     rtc_set_datetime(&current_time);
     // Set time_change_flag value. This flag provides to align ADCReadTask's period. When time changed, the task that aligned to beginning of the minute will broke, so this flag controls to align task itself beginning of the minute again
     time_change_flag = 1;
@@ -587,6 +592,10 @@ void setDateFromUART(uint8_t *buffer)
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
     getTimePt7c4338(&current_time);
+
+    if (current_time.dotw < 0 || current_time.dotw > 6)
+        current_time.dotw = 2;
+
     rtc_set_datetime(&current_time);
 }
 
@@ -835,7 +844,7 @@ void getThresholdRecord()
     // xor result to send as bcc
     uint8_t xor_result = 0x00;
     // buffer to format
-    uint8_t buffer[27];
+    uint8_t buffer[29];
 
     // send STX character
     uart_putc(UART0_ID, 0x02);
@@ -846,26 +855,41 @@ void getThresholdRecord()
         // if beginning offset of a record starts with FF or 00, it means it is an empty record, so finish the formatting process
         if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
         {
-            break;
+            continue;
         }
 
-        // set the date and values to variables
+        // copy the flash content in struct
         uint8_t year[3] = {record_ptr[i], record_ptr[i + 1], 0x00};
         uint8_t month[3] = {record_ptr[i + 2], record_ptr[i + 3], 0x00};
         uint8_t day[3] = {record_ptr[i + 4], record_ptr[i + 5], 0x00};
         uint8_t hour[3] = {record_ptr[i + 6], record_ptr[i + 7], 0x00};
         uint8_t min[3] = {record_ptr[i + 8], record_ptr[i + 9], 0x00};
-        uint8_t voltage[4] = {record_ptr[i + 10], record_ptr[i + 11], record_ptr[i + 12], 0x00};
-        uint8_t variance[4] = {record_ptr[i + 13], record_ptr[i + 14], record_ptr[i + 15], 0x00};
+        uint16_t vrms = record_ptr[i + 11];
+        vrms = (vrms << 8);
+        vrms += record_ptr[i + 10];
+        uint16_t variance = record_ptr[i + 13];
+        variance = (variance << 8);
+        variance += record_ptr[i + 12];
+
+#if DEBUG
+        printf("data.year is: %s\n", year);
+        printf("data.month is: %s\n", month);
+        printf("data.day is: %s\n", day);
+        printf("data.hour is: %s\n", hour);
+        printf("data.min is: %s\n", min);
+        printf("data.vrms is: %d\n", vrms);
+        printf("data.variance is: %d\n", variance);
+#endif
 
         // format the variables in a buffer
-        snprintf(buffer, 28, "(%s-%s-%s,%s:%s)(%s,%s)\r\n", year, month, day, hour, min, voltage);
+        snprintf(buffer, 30, "(%s-%s-%s,%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, vrms, variance);
+
         // xor all bytes of formatted array
-        xor_result = bccGenerate(buffer, 27, xor_result);
+        xor_result = bccGenerate(buffer, 29, xor_result);
 
 #if DEBUG
         printf("threshold record to send is: \n");
-        printBufferHex(buffer, 27);
+        printBufferHex(buffer, 29);
         printf("\n");
 #endif
 

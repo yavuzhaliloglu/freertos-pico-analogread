@@ -105,6 +105,7 @@ void vUARTTask(void *pvParameters)
                         rx_buffer[rx_buffer_len++] = rx_char;
 
                     vTaskDelay(pdMS_TO_TICKS(250));
+
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
 #if DEBUG
@@ -252,7 +253,7 @@ void vADCReadTask()
     double vrms = 0.0;
     TickType_t vaitingTime = 0;
     double bias_voltage;
-    double vrms_values[60] = {0};
+    double vrms_values[VRMS_VALUES_BUFFER_SIZE] = {0};
     uint8_t vrms_values_count = 0;
 
     while (1)
@@ -274,16 +275,21 @@ void vADCReadTask()
         printf("ADC READ TASK: calculated vrms is: %lf\n", vrms);
 #endif
         // set the vrms value to vrms_values buffer
-        vrms_values[vrms_values_count++ % 60] = vrms;
+        vrms_values[vrms_values_count % VRMS_VALUES_BUFFER_SIZE] = vrms;
+        vrms_values_count++;
 
         // if time is beginning of a minute, set the vrms value to buffer
         if (current_time.sec == 0)
         {
+            // if vrms values count is changed, the count of the buffer might be bigger than expected (60), so set it to 60.
+            if (vrms_values_count > VRMS_VALUES_BUFFER_SIZE)
+                vrms_values_count = VRMS_VALUES_BUFFER_SIZE;
+
             // get mean of vrms values and if the mean of vrms values is bigger than threshold value, calculate variance
             vrms = getMeanVarianceVRMSValues(vrms_values, vrms_values_count);
 
             // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
-            vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
+            vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
             vrms = 0.0;
 #if DEBUG
             printf("ADC READ TASK: VRMS_VALUES content is: \n");
@@ -312,8 +318,8 @@ void vADCReadTask()
 #if DEBUG
             printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
 #endif
-            if (vrms_buffer_count > 15)
-                vrms_buffer_count = 15;
+            if (vrms_buffer_count > VRMS_BUFFER_SIZE)
+                vrms_buffer_count = VRMS_BUFFER_SIZE;
 
             vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
 #if DEBUG
@@ -344,6 +350,7 @@ void vWriteDebugTask()
     while (true)
     {
         vTaskDelayUntil(&startTime, xFrequency);
+
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
 #if DEBUG
@@ -374,45 +381,57 @@ void main()
     initUART();
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
+    sleep_ms(100);
 
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
     gpio_init(3);
     gpio_set_dir(3, GPIO_OUT);
+    sleep_ms(100);
 
     // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
+    sleep_ms(100);
 
     adc_set_clkdiv(CLOCK_DIV);
     adcCapture(sample_buffer, VRMS_SAMPLE);
-    sleep_ms(1);
-
-    // RTC Init
-    rtc_init();
+    sleep_ms(100);
 
     // I2C Init
     i2c_init(i2c0, 400 * 1000);
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
+    sleep_ms(100);
 
     // sector content control
     checkSectorContent();
     checkThresholdContent();
+    sleep_ms(100);
 
     // // Reset Record Settings
     // resetFlashSettings();
 
     // FLASH CONTENTS
     getFlashContents();
+    sleep_ms(100);
+
+    // RTC Init
+    rtc_init();
+    sleep_ms(100);
 
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
+    sleep_ms(100);
+
+    if (current_time.dotw < 0 || current_time.dotw > 6)
+        current_time.dotw = 2;
+
     rtc_set_datetime(&current_time);
-    sleep_us(64);
+    sleep_ms(100);
 
     xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
     xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);

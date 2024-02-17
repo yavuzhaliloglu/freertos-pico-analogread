@@ -16,7 +16,7 @@ void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
     adc_fifo_drain();
 }
 
-uint32_t calculateVariance(double *buffer, size_t size)
+uint16_t calculateVariance(double *buffer, size_t size)
 {
     double total = 0;
     double mean;
@@ -43,7 +43,7 @@ uint32_t calculateVariance(double *buffer, size_t size)
     printf("\nvariance of samples as uint32_t is: %ld\n", (uint32_t)(variance_total / (size - 1)));
 #endif
 
-    return (uint32_t)(variance_total / (size - 1));
+    return (uint16_t)(variance_total / (size - 1));
 }
 
 double calculateVRMS(double bias)
@@ -95,33 +95,36 @@ double getMean(uint16_t *buffer, size_t size)
     return (total / size);
 }
 
-void writeThresholdRecord(double vrms, uint32_t variance)
+void writeThresholdRecord(double vrms, uint16_t variance)
 {
     // set datetime variables
-    int8_t day = current_time.day;
-    int8_t month = current_time.month;
-    int8_t year = current_time.year;
-    int8_t hour = current_time.hour;
-    int8_t min = current_time.min;
+    struct ThresholdData data;
     uint8_t *threshold_recs = (uint8_t *)(XIP_BASE + (FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE)));
     int l_offset;
-    uint8_t threshold_buffer[16] = {0};
-    // format the variables to create a record
-    snprintf(threshold_buffer, 17, "%02d%02d%02d%02d%02d%03d%03d", year, month, day, hour, min, (uint16_t)vrms, variance);
+    uint8_t record_count = 0;
 
-#if DEBUG
-    printf("threshold buffer as hexadecimal: \n");
-    printBufferHex(threshold_buffer, 16);
-#endif
+    // set struct data parameters
+    setDateToCharArray(current_time.year, data.year);
+    setDateToCharArray(current_time.month, data.month);
+    setDateToCharArray(current_time.day, data.day);
+    setDateToCharArray(current_time.hour, data.hour);
+    setDateToCharArray(current_time.min, data.min);
+    data.vrms = vrms;
+    data.variance = variance;
+    data.padding[0] = 0x00;
+    data.padding[1] = 0x00;
+
+    // // format the variables to create a record
+    // snprintf(threshold_buffer, 17, "%02d%02d%02d%02d%02d%03d%03d", year, month, day, hour, min, (uint16_t)vrms, variance);
 
     // find last record offset of the sector
-
     for (l_offset = 0; l_offset < FLASH_SECTOR_SIZE; l_offset += 16)
     {
         if (threshold_recs[l_offset] == 0xFF || threshold_recs[l_offset] == 0x00)
         {
             break;
         }
+        record_count++;
     }
 
     // if offset is equal to flash sector size, it means sector is full, so update sector and write data to the next sector
@@ -148,24 +151,30 @@ void writeThresholdRecord(double vrms, uint32_t variance)
     // copy the records in a sector in the buffer
     memcpy(flash_th_buf, threshold_recs, l_offset);
     // copy next record after the buffer's last record
-    memcpy((flash_th_buf + l_offset), threshold_buffer, 16);
+    memcpy((flash_th_buf + record_count), (void *)&data, 16);
 
 #if DEBUG
-    printf("flash_th_buf as hexadecimal: \n");
-    printBufferHex(flash_th_buf, FLASH_PAGE_SIZE);
+    printf("WRITETHRESHOLDDATA: flash_th_buf as hexadecimal: \n");
+    printBufferHex((uint8_t *)flash_th_buf, FLASH_PAGE_SIZE);
 #endif
 
     // write buffer in flash
     uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), flash_th_buf, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_th_buf, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
+
+#if DEBUG
+    printf("WRITETHRESHOLDDATA: threshold records as hexadecimal: \n");
+    printBufferHex(threshold_recs, FLASH_PAGE_SIZE);
+#endif
 }
 
 double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
 {
     double mean_vrms = 0;
     double total = 0;
+    uint16_t variance = 0;
 
     for (uint8_t i = 0; i < size; i++)
         total += buffer[i];
@@ -174,7 +183,7 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
 
     if (mean_vrms >= (double)vrms_threshold)
     {
-        uint32_t variance = calculateVariance(buffer, size);
+        variance = calculateVariance(buffer, size);
         writeThresholdRecord(mean_vrms, variance);
     }
 

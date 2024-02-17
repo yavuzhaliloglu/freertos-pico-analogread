@@ -33,7 +33,7 @@ void setTimePt7c4338(struct i2c_inst *i2c, uint8_t address, uint8_t seconds, uin
 }
 
 // This function gets the PT7C4338's Real Time and sets it to datetime object
-datetime_t getTimePt7c4338(datetime_t *dt)
+void getTimePt7c4338(datetime_t *dt)
 {
     uint8_t buffer[7] = {PT7C4338_REG_SECONDS};
 

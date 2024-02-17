@@ -84,6 +84,8 @@
 #define VRMS_SAMPLE 500
 // VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 15
+// VRMS values buffer size, is the size of calculated VRMS values in a minute
+#define VRMS_VALUES_BUFFER_SIZE 60
 //
 #define CLOCK_DIV 4 * 9600
 // ADC Voltage Pin

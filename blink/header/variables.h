@@ -101,6 +101,20 @@ struct FlashData
 };
 // This is a buffer that keeps record contents. When a record should be written in flash, current sector content is copied to this buffer, new record adds after last record, and this buffer is written to flash again.
 struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};
+// Threshold data to write and read from flash correctly with struct type
+struct ThresholdData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    uint16_t vrms;
+    uint16_t variance;
+    uint8_t padding[2];
+};
+// Threshold buffer that can keep 1 Sector size threshold record
+struct ThresholdData flash_th_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)] = {0};
 // this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.
 uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
 // this small buffer keeps 8 bytes of program data and this buffer is converted 8-bit from 7-bit
@@ -113,7 +127,6 @@ int ota_block_count = 0;
 int data_cnt = 0;
 // this flag variable is used to write reamining contents in rpb buffer to flash
 bool is_program_end = false;
-uint8_t flash_th_buf[FLASH_SECTOR_SIZE] = {0};
 
 // RTC VARIABLES
 
@@ -128,8 +141,8 @@ datetime_t current_time = {
     .day = 05,
     .dotw = 5, // 0 is Sunday, so 5 is Friday
     .hour = 15,
-    .min = 45,
-    .sec = 00};
+    .min = 46,
+    .sec = 50};
 
 // This is ADCTaskHandler. This handler is used to delete ADCReadTask in ReProgram State.
 TaskHandle_t xADCHandle;
