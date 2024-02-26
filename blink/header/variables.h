@@ -20,6 +20,8 @@ uint16_t bias_buffer[BIAS_SAMPLE];
 volatile uint8_t time_change_flag;
 // vrms threshold value
 uint16_t vrms_threshold;
+// threshold flag value, used for set threshold pin and hold it until command comes and resets it
+uint8_t threshold_set_before = 0;
 
 uint8_t vrms_buffer_count = 0;
 double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
@@ -57,7 +59,8 @@ enum ListeningStates
     ProductionInfo = 4,
     Password = 5,
     SetThreshold = 6,
-    GetThreshold = 7
+    GetThreshold = 7,
+    ThresholdPin = 8
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;

@@ -382,7 +382,7 @@ void searchDataInFlash()
     datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    char load_profile_line[42] = {0};
+    char load_profile_line[41] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
     uint8_t *date_start = strchr(rx_buffer, '(');
     uint8_t *date_end = strchr(rx_buffer, ')');
@@ -479,7 +479,13 @@ void searchDataInFlash()
 #if DEBUG
             printf("SEARCHDATAINFLASH: message to send: %s\n", load_profile_line);
 #endif
-            // send the record to UART and wait
+
+// send the record to UART and wait
+#if DEBUG
+            printf("SEARCHDATAINFLASH: Record to send as bytearray: \n");
+            printBufferHex(load_profile_line, 41);
+            printf("\n");
+#endif
             uart_puts(UART0_ID, load_profile_line);
             if (start_addr == end_addr)
                 uart_putc(UART0_ID, xor_result);
@@ -534,7 +540,9 @@ void resetFlashSettings()
 }
 
 void checkSectorContent()
-{
+{   
+    uint32_t ints = save_and_disable_interrupts();
+
     uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
     uint16_t ff_count = 0;
 
@@ -553,10 +561,14 @@ void checkSectorContent()
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
     }
+
+    restore_interrupts(ints);
 }
 
 void checkThresholdContent()
 {
+    uint32_t ints = save_and_disable_interrupts();
+
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
     uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
 
@@ -570,10 +582,9 @@ void checkThresholdContent()
         th_arr[0] = 5;
         th_arr[1] = th_ptr[1];
 
-        uint32_t ints = save_and_disable_interrupts();
+
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
     }
     // Threshold Records Sector control
     if (th_ptr[1] == 0xFFFF)
@@ -584,11 +595,11 @@ void checkThresholdContent()
         th_arr[0] = th_ptr[0];
         th_arr[1] = 0;
 
-        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
     }
+
+    restore_interrupts(ints);
 }
 
 void updateThresholdSector(uint16_t sector_val)

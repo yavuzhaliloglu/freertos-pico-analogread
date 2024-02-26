@@ -90,6 +90,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char reprogram_str[] = "!!!!";
     char threshold_str[] = "T.V.1";
     char get_threshold_str[] = "T.R.1";
+    char threshold_pin[] = "T.P.1";
 
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
@@ -174,6 +175,14 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 #endif
             return GetThreshold;
         }
+        // Set Threshold PIN (T.P.1)
+        if (strstr(data_buffer, threshold_pin) != NULL)
+        {
+#if DEBUG
+            printf("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
+#endif
+            return ThresholdPin;
+        }
     }
 #if DEBUG
     printf("CHECKLISTENINGDATA: dataerror state is accepted in checklisteningdata\n");
@@ -222,6 +231,7 @@ void parseReadingData(uint8_t *buffer)
             {
                 reading_state_end_time[l - (k + 1)] = buffer[l];
             }
+
             if (rx_buffer_len == 41)
             {
                 // Delete the characters from end date array
@@ -613,6 +623,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
     uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};
     uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};
 
     // length of mesasge that should be
     uint8_t time_len = 21;
@@ -624,6 +635,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t reading_all_len = 13;
     uint8_t set_threshold_len = 16;
     uint8_t get_threshold_len = 13;
+    uint8_t set_threshold_pin_len = 13;
 
     // controls for the message
     if ((len == password_len) && (strncmp(buffer, password, 4) == 0))
@@ -633,52 +645,59 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 #endif
         return true;
     }
-    if ((len == reprogram_len) && (strncmp(buffer, reprogram, 9) == 0))
+    else if ((len == reprogram_len) && (strncmp(buffer, reprogram, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reprogram request.\n");
 #endif
         return true;
     }
-    if (((len == reading_len) && ((strncmp(buffer, reading, 8) == 0) || (strncmp(buffer, reading2, 8) == 0))) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
+    else if (((len == reading_len) && ((strncmp(buffer, reading, 8) == 0) || (strncmp(buffer, reading2, 8) == 0))) || ((len == reading_all_len) && (strncmp(buffer, reading_all, 11) == 0)))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
 #endif
         return true;
     }
-    if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
+    else if ((len == time_len) && (strncmp(buffer, time, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is time change request.\n");
 #endif
         return true;
     }
-    if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
+    else if ((len == date_len) && (strncmp(buffer, date, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is date change request.\n");
 #endif
         return true;
     }
-    if ((len == production_len) && (strncmp(buffer, production, 10) == 0))
+    else if ((len == production_len) && (strncmp(buffer, production, 10) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is production info request.\n");
 #endif
         return true;
     }
-    if ((len == set_threshold_len) && (strncmp(buffer, set_threshold_val, 9) == 0))
+    else if ((len == set_threshold_len) && (strncmp(buffer, set_threshold_val, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is set threshold value.\n");
 #endif
         return true;
     }
-    if ((len == get_threshold_len) && (strncmp(buffer, get_threshold_val, 9) == 0))
+    else if ((len == get_threshold_len) && (strncmp(buffer, get_threshold_val, 9) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is get threshold value.\n");
+#endif
+        return true;
+    }
+    else if ((len == set_threshold_pin_len) && (strncmp(buffer, set_threshold_pin, 9) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
 #endif
         return true;
     }
@@ -907,6 +926,25 @@ void getThresholdRecord()
     uart_putc(UART0_ID, 0x03);
     // send BCC character
     uart_putc(UART0_ID, xor_result);
+}
+
+void setThresholdPIN()
+{
+    if (!password_correct_flag)
+        return;
+
+    if (threshold_set_before)
+    {
+#if DEBUG
+        printf("Threshold PIN set before, resetting pin...\n");
+#endif
+        gpio_put(THRESHOLD_PIN, 0);
+        vTaskDelay(10);
+        threshold_set_before = 0;
+#if DEBUG
+        printf("Threshold PIN reset\n");
+#endif
+    }
 }
 
 #endif

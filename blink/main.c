@@ -222,7 +222,13 @@ void vUARTTask(void *pvParameters)
 #endif
                             getThresholdRecord();
                             break;
-
+                        
+                        case ThresholdPin:
+#if DEBUG
+                            printf("UART TASK: entered listening-thresholdpin\n");
+#endif
+                            setThresholdPIN();
+                            break;
                         default:
 #if DEBUG
                             printf("UART TASK: entered listening-default\n");
@@ -373,8 +379,9 @@ void vResetTask()
 
 void main()
 {
+    sleep_ms(100);
     stdio_init_all();
-    sleep_ms(1000);
+    sleep_ms(2000);
 
     // UART INIT
     uart_init(UART0_ID, BAUD_RATE);
@@ -389,6 +396,12 @@ void main()
     gpio_init(3);
     gpio_set_dir(3, GPIO_OUT);
     sleep_ms(100);
+
+    // THRESHOLD GPIO INIT
+    gpio_init(THRESHOLD_PIN);
+    gpio_set_dir(THRESHOLD_PIN,GPIO_OUT);
+    sleep_ms(100);
+    gpio_put(THRESHOLD_PIN,0);
 
     // ADC INIT
     adc_init();
@@ -426,19 +439,37 @@ void main()
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
     sleep_ms(100);
-
+    
+    // If current time which is get from Chip has invalid value, adjust the value.
     if (current_time.dotw < 0 || current_time.dotw > 6)
         current_time.dotw = 2;
 
-    rtc_set_datetime(&current_time);
+    // set and get datetimes from RP2040 RTC's
+    bool is_time_set = rtc_set_datetime(&current_time);
+    sleep_ms(100);
+    bool is_time_get = rtc_get_datetime(&current_time);
     sleep_ms(100);
 
-    xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
-    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
-    xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
+    // if time is get correctly, set string datetime.
+    if(is_time_get)
+        datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
 
-    vTaskStartScheduler();
+    // wait for a while
+    sleep_ms(100);
+
+    // if time is set correctly, start the processes.
+    if (is_time_set)
+    {
+#if DEBUG
+        printf("Time is set. Starting tasks...\n");
+#endif
+        xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
+        xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
+        xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
+
+        vTaskStartScheduler();
+    }
 
     while (true)
         ;

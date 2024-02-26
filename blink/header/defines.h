@@ -71,12 +71,15 @@
 // Device software version number
 #define SOFTWARE_VERSION "V0.9"
 
-// RESET REFINES
+// RESET DEFINES
 
 // Reset Pin Select
 #define RESET_PULSE_PIN 2
 // Standby Time for the Task
 #define INTERVAL_MS 60000
+
+// THRESHOLD PIN DEFINE
+#define THRESHOLD_PIN 17
 
 // ADC DEFINES
 

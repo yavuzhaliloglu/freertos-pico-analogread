@@ -183,6 +183,15 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
 
     if (mean_vrms >= (double)vrms_threshold)
     {
+        if (!threshold_set_before)
+        {   
+            // put THRESHOLD PIN 1 value
+            gpio_put(THRESHOLD_PIN,1);
+            vTaskDelay(10);
+            // set flag to not put 1 until command comes
+            threshold_set_before = 1;
+        }
+
         variance = calculateVariance(buffer, size);
         writeThresholdRecord(mean_vrms, variance);
     }
