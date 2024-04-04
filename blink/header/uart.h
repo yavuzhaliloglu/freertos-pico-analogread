@@ -44,6 +44,10 @@ void sendDeviceInfo()
     sprintf(debug_uart_buffer, "sector count is: %d\r\n\0", flash_sector_content[0]);
     uart_puts(UART0_ID, debug_uart_buffer);
 
+    uart_puts(UART0_ID,"System Time is: ");
+    uart_puts(UART0_ID,datetime_str);
+    uart_puts(UART0_ID,"\r\n");
+
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
 
@@ -503,13 +507,13 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
             // Generate the message to send UART
-            uint8_t mread_data_buff[90] = {0};
+            uint8_t mread_data_buff[92] = {0};
             //                                   19                     17                      17                  18            13          4
-            snprintf(mread_data_buff, 89, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(23-10-05)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, SOFTWARE_VERSION, 0x03);
-            setBCC(mread_data_buff, 88, 0x02);
+            snprintf(mread_data_buff, 91, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(%s)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, PRODUCTION_DATE, SOFTWARE_VERSION, 0x03);
+            setBCC(mread_data_buff, 90, 0x02);
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 90);
+            printBufferHex(mread_data_buff, 92);
             printf("\n");
 #endif
             // Send the readout data

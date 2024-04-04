@@ -91,11 +91,11 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         print("information response bcc result: ", hex(bcc))
 
         if bcc_received == bcc:
-            # bcc = 0x01
-            # # tüketim sorgusu
-            # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2824-01-15,08:00;24-01-15,20:00\x29\x03"
-            # )
+            bcc = 0x01
+            # tüketim sorgusu
+            loadFormat = bytearray(
+                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2824-04-04,14:00;24-04-04,16:00\x29\x03"
+            )
             
             # bcc = 0x01
             # # tüketim sorgusu
@@ -103,44 +103,34 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
             # )
 
-            # for b in loadFormat:
-            #     bcc ^= b
-            # loadFormat.append(bcc)
-            # print("data to send device: ", loadFormat)
-            # seri.write(loadFormat)
+            for b in loadFormat:
+                bcc ^= b
+            loadFormat.append(bcc)
+            print("data to send device: ", loadFormat)
+            seri.write(loadFormat)
 
-            # xor_check = 0x02
-            # for i in range(500):
-            #     data = bytearray(seri.readline())
-            #     if len(data) == 0:
-            #         break
-            #     print(data)
-            #     if len(data) != 3:
-            #         for b in data:
-            #             xor_check ^= b
-            #     else:
-            #         xor_check ^= data[0]
-            #         xor_check ^= data[1]
-            #         print("xor check:", hex(xor_check))
+            xor_check = 0x02
+            for i in range(500):
+                data = bytearray(seri.readline())
+                if len(data) == 0:
+                    break
+                print(data)
+                if len(data) != 3:
+                    for b in data:
+                        xor_check ^= b
+                else:
+                    xor_check ^= data[0]
+                    xor_check ^= data[1]
+                    print("xor check:", hex(xor_check))
 
-            # loadFormat2 = bytearray(b'\x01\x52\x32\x02\x50\x2E\x30\x31\x282401120800;2308110100\x29\x03')
-            # bcc2= 0x01
-            # for b in loadFormat2:
-            #     bcc2 ^= b
-            # loadFormat2.append(bcc2)
-            # print(loadFormat2)
-            # seri.write(loadFormat2)
-            # for i in range(20):
-            #     print(seri.readline())
-
-            bcc_password = 0x01
-            passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
-            for b in passwordMessage:
-                bcc_password ^= b
-            passwordMessage.append(bcc_password)
-            print(passwordMessage)
-            seri.write(passwordMessage)
-            print(bytearray(seri.readline()))
+            # bcc_password = 0x01
+            # passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
+            # for b in passwordMessage:
+            #     bcc_password ^= b
+            # passwordMessage.append(bcc_password)
+            # print(passwordMessage)
+            # seri.write(passwordMessage)
+            # print(bytearray(seri.readline()))
 # # ---------------------------------------------------------------------------------------------------
 #             time_str = hour_str + ":" + minute_str + ":" + second_str
 #             time_str = time_str.encode()
@@ -177,17 +167,17 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
 #             print(seri.readline())
 # # ----------------------------------------------------------------------------------------------------
 
-            bcc_threshold = 0x01
-            threshold = bytearray(b'\x01\x57\x32\x02T.P.1()\x03')
-            for b in threshold:
-                bcc_threshold ^=b
-            threshold.append(bcc_threshold)
-            seri.write(threshold)
-            for i in range(500):
-                data = seri.readline()
-                if len(data) == 0:
-                    break
-                print(data)
+            # bcc_threshold = 0x01
+            # threshold = bytearray(b'\x01\x57\x32\x02T.P.1()\x03')
+            # for b in threshold:
+            #     bcc_threshold ^=b
+            # threshold.append(bcc_threshold)
+            # seri.write(threshold)
+            # for i in range(500):
+            #     data = seri.readline()
+            #     if len(data) == 0:
+            #         break
+            #     print(data)
 
             # bcc_threshold = 0x01
             # threshold = bytearray(b'\x01\x57\x32\x02T.V.1(007)\x03')
@@ -198,7 +188,7 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
             # print(seri.readline())
 
             # bcc_threshold = 0x01
-            # threshold = bytearray(b'\x01\x52\x32\x02T.V.1()\x03')
+            # threshold = bytearray(b'\x01\x52\x32\x02T.R.1()\x03')
             # for b in threshold:
             #     bcc_threshold ^=b
             # threshold.append(bcc_threshold)
