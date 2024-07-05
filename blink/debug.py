@@ -33,7 +33,7 @@ mbr_int = int(mbr_str)
 baud_rates = [300, 600, 1200, 2400, 4800, 9600]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
-    information_message = bytearray(b"\x0604\r\n")
+    information_message = bytearray(b"\x0600\r\n")
     information_message[2:2] = max_baud_rate
     print(information_message)
 

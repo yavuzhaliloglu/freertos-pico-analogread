@@ -4,7 +4,7 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/common/boot_uf2/include
+CXX_INCLUDES = -I/home/yavuz/pico/freertos-pico/pico-sdk/src/common/boot_uf2/include
 
 CXX_FLAGS = -std=gnu++14
 

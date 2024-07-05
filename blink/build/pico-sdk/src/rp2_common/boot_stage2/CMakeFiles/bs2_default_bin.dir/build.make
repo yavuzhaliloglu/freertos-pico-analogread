@@ -70,7 +70,7 @@ pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin: pico-sdk/src/rp2
 
 pico-sdk/src/rp2_common/boot_stage2/bs2_default.bin: pico-sdk/src/rp2_common/boot_stage2/bs2_default.elf
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --blue --bold --progress-dir=/home/yavuz/pico/freertos-pico/blink/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Generating bs2_default.bin"
-	cd /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2 && /usr/bin/arm-none-eabi-objcopy -Obinary /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/bs2_default.elf /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/bs2_default.bin
+	cd /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2 && /home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-objcopy -Obinary /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/bs2_default.elf /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/bs2_default.bin
 
 bs2_default_bin: pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin
 bs2_default_bin: pico-sdk/src/rp2_common/boot_stage2/bs2_default.bin
@@ -86,6 +86,6 @@ pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/clean:
 .PHONY : pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/clean
 
 pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/depend:
-	cd /home/yavuz/pico/freertos-pico/blink/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yavuz/pico/freertos-pico/blink /home/yavuz/Desktop/pico-bootloader/pico/pico-sdk/src/rp2_common/boot_stage2 /home/yavuz/pico/freertos-pico/blink/build /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2 /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/yavuz/pico/freertos-pico/blink/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/yavuz/pico/freertos-pico/blink /home/yavuz/pico/freertos-pico/pico-sdk/src/rp2_common/boot_stage2 /home/yavuz/pico/freertos-pico/blink/build /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2 /home/yavuz/pico/freertos-pico/blink/build/pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : pico-sdk/src/rp2_common/boot_stage2/CMakeFiles/bs2_default_bin.dir/depend
 

@@ -34,6 +34,6 @@ endif()
 
 # Set default install directory permissions.
 if(NOT DEFINED CMAKE_OBJDUMP)
-  set(CMAKE_OBJDUMP "/usr/bin/arm-none-eabi-objdump")
+  set(CMAKE_OBJDUMP "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-objdump")
 endif()
 

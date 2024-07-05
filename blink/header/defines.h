@@ -69,10 +69,10 @@
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
-#define SOFTWARE_VERSION "V0.9.1"
+#define SOFTWARE_VERSION "V0.9.2"
 // production date of device (yy-mm-dd)
 #define PRODUCTION_DATE "24-03-13"
-
+ 
 // RESET DEFINES
 
 // Reset Pin Select
@@ -102,7 +102,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // Debugs
-#define DEBUG 0
+#define DEBUG 1
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 

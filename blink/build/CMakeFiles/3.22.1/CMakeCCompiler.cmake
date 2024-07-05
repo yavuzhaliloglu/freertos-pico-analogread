@@ -1,7 +1,7 @@
-set(CMAKE_C_COMPILER "/usr/bin/arm-none-eabi-gcc")
+set(CMAKE_C_COMPILER "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "GNU")
-set(CMAKE_C_COMPILER_VERSION "10.3.1")
+set(CMAKE_C_COMPILER_VERSION "9.3.1")
 set(CMAKE_C_COMPILER_VERSION_INTERNAL "")
 set(CMAKE_C_COMPILER_WRAPPER "")
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "17")
@@ -21,11 +21,11 @@ set(CMAKE_C_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "/usr/bin/arm-none-eabi-ar")
-set(CMAKE_C_COMPILER_AR "/usr/bin/arm-none-eabi-gcc-ar")
-set(CMAKE_RANLIB "/usr/bin/arm-none-eabi-ranlib")
-set(CMAKE_C_COMPILER_RANLIB "/usr/bin/arm-none-eabi-gcc-ranlib")
-set(CMAKE_LINKER "/usr/bin/arm-none-eabi-ld")
+set(CMAKE_AR "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-ar")
+set(CMAKE_C_COMPILER_AR "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc-ar")
+set(CMAKE_RANLIB "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-ranlib")
+set(CMAKE_C_COMPILER_RANLIB "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-gcc-ranlib")
+set(CMAKE_LINKER "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/bin/arm-none-eabi-ld")
 set(CMAKE_MT "")
 set(CMAKE_COMPILER_IS_GNUCC 1)
 set(CMAKE_C_COMPILER_LOADED 1)
@@ -66,7 +66,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/usr/lib/gcc/arm-none-eabi/10.3.1/include;/usr/lib/gcc/arm-none-eabi/10.3.1/include-fixed;/usr/lib/arm-none-eabi/include")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/lib/gcc/arm-none-eabi/9.3.1/include;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/lib/gcc/arm-none-eabi/9.3.1/include-fixed;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/include")
 set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/usr/lib/gcc/arm-none-eabi/10.3.1/thumb/v6-m/nofp;/usr/lib/arm-none-eabi/lib/thumb/v6-m/nofp;/usr/lib/gcc/arm-none-eabi/10.3.1;/usr/lib/arm-none-eabi/lib")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/lib/gcc/arm-none-eabi/9.3.1/thumb/v6-m/nofp;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/lib/thumb/v6-m/nofp;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/lib/gcc/arm-none-eabi/9.3.1;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/lib/gcc;/home/yavuz/gcc-arm-none-eabi-9-2020-q2-update/arm-none-eabi/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")

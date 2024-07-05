@@ -43,13 +43,14 @@ time.sleep(0.25)
 print(meeting_response)
 print(len(meeting_response))
 
-max_baud_rate = b"\x35"
+max_baud_rate = b"\x36"
 mbr_str = max_baud_rate.decode("utf-8")
 mbr_int = int(mbr_str)
 
-baud_rates = [300, 600, 1200, 2400, 4800, 9600]
+baud_rates = [300, 600, 1200, 2400, 4800, 9600, 19200]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
+    # EĞER READOUT İÇİN (b"\x0600\r\n") YAPIN, YÜK OKUMA VE DİĞER TESTLER İÇİN (b"\x0601\r\n") YAPIN 
     information_message = bytearray(b"\x0601\r\n")
     information_message[2:2] = max_baud_rate
     
@@ -91,17 +92,18 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         print("information response bcc result: ", hex(bcc))
 
         if bcc_received == bcc:
+            # bcc = 0x01
+            # # tüketim sorgusu
+            # # TARİH BELİRLEME
+            # loadFormat = bytearray(
+            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2824-04-25,10:00;24-04-25,16:00\x29\x03"
+            # )
+            
             bcc = 0x01
             # tüketim sorgusu
             loadFormat = bytearray(
-                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x2824-04-04,14:00;24-04-04,16:00\x29\x03"
+                b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
             )
-            
-            # bcc = 0x01
-            # # tüketim sorgusu
-            # loadFormat = bytearray(
-            #     b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03"
-            # )
 
             for b in loadFormat:
                 bcc ^= b
@@ -123,14 +125,16 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                     xor_check ^= data[1]
                     print("xor check:", hex(xor_check))
 
-            # bcc_password = 0x01
-            # passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
-            # for b in passwordMessage:
-            #     bcc_password ^= b
-            # passwordMessage.append(bcc_password)
-            # print(passwordMessage)
-            # seri.write(passwordMessage)
-            # print(bytearray(seri.readline()))
+            time.sleep(0.2)
+
+#             bcc_password = 0x01
+#             passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
+#             for b in passwordMessage:
+#                 bcc_password ^= b
+#             passwordMessage.append(bcc_password)
+#             print(passwordMessage)
+#             seri.write(passwordMessage)
+#             print(bytearray(seri.readline()))
 # # ---------------------------------------------------------------------------------------------------
 #             time_str = hour_str + ":" + minute_str + ":" + second_str
 #             time_str = time_str.encode()

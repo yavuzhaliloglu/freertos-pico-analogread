@@ -44,9 +44,9 @@ void sendDeviceInfo()
     sprintf(debug_uart_buffer, "sector count is: %d\r\n\0", flash_sector_content[0]);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    uart_puts(UART0_ID,"System Time is: ");
-    uart_puts(UART0_ID,datetime_str);
-    uart_puts(UART0_ID,"\r\n");
+    uart_puts(UART0_ID, "System Time is: ");
+    uart_puts(UART0_ID, datetime_str);
+    uart_puts(UART0_ID, "\r\n");
 
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n\0", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
@@ -253,7 +253,7 @@ void parseReadingData(uint8_t *buffer)
 #endif
 }
 
-// This function gets the baud rate number like 1,2,3,4,5
+// This function gets the baud rate number like 1-6
 uint8_t getProgramBaudRate(uint16_t b_rate)
 {
     switch (b_rate)
@@ -270,6 +270,8 @@ uint8_t getProgramBaudRate(uint16_t b_rate)
         return 4;
     case 9600:
         return 5;
+    case 19200:
+        return 6;
     }
 }
 
@@ -297,6 +299,9 @@ void setProgramBaudRate(uint8_t b_rate)
         break;
     case 5:
         selected_baud_rate = 9600;
+        break;
+    case 6:
+        selected_baud_rate = 19200;
         break;
     }
     // set UART's baud rate
@@ -360,8 +365,11 @@ void greetingStateHandler(uint8_t *buffer, uint8_t size)
 {
     // initialize variables,
     uint8_t *serial_num;
+    // !?
     uint8_t greeting_head[2] = {0x2F, 0x3F};
+    // !?ALP
     uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50};
+    // !\r\n
     uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};
     uint8_t *buffer_tail = strchr(buffer, 0x21);
     bool greeting_head_check = strncmp(greeting_head, buffer, 2) == 0 ? true : false;
@@ -453,10 +461,10 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         printf("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
 #endif
 
-        if (modem_baud_rate < 0 || modem_baud_rate > 5)
+        if (modem_baud_rate < 0 || modem_baud_rate > 6)
         {
 #if DEBUG
-            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than 5 or smaller than 0.\n");
+            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than 6 or smaller than 0.\n");
 #endif
             uart_putc(UART0_ID, 0x15);
             return;
