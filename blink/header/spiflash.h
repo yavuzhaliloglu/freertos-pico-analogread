@@ -301,9 +301,9 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
-    for (int i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
+    for (unsigned int i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
     {
-        uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+        // uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
         // this is the end index control. if start index occurs and current index starts with FF or current index is NULL which means this is the last index of records
         if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
@@ -384,8 +384,8 @@ void searchDataInFlash()
     int32_t end_index = -1;
     char load_profile_line[41] = {0};
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    uint8_t *date_start = strchr(rx_buffer, '(');
-    uint8_t *date_end = strchr(rx_buffer, ')');
+    uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
+    uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
 
     // if there are just ; character between parentheses and this function executes, it means load profile request got without dates so it means all records will be showed in load profile request
     if (date_end - date_start == 2)
@@ -426,6 +426,7 @@ void searchDataInFlash()
         uint32_t start_addr = start_index;
         uint8_t first_flag = 0;
         uint32_t end_addr = start_index <= end_index ? end_index : 1572864;
+        int result;
 
         for (; start_addr <= end_addr;)
         {
@@ -448,15 +449,15 @@ void searchDataInFlash()
                 // if this is the first record, it means there is just one record to send so thsi string include STX and BCC together
                 if (!first_flag)
                 { // 17               19                  4
-                    snprintf(load_profile_line, 41, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
+                    result = snprintf(load_profile_line, 41, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
                     first_flag = 1;
-                    xor_result = bccGenerate(load_profile_line, 40, xor_result);
+                    xor_result = bccGenerate((uint8_t *)load_profile_line, 40, xor_result);
                 }
                 // if this is the not first record, it means this is the last record to send
                 else
                 { // 16               19               4
-                    snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
-                    xor_result = bccGenerate(load_profile_line, 39, xor_result);
+                    result = snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
+                    xor_result = bccGenerate((uint8_t *)load_profile_line, 39, xor_result);
                 }
             }
             // if start address not equals to end address, it means this is the start record or normal record
@@ -465,15 +466,15 @@ void searchDataInFlash()
                 // if this record is start record, this string includes STX character
                 if (!first_flag)
                 { // 17               19               2
-                    snprintf(load_profile_line, 39, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
-                    xor_result = bccGenerate(load_profile_line, 38, xor_result);
+                    result = snprintf(load_profile_line, 39, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
+                    xor_result = bccGenerate((uint8_t *)load_profile_line, 38, xor_result);
                     first_flag = 1;
                 }
                 // if this is not start record, this is the normal record
                 else
                 { // 16                   19               2
-                    snprintf(load_profile_line, 38, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
-                    xor_result = bccGenerate(load_profile_line, 37, xor_result);
+                    result = snprintf(load_profile_line, 38, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
+                    xor_result = bccGenerate((uint8_t *)load_profile_line, 37, xor_result);
                 }
             }
 #if DEBUG
@@ -483,12 +484,22 @@ void searchDataInFlash()
 // send the record to UART and wait
 #if DEBUG
             printf("SEARCHDATAINFLASH: Record to send as bytearray: \n");
-            printBufferHex(load_profile_line, 41);
+            printBufferHex((uint8_t *)load_profile_line, 41);
             printf("\n");
 #endif
-            uart_puts(UART0_ID, load_profile_line);
-            if (start_addr == end_addr)
-                uart_putc(UART0_ID, xor_result);
+            if (result >= (int)sizeof(load_profile_line))
+            {
+#if DEBUG
+                printf("SEARCHDATAINFLASH: Buffer Overflow! Sending NACK.\n");
+#endif
+                uart_putc(UART0_ID, 0x15);
+            }
+            else
+            {
+                uart_puts(UART0_ID, load_profile_line);
+                if (start_addr == end_addr)
+                    uart_putc(UART0_ID, xor_result);
+            }
 
             sleep_ms(15);
 
@@ -540,7 +551,7 @@ void resetFlashSettings()
 }
 
 void checkSectorContent()
-{   
+{
     uint32_t ints = save_and_disable_interrupts();
 
     uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
@@ -582,7 +593,6 @@ void checkThresholdContent()
         th_arr[0] = 5;
         th_arr[1] = th_ptr[1];
 
-
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
     }
@@ -604,7 +614,6 @@ void checkThresholdContent()
 
 void updateThresholdSector(uint16_t sector_val)
 {
-    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
     uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
 
     th_arr[0] = 5;

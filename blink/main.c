@@ -83,10 +83,11 @@ void vUARTTask(void *pvParameters)
                 rx_char = uart_getc(UART0_ID);
 
                 // If state is WriteProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
-                if (state == WriteProgram)
+                if (state == ReProgram)
                 {
                     xTimerReset(ReprogramTimer, 0);
                     writeProgramToFlash(rx_char);
+
                     continue;
                 }
 #if DEBUG
@@ -115,7 +116,6 @@ void vUARTTask(void *pvParameters)
                     printf("\n");
                     printf("UART TASK: rx_buffer_len value: %d\n", rx_buffer_len);
 #endif
-
                     switch (state)
                     {
                     // This is the Initial state in device. In this state, modem and device will handshake.
@@ -124,8 +124,8 @@ void vUARTTask(void *pvParameters)
                         printf("UART TASK: entered greeting state\n");
 #endif
                         // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
-                        st_chr_msg = strchr(rx_buffer, 0x2F);
-                        greetingStateHandler(st_chr_msg, rx_buffer_len - ((uint8_t *)st_chr_msg - rx_buffer));
+                        st_chr_msg = strchr((char *)rx_buffer, 0x2F);
+                        greetingStateHandler((uint8_t *)st_chr_msg);
 
                         xTimerStart(ResetStateTimer, 0);
                         break;
@@ -166,11 +166,11 @@ void vUARTTask(void *pvParameters)
                             break;
 
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
-                        case ReProgram:
+                        case WriteProgram:
 #if DEBUG
                             printf("UART TASK: entered listening-reprogram\n");
 #endif
-                            ReProgramHandler(rx_buffer, rx_buffer_len);
+                            ReProgramHandler();
                             xTimerStop(ResetBufferTimer, 0);
                             xTimerStop(ResetStateTimer, 0);
                             xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
@@ -181,7 +181,7 @@ void vUARTTask(void *pvParameters)
 #if DEBUG
                             printf("UART TASK: entered listening-password\n");
 #endif
-                            passwordHandler(rx_buffer, rx_buffer_len);
+                            passwordHandler(rx_buffer);
                             break;
 
                         // This state changes time of this device.
@@ -222,7 +222,7 @@ void vUARTTask(void *pvParameters)
 #endif
                             getThresholdRecord();
                             break;
-                        
+
                         case ThresholdPin:
 #if DEBUG
                             printf("UART TASK: entered listening-thresholdpin\n");
@@ -236,6 +236,11 @@ void vUARTTask(void *pvParameters)
                             uart_putc(UART0_ID, 0x15);
                             break;
                         }
+                        break;
+                    case ReProgram:
+#if DEBUG
+                        printf("UART TASK: entered reprogram state (UNSUPPORTED!)\n");
+#endif
                         break;
                     }
                     // After a request or message, buffers and index variables will be set to zero.
@@ -257,7 +262,6 @@ void vADCReadTask()
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
     double vrms = 0.0;
-    TickType_t vaitingTime = 0;
     double bias_voltage;
     double vrms_values[VRMS_VALUES_BUFFER_SIZE] = {0};
     uint8_t vrms_values_count = 0;
@@ -336,7 +340,7 @@ void vADCReadTask()
 #if DEBUG
             printf("ADC READ TASK: writing flash memory process is completed.\n");
 #endif
-            memset(vrms_buffer, 0, VRMS_BUFFER_SIZE);
+            memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(double));
             vrms_buffer_count = 0;
 #if DEBUG
             printf("ADC READ TASK: buffer content is deleted\n");
@@ -377,7 +381,7 @@ void vResetTask()
     }
 }
 
-void main()
+int main()
 {
     sleep_ms(100);
     stdio_init_all();
@@ -399,9 +403,9 @@ void main()
 
     // THRESHOLD GPIO INIT
     gpio_init(THRESHOLD_PIN);
-    gpio_set_dir(THRESHOLD_PIN,GPIO_OUT);
+    gpio_set_dir(THRESHOLD_PIN, GPIO_OUT);
     sleep_ms(100);
-    gpio_put(THRESHOLD_PIN,0);
+    gpio_put(THRESHOLD_PIN, 0);
 
     // ADC INIT
     adc_init();
@@ -439,7 +443,7 @@ void main()
     // Get PT7C4338's Time information and set RP2040's RTC module
     getTimePt7c4338(&current_time);
     sleep_ms(100);
-    
+
     // If current time which is get from Chip has invalid value, adjust the value.
     if (current_time.dotw < 0 || current_time.dotw > 6)
         current_time.dotw = 2;
@@ -451,7 +455,7 @@ void main()
     sleep_ms(100);
 
     // if time is get correctly, set string datetime.
-    if(is_time_get)
+    if (is_time_get)
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
 
     // wait for a while

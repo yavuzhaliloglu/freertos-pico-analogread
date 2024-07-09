@@ -8,7 +8,7 @@ void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
     adc_run(true);
 
     // Get FIFO contents and copy them to buffer
-    for (int i = 0; i < count; i = i + 1)
+    for (size_t i = 0; i < count; i = i + 1)
         buf[i] = adc_fifo_get_blocking();
 
     // End sampling and drain the FIFO
@@ -22,14 +22,14 @@ uint16_t calculateVariance(double *buffer, size_t size)
     double mean;
     double variance_total = 0;
 
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         total += buffer[i];
     }
 
     mean = total / size;
 
-    for (int i = 0; i < size; i++)
+    for (size_t i = 0; i < size; i++)
     {
         double mult = buffer[i] - mean;
         variance_total += mult * mult;
@@ -100,7 +100,7 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     // set datetime variables
     struct ThresholdData data;
     uint8_t *threshold_recs = (uint8_t *)(XIP_BASE + (FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE)));
-    int l_offset;
+    unsigned int l_offset;
     uint8_t record_count = 0;
 
     // set struct data parameters
