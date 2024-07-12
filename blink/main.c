@@ -19,7 +19,7 @@
 #include "hardware/spi.h"
 #include "hardware/dma.h"
 #include "hardware/irq.h"
-#include "hardware/sync.h"
+// #include "hardware/sync.h"
 #include "hardware/flash.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
@@ -82,7 +82,7 @@ void vUARTTask(void *pvParameters)
                 // Get character from UART
                 rx_char = uart_getc(UART0_ID);
 
-                // If state is WriteProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
+                // If state is ReProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
                 if (state == ReProgram)
                 {
                     xTimerReset(ReprogramTimer, 0);
@@ -161,7 +161,7 @@ void vUARTTask(void *pvParameters)
 #if DEBUG
                             printf("UART TASK: entered listening-reading\n");
 #endif
-                            parseReadingData(rx_buffer);
+                            parseReadingData(rx_buffer, rx_buffer_len);
                             searchDataInFlash();
                             break;
 
@@ -269,9 +269,7 @@ void vADCReadTask()
     while (1)
     {
         startTime = xTaskGetTickCount();
-#if DEBUG
-        printf("ADC READ TASK: adc task entered at %s.\n", datetime_str);
-#endif
+
         // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
@@ -285,8 +283,7 @@ void vADCReadTask()
         printf("ADC READ TASK: calculated vrms is: %lf\n", vrms);
 #endif
         // set the vrms value to vrms_values buffer
-        vrms_values[vrms_values_count % VRMS_VALUES_BUFFER_SIZE] = vrms;
-        vrms_values_count++;
+        vrms_values[(vrms_values_count++) % VRMS_VALUES_BUFFER_SIZE] = vrms;
 
         // if time is beginning of a minute, set the vrms value to buffer
         if (current_time.sec == 0)
@@ -319,7 +316,7 @@ void vADCReadTask()
 #endif
 
             // reset the buffer
-            memset(vrms_values, 0, vrms_values_count);
+            memset(vrms_values, 0, vrms_values_count * sizeof(double));
             vrms_values_count = 0;
         }
         // Write a record to the flash memory periodically
@@ -374,10 +371,17 @@ void vResetTask()
 {
     while (1)
     {
+        // TODO: REMOVE THRESHOLD PIN
+
         gpio_put(RESET_PULSE_PIN, 1);
-        vTaskDelay(10);
+        gpio_put(THRESHOLD_PIN, 1);
+
+        vTaskDelay(1000);
+
         gpio_put(RESET_PULSE_PIN, 0);
-        vTaskDelay(INTERVAL_MS);
+        gpio_put(THRESHOLD_PIN, 0);
+
+        vTaskDelay(1000);
     }
 }
 
@@ -457,6 +461,12 @@ int main()
     // if time is get correctly, set string datetime.
     if (is_time_get)
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+    else
+    {
+#if DEBUG
+        printf("Time is not GET. Please check the time setting.\n");
+#endif
+    }
 
     // wait for a while
     sleep_ms(100);
@@ -473,6 +483,13 @@ int main()
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
 
         vTaskStartScheduler();
+    }
+    else
+    {
+#if DEBUG
+        printf("Time is not SET. Please check the time setting.\n");
+        watchdog_reboot(0, 0, 0);
+#endif
     }
 
     while (true)

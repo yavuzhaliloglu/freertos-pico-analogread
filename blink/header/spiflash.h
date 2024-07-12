@@ -70,7 +70,7 @@ void writeProgramToFlash(uint8_t chr)
 }
 
 // This function gets the contents like sector data, last records contents from flash and sets them to variables.
-void __not_in_flash_func(getFlashContents)()
+void getFlashContents()
 {
     // disable interrupts and get the contents
     uint32_t ints = save_and_disable_interrupts();
@@ -94,7 +94,7 @@ void __not_in_flash_func(getFlashContents)()
 }
 
 // This function writes current sector data to flash.
-void __not_in_flash_func(setSectorData)()
+void setSectorData()
 {
     uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
     sector_buffer[0] = sector_data;
@@ -239,7 +239,7 @@ void setFlashData()
 }
 
 // This function writes flash_data content to flash area
-void __not_in_flash_func(SPIWriteToFlash)()
+void SPIWriteToFlash()
 {
 #if DEBUG
     printf("SPIWRITETOFLASH: Setting flash data...\n");

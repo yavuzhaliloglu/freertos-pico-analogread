@@ -1,14 +1,14 @@
 #ifndef ADC_H
 #define ADC_H
 
-void __not_in_flash_func(adcCapture)(uint16_t *buf, size_t count)
+void adcCapture(uint16_t *buf, size_t count)
 {
     // Set ADC FIFO and get the samples with adc_run()
     adc_fifo_setup(true, false, 0, false, false);
     adc_run(true);
 
     // Get FIFO contents and copy them to buffer
-    for (size_t i = 0; i < count; i = i + 1)
+    for (size_t i = 0; i < count; i++)
         buf[i] = adc_fifo_get_blocking();
 
     // End sampling and drain the FIFO
@@ -78,7 +78,6 @@ double calculateVRMS(double bias)
     deneme[37] = '\0';
     printf("%s", deneme);
 #endif
-
     vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
     vrms = vrms * 150;
 
@@ -90,7 +89,7 @@ double getMean(uint16_t *buffer, size_t size)
     double total = 0;
 
     for (size_t i = 0; i < size; i++)
-        total += buffer[i];
+        total += (double)buffer[i];
 
     return (total / size);
 }
@@ -184,9 +183,9 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
     if (mean_vrms >= (double)vrms_threshold)
     {
         if (!threshold_set_before)
-        {   
+        {
             // put THRESHOLD PIN 1 value
-            gpio_put(THRESHOLD_PIN,1);
+            gpio_put(THRESHOLD_PIN, 1);
             vTaskDelay(10);
             // set flag to not put 1 until command comes
             threshold_set_before = 1;

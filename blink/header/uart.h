@@ -82,10 +82,10 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
     // define the process strings
     // uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
-    uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};
-    uint8_t reading_control2[4] = {0x01, 0x52, 0x35, 0x02};
-    uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};            // [SOH]P1[STX]
+    uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};     // [SOH]R2[STX]
+    uint8_t reading_control_alt[4] = {0x01, 0x52, 0x35, 0x02}; // [SOH]R5[STX]
+    uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};     // [SOH]W2[STX]
 
     char reading_str[] = "P.01";
     char timeset_str[] = "0.9.1";
@@ -106,7 +106,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     }
 
     // Password Control ([SOH]P1[STX])
-    if (strncmp((char *)data_buffer, (char *)password, 4) == 0)
+    if (strncmp((char *)data_buffer, (char *)password, sizeof(password)) == 0)
     {
 #if DEBUG
         printf("CHECKLISTENINGDATA: Password state is accepted in checklisteningdata\n");
@@ -115,7 +115,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     }
 
     // Reading Control ([SOH]R2[STX])([SOH]R5[STX]), or Writing Control ([SOH]W2[STX])
-    if (strncmp((char *)data_buffer, (char *)reading_control, 4) == 0 || strncmp((char *)data_buffer, (char *)writing_control, 4) == 0 || strncmp((char *)data_buffer, (char *)reading_control2, 4) == 0)
+    if (strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 || strncmp((char *)data_buffer, (char *)writing_control, sizeof(writing_control)) == 0 || strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0)
     {
 #if DEBUG
         printf("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
@@ -161,7 +161,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 #if DEBUG
             printf("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
 #endif
-            return ReProgram;
+            return WriteProgram;
         }
         // Set Threshold control (T.V.1)
         if (strstr((char *)data_buffer, threshold_str) != NULL)
@@ -207,18 +207,19 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
 }
 
 // This function gets the load profile data and finds the date characters and add them to time arrays
-void parseReadingData(uint8_t *buffer)
+void parseReadingData(uint8_t *buffer, uint8_t len)
 {
-    for (uint8_t i = 0; buffer[i] != '\0'; i++)
+    for (uint8_t i = 0; i < len; i++)
     {
-        // if character is "(" then next character will be start of the start date
         if (buffer[i] == 0x28)
         {
             uint8_t k;
 
-            // add start time to array
             for (k = i + 1; buffer[k] != 0x3B; k++)
             {
+                if (k == len)
+                    break;
+
                 reading_state_start_time[k - (i + 1)] = buffer[k];
             }
 
@@ -233,6 +234,9 @@ void parseReadingData(uint8_t *buffer)
             // add end time to array
             for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
             {
+                if (l == len)
+                    break;
+
                 reading_state_end_time[l - (k + 1)] = buffer[l];
             }
 
@@ -247,6 +251,7 @@ void parseReadingData(uint8_t *buffer)
             break;
         }
     }
+
 #if DEBUG
     printf("PARSEREADINGDATA: parsed start time: %s\n", reading_state_start_time);
     printf("PARSEREADINGDATA: parsed end time: %s\n", reading_state_end_time);
@@ -321,7 +326,7 @@ void setProgramBaudRate(uint8_t b_rate)
 
 // This function reboots this device. This function checks new program area and get the new program area contents and compares if the program written true.
 // If program is written correctly, device will be rebooted but if it's not, new program area will be deleted and device won't be rebooted
-void __not_in_flash_func(rebootDevice)()
+void rebootDevice()
 {
     // get contents of new program area
     uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
@@ -376,16 +381,15 @@ void greetingStateHandler(uint8_t *buffer)
 {
     // initialize variables,
     uint8_t *serial_num;
-    // !?
-    uint8_t greeting_head[2] = {0x2F, 0x3F};
-    // !?ALP
-    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50};
-    // !\r\n
-    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};
+    uint8_t greeting_head[2] = {0x2F, 0x3F};                       // /?
+    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50}; // /?ALP
+    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};                 // !\r\n
     uint8_t *buffer_tail = (uint8_t *)strchr((char *)buffer, 0x21);
-    bool greeting_head_check = strncmp((char *)greeting_head, (char *)buffer, 2) == 0 ? true : false;
-    bool greeting_head_new_check = strncmp((char *)greeting_head_new, (char *)buffer, 5) == 0 ? true : false;
-    bool greeting_tail_check = strncmp((char *)greeting_tail, (char *)buffer_tail, 3) == 0 ? true : false;
+
+    bool greeting_head_check = strncmp((char *)greeting_head, (char *)buffer, sizeof(greeting_head)) == 0 ? true : false;
+    bool greeting_head_new_check = strncmp((char *)greeting_head_new, (char *)buffer, sizeof(greeting_head_new)) == 0 ? true : false;
+    bool greeting_tail_check = strncmp((char *)greeting_tail, (char *)buffer_tail, sizeof(greeting_tail)) == 0 ? true : false;
+
     uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
     char greeting_uart_buffer[20] = {0};
 
@@ -403,13 +407,16 @@ void greetingStateHandler(uint8_t *buffer)
         if (greeting_head_new_check)
             serial_num = (uint8_t *)strchr((char *)buffer, 0x50) + 1;
 
+#if DEBUG
+        printf("GREETINGSTATEHANDLER: serial number: %s\n", serial_num);
+#endif
         // check if greeting message received with serial number
         if (serial_num[0] != 0x21)
         {
 #if DEBUG
             printf("GREETINGSTATEHANDLER: request came with serial number.\n");
 #endif
-            // is serial num 8 character and is it the correct serial number
+            // is serial num 9 character and is it the correct serial number
             if (strncmp((char *)serial_num, (char *)serial_number, 9) == 0 && (buffer_tail - serial_num == 9))
             {
 #if DEBUG
@@ -454,14 +461,14 @@ void greetingStateHandler(uint8_t *buffer)
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
-    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};
-    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};
-    uint8_t readout[3] = {0x30, 0x0D, 0x0A};
-    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};
-    uint8_t default_control[2] = {0x06, 0x30};
+    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};         // 6\r\n
+    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};   // 1\r\n
+    uint8_t readout[3] = {0x30, 0x0D, 0x0A};            // 0\r\n
+    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};         // 4\r\n
+    uint8_t default_control[2] = {0x06, 0x30};          // [ACK]0
 
     // if default control is true and size of message is 6, it means the message format is true.
-    if ((strncmp((char *)buffer, (char *)default_control, 2) == 0) && (size == 6))
+    if ((strncmp((char *)buffer, (char *)default_control, sizeof(default_control)) == 0) && (size == 6))
     {
 #if DEBUG
         printf("SETTINGSTATEHANDLER: default control is passed.\n");
@@ -647,19 +654,19 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};
-    uint8_t reprogram[10] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};
-    uint8_t reading2[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};
-    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};
-    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                               // [SOH]P1[STX]
+    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                // [SOH]W2[STX]!!!![ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                        // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                    // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                     // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                     // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};        // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29}; // [SOH]R2[STX]P.01(;)
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};        // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};        // [SOH]R2[STX]T.R.1
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};        // [SOH]W2[STX]T.P.1
 
-    // length of mesasge that should be
+    // length of message that should be
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
@@ -672,63 +679,63 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t set_threshold_pin_len = 13;
 
     // controls for the message
-    if ((len == password_len) && (strncmp((char *)buffer, (char *)password, 4) == 0))
+    if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is password request.\n");
 #endif
         return true;
     }
-    else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, 9) == 0))
+    else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, sizeof(reprogram)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reprogram request.\n");
 #endif
         return true;
     }
-    else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, 8) == 0) || (strncmp((char *)buffer, (char *)reading2, 8) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, 11) == 0)))
+    else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
 #endif
         return true;
     }
-    else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, 9) == 0))
+    else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, sizeof(time)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is time change request.\n");
 #endif
         return true;
     }
-    else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, 9) == 0))
+    else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, sizeof(date)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is date change request.\n");
 #endif
         return true;
     }
-    else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, 10) == 0))
+    else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, sizeof(production)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is production info request.\n");
 #endif
         return true;
     }
-    else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, 9) == 0))
+    else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, sizeof(set_threshold_val)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is set threshold value.\n");
 #endif
         return true;
     }
-    else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, 9) == 0))
+    else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, sizeof(get_threshold_val)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is get threshold value.\n");
 #endif
         return true;
     }
-    else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, 9) == 0))
+    else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
@@ -746,10 +753,10 @@ void sendProductionInfo()
     char production_obis[22] = {0};
 
     // generate the message and add BCC to the message
-    snprintf(production_obis, 21, "%c96.1.3(23-10-05)\r\n%c", 0x02, 0x03);
+    snprintf(production_obis, 21, "%c96.1.3(%s)\r\n%c", 0x02, PRODUCTION_DATE, 0x03);
     setBCC((uint8_t *)production_obis, 21, 0x02);
 #if DEBUG
-    printf("SENDPRODUCTIONINFO: production info message to send: %s.\n", production_obis);
+    printf("SENDPRODUCTIONINFO: production info message to send: %s\n", production_obis);
 #endif
     // send the message to UART
     uart_puts(UART0_ID, production_obis);
@@ -779,7 +786,7 @@ void ReProgramHandler()
     printf("REPROGRAMHANDLER: ACK send from reprogram handler.\n");
 #endif
     // change the state to reprogram
-    state = WriteProgram;
+    state = ReProgram;
 #if DEBUG
     printf("REPROGRAMHANDLER: state changed from reprogram handler.\n");
 #endif
