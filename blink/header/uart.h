@@ -461,11 +461,11 @@ void greetingStateHandler(uint8_t *buffer)
 void settingStateHandler(uint8_t *buffer, uint8_t size)
 {
     // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
-    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};         // 6\r\n
-    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A};   // 1\r\n
-    uint8_t readout[3] = {0x30, 0x0D, 0x0A};            // 0\r\n
-    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};         // 4\r\n
-    uint8_t default_control[2] = {0x06, 0x30};          // [ACK]0
+    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};       // 6\r\n
+    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A}; // 1\r\n
+    uint8_t readout[3] = {0x30, 0x0D, 0x0A};          // 0\r\n
+    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};       // 4\r\n
+    uint8_t default_control[2] = {0x06, 0x30};        // [ACK]0
 
     // if default control is true and size of message is 6, it means the message format is true.
     if ((strncmp((char *)buffer, (char *)default_control, sizeof(default_control)) == 0) && (size == 6))
@@ -532,29 +532,36 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 #if DEBUG
             printf("SETTINGSTATEHANDLER: readout request accepted.\n");
 #endif
-            // Generate the message to send UART
-            uint8_t mread_data_buff[92] = {0};
-            //                                   19                     17                      17                  18            13          4
-            int result = snprintf((char *)mread_data_buff, 91, "%c0.0.0(%s)\r\n0.9.1(%02d:%02d:%02d)\r\n0.9.2(%02d-%02d-%02d)\r\n96.1.3(%s)\r\n0.2.0(%s)\r\n!\r\n%c", 0x02, serial_number, current_time.hour, current_time.min, current_time.sec, current_time.year, current_time.month, current_time.day, PRODUCTION_DATE, SOFTWARE_VERSION, 0x03);
-            setBCC(mread_data_buff, 90, 0x02);
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: readout message to send:\n");
-            printBufferHex(mread_data_buff, 92);
-            printf("\n");
-#endif
+            char mread_data_buff[21] = {0};
+            int result = 0;
 
-            if (result >= (int)sizeof(mread_data_buff))
-            {
-#if DEBUG
-                printf("SETTINGSTATEHANDLER: Buffer Overflow! Sending NACK.\n");
-#endif
-                uart_putc(UART0_ID, 0x15);
-            }
-            else
-            {
-                // Send the readout data
-                uart_puts(UART0_ID, (char *)mread_data_buff);
-            }
+            uart_putc(UART0_ID, 0x02);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.0.0(%s)\r\n", serial_number);
+            uint8_t readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", 0x03);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uart_puts(UART0_ID, mread_data_buff);
+
+            uart_putc(UART0_ID, readout_xor);
         }
 
         // Debug Mode ([ACK]0Z4[CR][LF])
@@ -904,7 +911,7 @@ void getThresholdRecord()
     // xor result to send as bcc
     uint8_t xor_result = 0x00;
     // buffer to format
-    uint8_t buffer[29];
+    uint8_t buffer[35] = {0};
 
     // send STX character
     uart_putc(UART0_ID, 0x02);
@@ -942,7 +949,7 @@ void getThresholdRecord()
 #endif
 
         // format the variables in a buffer
-        int result = snprintf((char *)buffer, 30, "(%s-%s-%s,%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, vrms, variance);
+        int result = snprintf((char *)buffer, sizeof(buffer), "(%s-%s-%s,%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, vrms, variance);
 
         // xor all bytes of formatted array
         xor_result = bccGenerate(buffer, 29, xor_result);
