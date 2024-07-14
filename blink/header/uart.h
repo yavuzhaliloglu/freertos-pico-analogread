@@ -538,29 +538,47 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             uart_putc(UART0_ID, 0x02);
 
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.0.0(%s)\r\n", serial_number);
-            uint8_t readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            uint8_t readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, 0x00);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
-            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
-            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
-            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
-            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", 0x03);
-            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, mread_data_buff[0]);
+            readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
+#if DEBUG
+            printBufferHex((uint8_t *)mread_data_buff, result);
+            printf("\n");
+#endif
             uart_putc(UART0_ID, readout_xor);
         }
 
