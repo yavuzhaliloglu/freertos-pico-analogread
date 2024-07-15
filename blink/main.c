@@ -19,7 +19,6 @@
 #include "hardware/spi.h"
 #include "hardware/dma.h"
 #include "hardware/irq.h"
-// #include "hardware/sync.h"
 #include "hardware/flash.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
@@ -371,17 +370,10 @@ void vResetTask()
 {
     while (1)
     {
-        // TODO: REMOVE THRESHOLD PIN
-
         gpio_put(RESET_PULSE_PIN, 1);
-        gpio_put(THRESHOLD_PIN, 1);
-
-        vTaskDelay(1000);
-
+        vTaskDelay(10);
         gpio_put(RESET_PULSE_PIN, 0);
-        gpio_put(THRESHOLD_PIN, 0);
-
-        vTaskDelay(1000);
+        vTaskDelay(INTERVAL_MS);
     }
 }
 
@@ -427,6 +419,11 @@ int main()
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
     sleep_ms(100);
+
+#if WITHOUT_BOOTLOADER
+    addSerialNumber();
+    sleep_ms(100);
+#endif
 
     // sector content control
     checkSectorContent();

@@ -130,6 +130,10 @@ int ota_block_count = 0;
 int data_cnt = 0;
 // this flag variable is used to write reamining contents in rpb buffer to flash
 bool is_program_end = false;
+#if WITHOUT_BOOTLOADER
+// serial number of this device
+static const char s_number[256] = "REPLACESN\0";
+#endif
 
 // RTC VARIABLES
 

@@ -103,6 +103,8 @@
 #define ADC_BIAS_INPUT 1
 // Debugs
 #define DEBUG 1
+// bootloader select
+#define WITHOUT_BOOTLOADER 1
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 

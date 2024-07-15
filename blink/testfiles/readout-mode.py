@@ -172,6 +172,9 @@ if len(readout_buffer) == 0:
 readout_buffer_bcc = readout_buffer.pop()
 readout_buffer_bcc_calculated = calculateBCC(readout_buffer, readout_buffer[0])
 
+print("BCC calculated: ", readout_buffer_bcc_calculated)
+print("BCC incoming: ", readout_buffer_bcc)
+
 if(readout_buffer_bcc != readout_buffer_bcc_calculated):
     print("BCC check failed!")
 else:

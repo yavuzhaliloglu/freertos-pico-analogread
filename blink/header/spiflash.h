@@ -625,4 +625,24 @@ void updateThresholdSector(uint16_t sector_val)
     restore_interrupts(ints);
 }
 
+#if WITHOUT_BOOTLOADER
+// This function adds serial number to flash area
+void addSerialNumber()
+{
+#if DEBUG
+    printf("ADDSERIALNUMBER: entered addserialnumber function.\n");
+#endif
+    uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+    if (snumber[0] == 0xFF)
+    {
+#if DEBUG
+        printf("ADDSERIALNUMBER: serial number is going to be added.\n");
+#endif
+
+        flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_SERIAL_OFFSET, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
+    }
+}
+#endif
+
 #endif
