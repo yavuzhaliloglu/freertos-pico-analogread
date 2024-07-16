@@ -1,13 +1,13 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//    36kb               236kB    256kB                      512kB                                                                                                                                     2048kB
+//    36kb                236kB 256kB                    512kB                                                                                                                                         2048kB
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-// |    |                    | |  |                        | | |                                                                                                                                         |
-// | B  |      Main Program  |X|T |      OTA Program       |N|S|                                                            Records                                                                      |
-// |    |                    | |  |                        | | |                                                                                                                                         |
+// |   |                    | | |                        | | |                                                                                                                                           |
+// | B |      Main Program  |X|T|      OTA Program       |N|S|                                                            Records                                                                        |
+// |   |                    | | |                        | | |                                                                                                                                           |
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-//                           240kB                      508kB  516kB
+//                          240kB                      508kB 516kB
 //  B -> Bootloader
 //  T -> Threshold Contents
 //  N -> Serial Number Contents
@@ -18,26 +18,28 @@
 
 // this is the start offset of the program
 #define FLASH_PROGRAM_OFFSET 36 * 1024
-// this is the size of reprogram area
-#define FLASH_PROGRAM_SIZE 220 * 1024
-// this is the start offset of sector information that load profile records will written
-#define FLASH_SECTOR_OFFSET 512 * 1024
-// this is the start offset of device serial number information
-#define FLASH_SERIAL_OFFSET 512 * 1024 - FLASH_SECTOR_SIZE
-// this is the start offset of OTA program will written
-#define FLASH_REPROGRAM_OFFSET 256 * 1024
-// threshold values offset
-#define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
 // threshold values offset
 #define FLASH_THRESHOLD_INFO_OFFSET (256 * 1024) - (5 * FLASH_SECTOR_SIZE)
+// threshold values offset
+#define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
+// this is the start offset of OTA program will written
+#define FLASH_REPROGRAM_OFFSET 256 * 1024
+// reset count offset
+#define FLASH_RESET_COUNT_OFFSET (512 * 1024) - (2 * FLASH_SECTOR_SIZE)
+// this is the start offset of device serial number information
+#define FLASH_SERIAL_OFFSET (512 * 1024) - FLASH_SECTOR_SIZE
+// this is the start offset of sector information that load profile records will written
+#define FLASH_SECTOR_OFFSET 512 * 1024
+// this is the start offset of load profile records will written
+#define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
+// this is the size of reprogram area
+#define FLASH_PROGRAM_SIZE 220 * 1024
 // repgrogram area size
 #define FLASH_REPROGRAM_SIZE 256 * 1024 - FLASH_SECTOR_SIZE
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
 #define FLASH_TOTAL_SECTORS 380
-// this is the start offset of load profile records will written
-#define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
 // this is the size of one load profile record
 #define FLASH_RECORD_SIZE 16
 // this is the count of total records can be kept in a flash
@@ -104,7 +106,7 @@
 // Debugs
 #define DEBUG 1
 // bootloader select
-#define WITHOUT_BOOTLOADER 1
+#define WITHOUT_BOOTLOADER 0
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 

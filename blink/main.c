@@ -11,6 +11,7 @@
 #include "pico/binary_info.h"
 #include "pico/bootrom.h"
 #include "pico/time.h"
+#include "hardware/sync.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/rtc.h"
@@ -42,6 +43,7 @@ void vUARTTask(void *pvParameters)
     xTaskToNotify_UART = NULL;
     uint8_t rx_char;
     char *st_chr_msg;
+    uint8_t end_connection_str[6] = {0x01, 0x42, 0x30, 0x03, 0x71, 0x00}; // [SOH]B0[ETX]q[NULL]
 
     // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
@@ -115,6 +117,15 @@ void vUARTTask(void *pvParameters)
                     printf("\n");
                     printf("UART TASK: rx_buffer_len value: %d\n", rx_buffer_len);
 #endif
+
+                    if (strncmp((char *)rx_buffer, (char *)end_connection_str, 5) == 0)
+                    {
+                        resetRxBuffer();
+                        resetState();
+
+                        break;
+                    }
+
                     switch (state)
                     {
                     // This is the Initial state in device. In this state, modem and device will handshake.
@@ -465,6 +476,10 @@ int main()
 #endif
     }
 
+    // set when program started
+    setProgramStartDate(&current_time);
+    sleep_ms(100);
+
     // wait for a while
     sleep_ms(100);
 
@@ -485,8 +500,8 @@ int main()
     {
 #if DEBUG
         printf("Time is not SET. Please check the time setting.\n");
-        watchdog_reboot(0, 0, 0);
 #endif
+        watchdog_reboot(0, 0, 0);
     }
 
     while (true)

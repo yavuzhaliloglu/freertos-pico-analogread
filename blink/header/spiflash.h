@@ -629,6 +629,7 @@ void updateThresholdSector(uint16_t sector_val)
 // This function adds serial number to flash area
 void addSerialNumber()
 {
+    uint32_t ints = save_and_disable_interrupts();
 #if DEBUG
     printf("ADDSERIALNUMBER: entered addserialnumber function.\n");
 #endif
@@ -642,7 +643,49 @@ void addSerialNumber()
         flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SERIAL_OFFSET, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
     }
+
+    restore_interrupts(ints);
 }
 #endif
+
+void setProgramStartDate(datetime_t *ct)
+{
+    uint8_t *flash_reset_count_offset = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
+    uint8_t current_time_buffer[10] = {0};
+    uint8_t flash_reset_count_buffer[FLASH_SECTOR_SIZE] = {0};
+    uint16_t offset = 0;
+
+    memcpy(flash_reset_count_buffer, flash_reset_count_offset, FLASH_SECTOR_SIZE);
+
+    setDateToCharArray(ct->year, (char *)current_time_buffer);
+    setDateToCharArray(ct->month, (char *)current_time_buffer + 2);
+    setDateToCharArray(ct->day, (char *)current_time_buffer + 4);
+    setDateToCharArray(ct->hour, (char *)current_time_buffer + 6);
+    setDateToCharArray(ct->min, (char *)current_time_buffer + 8);
+
+#if DEBUG
+    printf("SETPROGRAMSTARTDATE: Program start date is set to: ");
+    printBufferHex(current_time_buffer, 10);
+    printf("\n");
+#endif
+    while(offset < FLASH_SECTOR_SIZE){
+        if(flash_reset_count_buffer[offset] == 0xFF || flash_reset_count_offset[offset] == 0x00){
+            break;
+        }
+
+        offset++;
+    }
+
+    memcpy(flash_reset_count_buffer + offset, current_time_buffer, sizeof(current_time_buffer));
+
+    uint32_t ints = save_and_disable_interrupts();
+    flash_range_erase(FLASH_RESET_COUNT_OFFSET, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_RESET_COUNT_OFFSET, flash_reset_count_buffer, FLASH_SECTOR_SIZE);
+    restore_interrupts(ints);
+
+#if DEBUG
+    printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
+#endif
+}
 
 #endif

@@ -622,6 +622,10 @@ void setTimeFromUART(uint8_t *buffer)
     min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
     sec = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
 
+#if DEBUG
+    printf("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
+#endif
+
     // Get the current time and set chip's Time value according to variables and current date values
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
@@ -630,9 +634,25 @@ void setTimeFromUART(uint8_t *buffer)
     if (current_time.dotw < 0 || current_time.dotw > 6)
         current_time.dotw = 2;
 
-    rtc_set_datetime(&current_time);
+    bool is_rtc_set = rtc_set_datetime(&current_time);
+
     // Set time_change_flag value. This flag provides to align ADCReadTask's period. When time changed, the task that aligned to beginning of the minute will broke, so this flag controls to align task itself beginning of the minute again
     time_change_flag = 1;
+
+    if (is_rtc_set)
+    {
+#if DEBUG
+        printf("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
+#endif
+        uart_putc(UART0_ID, 0x06);
+    }
+    else
+    {
+#if DEBUG
+        printf("SETTTIMEFROMUART: time was not set!\n");
+#endif
+        uart_putc(UART0_ID, 0x15);
+    }
 }
 
 // This function sets date via UART
@@ -664,6 +684,10 @@ void setDateFromUART(uint8_t *buffer)
     month = (date_buffer[2] - '0') * 10 + (date_buffer[3] - '0');
     day = (date_buffer[4] - '0') * 10 + (date_buffer[5] - '0');
 
+#if DEBUG
+    printf("SETDATEFROMUART: year: %d, month: %d, day: %d\n", year, month, day);
+#endif
+
     // Get the current time and set chip's date value according to variables and current time values
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
@@ -672,7 +696,22 @@ void setDateFromUART(uint8_t *buffer)
     if (current_time.dotw < 0 || current_time.dotw > 6)
         current_time.dotw = 2;
 
-    rtc_set_datetime(&current_time);
+    bool is_rtc_set = rtc_set_datetime(&current_time);
+
+    if (is_rtc_set)
+    {
+#if DEBUG
+        printf("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
+#endif
+        uart_putc(UART0_ID, 0x06);
+    }
+    else
+    {
+#if DEBUG
+        printf("SETDATEFROMUART: date was not set!\n");
+#endif
+        uart_putc(UART0_ID, 0x15);
+    }
 }
 
 //  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
@@ -690,6 +729,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};        // [SOH]W2[STX]T.V.1
     uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};        // [SOH]R2[STX]T.R.1
     uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};        // [SOH]W2[STX]T.P.1
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                               // [SOH]B0[ETX]q[NULL]
 
     // length of message that should be
     uint8_t time_len = 21;
@@ -702,6 +742,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t set_threshold_len = 16;
     uint8_t get_threshold_len = 13;
     uint8_t set_threshold_pin_len = 13;
+    uint8_t end_connection_str_len = 5;
 
     // controls for the message
     if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
@@ -764,6 +805,13 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     {
 #if DEBUG
         printf("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
+#endif
+        return true;
+    }
+    else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
+    {
+#if DEBUG
+        printf("CONTROLRXBUFFER: incoming message is end connection request.\n");
 #endif
         return true;
     }
