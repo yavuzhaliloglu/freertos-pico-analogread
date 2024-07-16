@@ -35,13 +35,11 @@ uint16_t calculateVariance(double *buffer, size_t size)
         variance_total += mult * mult;
     }
 
-#if DEBUG
-    printf("\ntotal of samples is: %f\n", total);
-    printf("\nmean of samples is: %f\n", mean);
-    printf("\nvariance total of samples is: %f\n", variance_total);
-    printf("\nvariance of samples is: %f\n", (variance_total / (size - 1)));
-    printf("\nvariance of samples as uint32_t is: %ld\n", (uint32_t)(variance_total / (size - 1)));
-#endif
+    PRINTF("\ntotal of samples is: %f\n", total);
+    PRINTF("\nmean of samples is: %f\n", mean);
+    PRINTF("\nvariance total of samples is: %f\n", variance_total);
+    PRINTF("\nvariance of samples is: %f\n", (variance_total / (size - 1)));
+    PRINTF("\nvariance of samples as uint32_t is: %ld\n", (uint32_t)(variance_total / (size - 1)));
 
     return (uint16_t)(variance_total / (size - 1));
 }
@@ -64,7 +62,7 @@ double calculateVRMS(double bias)
 #if DEBUG
     deneme[32] = '\0';
     snprintf(deneme, 31, "CALCULATEVRMS: mean: %f\n", mean);
-    printf("%s", deneme);
+    PRINTF("%s", deneme);
 #endif
 
     for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
@@ -76,7 +74,7 @@ double calculateVRMS(double bias)
 #if DEBUG
     snprintf(deneme, 36, "CALCULATEVRMS: vrmsAc: %f\n", vrms_accumulator);
     deneme[37] = '\0';
-    printf("%s", deneme);
+    PRINTF("%s", deneme);
 #endif
     vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
     vrms = vrms * 150;
@@ -152,10 +150,8 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     // copy next record after the buffer's last record
     memcpy((flash_th_buf + record_count), (void *)&data, 16);
 
-#if DEBUG
-    printf("WRITETHRESHOLDDATA: flash_th_buf as hexadecimal: \n");
+    PRINTF("WRITETHRESHOLDDATA: flash_th_buf as hexadecimal: \n");
     printBufferHex((uint8_t *)flash_th_buf, FLASH_PAGE_SIZE);
-#endif
 
     // write buffer in flash
     uint32_t ints = save_and_disable_interrupts();
@@ -163,10 +159,8 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_th_buf, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
 
-#if DEBUG
-    printf("WRITETHRESHOLDDATA: threshold records as hexadecimal: \n");
+    PRINTF("WRITETHRESHOLDDATA: threshold records as hexadecimal: \n");
     printBufferHex(threshold_recs, FLASH_PAGE_SIZE);
-#endif
 }
 
 double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
@@ -195,9 +189,7 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
         writeThresholdRecord(mean_vrms, variance);
     }
 
-#if DEBUG
-    printf("GETMEANVARIANCEVRMSVALUES: calculated vrms value from vrms_values array is: %f\n", mean_vrms);
-#endif
+    PRINTF("GETMEANVARIANCEVRMSVALUES: calculated vrms value from vrms_values array is: %f\n", mean_vrms);
 
     return mean_vrms;
 }

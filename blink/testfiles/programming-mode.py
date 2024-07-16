@@ -55,6 +55,10 @@ def checkSubstrings(main_string):
 
 # ---------------------------------------------------------------------------------------------------------------------
 
+def sendEndConnectionMessage():
+    end_connection_bytes = bytearray(b'\x01\x42\x30\x03\x71\x00')
+    seri.write(end_connection_bytes)
+
 def checkResponseMessage(response_msg):
     response_max_b_rate = int(chr(response_msg[4]))
     print("response max baud rate: ", response_max_b_rate)
@@ -382,19 +386,24 @@ if args.load_profile is not None:
 
 if args.datetime_set:
     sendDatetimeSetRequest()
+    sendEndConnectionMessage()
 
 if args.threshold_set:
     sendThresholdSetRequest()
+    sendEndConnectionMessage()
 
 if args.threshold_get:
     threshold_get_msg = bytearray(b'\x01\x52\x32\x02T.R.1()\x03')
     sendLoadProfileRequest(threshold_get_msg)
+    sendEndConnectionMessage()
 
 if args.threshold_pin:
     sendThresholdPINResetRequest()
+    sendEndConnectionMessage()
 
 if args.production:
     sendProductionMessageRequest()
+    sendEndConnectionMessage()
 
 seri.close()
     

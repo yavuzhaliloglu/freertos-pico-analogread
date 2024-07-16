@@ -29,7 +29,9 @@ void writeBlock(uint8_t *buffer, uint8_t size)
     // if data_cnt value is 0 and this function runs, it means program is over and there are program data in rpb buffer which is not written to flash, and there is no data in data_pck buffer.
     // So there is no need to copy data_pck values to rpb buffer.
     if (data_cnt != 0)
+    {
         memcpy(rpb + (rpb_len), buffer, size - 1);
+    }
 
     // increase the rpb_len value to write next 7-bytes area
     rpb_len += 7;
@@ -37,9 +39,8 @@ void writeBlock(uint8_t *buffer, uint8_t size)
     // is_program_end flag is set when there is no values coming in 5 seconds from UART, and it means program data is over or program data transfer broke.
     if (rpb_len == FLASH_RPB_BLOCK_SIZE || is_program_end)
     {
-#if DEBUG
-        printf("WRITEBLOCK: rpb len is equal to block size. Programming...\n");
-#endif
+        PRINTF("WRITEBLOCK: rpb len is equal to block size. Programming...\n");
+
         // write the buffer to flash
         flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
         // jump to next block offset to write data automatically
@@ -55,7 +56,9 @@ void writeProgramToFlash(uint8_t chr)
 {
     // copy character to data_pack value. If is_program_end flag is set it means there is no character coming from UART the no need to copy a NULL value to data_pack buffer.
     if (!is_program_end)
+    {
         data_pck[data_cnt++] = chr;
+    }
 
     // if data_pck buffer is full or is_program_end flag is set the buffer can be copied to rpb buffer
     if (data_cnt == 8 || is_program_end)
@@ -83,11 +86,9 @@ void getFlashContents()
     vrms_threshold = th_ptr[0];
     th_sector_data = th_ptr[1];
 
-#if DEBUG
-    printf("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
-    printf("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);
-    printf("GETFLASHCONTENTS: threshold sector is: %d\n", th_sector_data);
-#endif
+    PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
+    PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);
+    PRINTF("GETFLASHCONTENTS: threshold sector is: %d\n", th_sector_data);
 
     // enable interrupts
     restore_interrupts(ints);
@@ -98,9 +99,9 @@ void setSectorData()
 {
     uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
     sector_buffer[0] = sector_data;
-#if DEBUG
-    printf("SETSECTORDATA: sector data which is going to be written: %d\n", sector_data);
-#endif
+
+    PRINTF("SETSECTORDATA: sector data which is going to be written: %d\n", sector_data);
+
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_SECTOR_SIZE);
 }
@@ -127,10 +128,10 @@ uint8_t doubleFloatingToUint8t(double double_value)
 {
     // get floating value of double value and multiply it with 10, so we can get the first digit. We set that value an uint8_t value because we don't want to get rest of the floating digits.
     uint8_t floating_value = (double_value - floor(double_value)) * 10;
-#if DEBUG
-    printf("double value after subtraction: %lf\n", double_value);
-    printf("floating value after floor and uint8_t: %d\n\n", floating_value);
-#endif
+
+    PRINTF("double value after subtraction: %lf\n", double_value);
+    PRINTF("floating value after floor and uint8_t: %d\n\n", floating_value);
+
     return floating_value;
 }
 
@@ -144,10 +145,14 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
     for (uint8_t i = 1; i < size; i++)
     {
         if (buffer[i] > buffer_max)
+        {
             buffer_max = buffer[i];
+        }
 
         if (buffer[i] < buffer_min)
+        {
             buffer_min = buffer[i];
+        }
 
         buffer_sum += buffer[i];
     }
@@ -159,11 +164,9 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
     vrms_min_dec = doubleFloatingToUint8t(buffer_min);
     vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
 
-#if DEBUG
-    printf("buffer max: %lf,vrms_max: %d,vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
-    printf("buffer min: %lf,vrms_min: %d,vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
-    printf("buffer mean: %lf,vrms_mean: %d,vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
-#endif
+    PRINTF("buffer max: %lf,vrms_max: %d,vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
+    PRINTF("buffer min: %lf,vrms_min: %d,vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
+    PRINTF("buffer mean: %lf,vrms_mean: %d,vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
 }
 
 // This function sets the current time values which are 16 bytes total and calculated VRMS values to flash
@@ -200,16 +203,19 @@ void setFlashData()
     {
         if (flash_target_contents[offset] == '\0' || flash_target_contents[offset] == 0xff)
         {
-#if DEBUG
             if (offset == 0)
-                printf("SETFLASHDATA: last record is not found.\n");
+            {
+                PRINTF("SETFLASHDATA: last record is not found.\n");
+            }
             else
-                printf("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
-#endif
+            {
+                PRINTF("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
+            }
+
             flash_data[offset / FLASH_RECORD_SIZE] = data;
-#if DEBUG
-            printf("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
-#endif
+
+            PRINTF("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
+
             break;
         }
     }
@@ -217,33 +223,34 @@ void setFlashData()
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
     if (offset >= FLASH_SECTOR_SIZE)
     {
-#if DEBUG
-        printf("SETFLASHDATA: offset value is equals to sector size.current secor data is: %d. Sector is changing...\n", sector_data);
-#endif
+        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_data);
+
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
         if (sector_data == FLASH_TOTAL_SECTORS)
+        {
             sector_data = 0;
+        }
         else
+        {
             sector_data++;
-#if DEBUG
-        printf("SETFLASHDATA: new sector value is: %d\n", sector_data);
-#endif
+        }
+
+        PRINTF("SETFLASHDATA: new sector value is: %d\n", sector_data);
+
         // reset variables and call setSectorData()
         memset(flash_data, 0, FLASH_SECTOR_SIZE);
         flash_data[0] = data;
         setSectorData();
-#if DEBUG
-        printf("SETFLASHDATA: Sector changing written to flash.\n");
-#endif
+
+        PRINTF("SETFLASHDATA: Sector changing written to flash.\n");
     }
 }
 
 // This function writes flash_data content to flash area
 void SPIWriteToFlash()
 {
-#if DEBUG
-    printf("SPIWRITETOFLASH: Setting flash data...\n");
-#endif
+    PRINTF("SPIWRITETOFLASH: Setting flash data...\n");
+
     setFlashData();
     // setSectorData();
 
@@ -265,22 +272,34 @@ void arrayToDatetime(datetime_t *dt, uint8_t *arr)
 int datetimeComp(datetime_t *dt1, datetime_t *dt2)
 {
     if (dt1->year - dt2->year != 0)
+    {
         return dt1->year - dt2->year;
+    }
 
     else if (dt1->month - dt2->month != 0)
+    {
         return dt1->month - dt2->month;
+    }
 
     else if (dt1->day - dt2->day != 0)
+    {
         return dt1->day - dt2->day;
+    }
 
     else if (dt1->hour - dt2->hour != 0)
+    {
         return dt1->hour - dt2->hour;
+    }
 
     else if (dt1->min - dt2->min != 0)
+    {
         return dt1->min - dt2->min;
+    }
 
     else if (dt1->sec - dt2->sec != 0)
+    {
         return dt1->sec - dt2->sec;
+    }
 
     return 0;
 }
@@ -315,7 +334,9 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
 
         // if current index is 0xFF or 0x00, this is an empty record and no need to look for if it is start index, continue the loop
         if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
+        {
             continue;
+        }
 
         // if current record is not empty, this is start index of records.
         if (*st_idx == -1)
@@ -336,7 +357,9 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 
     // if start date is bigger than end date, it means dates are wrong so function returns
     if (datetimeComp(start, end) > 0)
+    {
         return;
+    }
 
     for (uint32_t i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
     {
@@ -345,7 +368,9 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 
         // if current index is empty, continue
         if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
+        {
             continue;
+        }
 
         // if current index is not empty, set datetime to current index record
         arrayToDatetime(&recurrent_time, &flash_start_content[i]);
@@ -390,23 +415,20 @@ void searchDataInFlash()
     // if there are just ; character between parentheses and this function executes, it means load profile request got without dates so it means all records will be showed in load profile request
     if (date_end - date_start == 2)
     {
-#if DEBUG
-        printf("SEARCHDATAINFLASH: all records are going to send\n");
-#endif
+        PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
         getAllRecords(&start_index, &end_index, &start, &end);
     }
     // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
     else
     {
-#if DEBUG
-        printf("SEARCHDATAINFLASH: selected records are going to send\n");
-#endif
+        PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
+
         getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end);
     }
-#if DEBUG
-    printf("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
-    printf("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
-#endif
+
+    PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
+    PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
+
     // if start index is bigger than end index, swap the values
     if (start_index > end_index)
     {
@@ -418,9 +440,8 @@ void searchDataInFlash()
     // if there start and end index are set, there are records between these times so send them to UART
     if (start_index >= 0 && end_index >= 0)
     {
-#if DEBUG
-        printf("SEARCHDATAINFLASH: Generating messages...\n");
-#endif
+        PRINTF("SEARCHDATAINFLASH: Generating messages...\n");
+
         // initialize the variables. XOR result is 0x02 because message to send UART starts with 0x02 (STX) so in BCC calculation, that byte will be ignored
         uint8_t xor_result = 0x02;
         uint32_t start_addr = start_index;
@@ -477,28 +498,26 @@ void searchDataInFlash()
                     xor_result = bccGenerate((uint8_t *)load_profile_line, 37, xor_result);
                 }
             }
-#if DEBUG
-            printf("SEARCHDATAINFLASH: message to send: %s\n", load_profile_line);
-#endif
 
-// send the record to UART and wait
-#if DEBUG
-            printf("SEARCHDATAINFLASH: Record to send as bytearray: \n");
+            PRINTF("SEARCHDATAINFLASH: message to send: %s\n", load_profile_line);
+
+            // send the record to UART and wait
+            PRINTF("SEARCHDATAINFLASH: Record to send as bytearray: \n");
             printBufferHex((uint8_t *)load_profile_line, 41);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             if (result >= (int)sizeof(load_profile_line))
             {
-#if DEBUG
-                printf("SEARCHDATAINFLASH: Buffer Overflow! Sending NACK.\n");
-#endif
+                PRINTF("SEARCHDATAINFLASH: Buffer Overflow! Sending NACK.\n");
                 uart_putc(UART0_ID, 0x15);
             }
             else
             {
                 uart_puts(UART0_ID, load_profile_line);
                 if (start_addr == end_addr)
+                {
                     uart_putc(UART0_ID, xor_result);
+                }
             }
 
             sleep_ms(15);
@@ -517,27 +536,21 @@ void searchDataInFlash()
     // if start record or end record does not exist, send NACK message
     else
     {
-#if DEBUG
-        printf("SEARCHDATAINFLASH: data not found.\n");
-#endif
-
+        PRINTF("SEARCHDATAINFLASH: data not found.\n");
         uart_putc(UART0_ID, 0x15);
     }
 
     // reset time buffers
     memset(reading_state_start_time, 0, 10);
     memset(reading_state_end_time, 0, 10);
-#if DEBUG
-    printf("SEARCHDATAINFLASH: time values are deleted.\n");
-#endif
+
+    PRINTF("SEARCHDATAINFLASH: time values are deleted.\n");
 }
 
 // This function resets records and sector data and set sector data to 0
 void resetFlashSettings()
 {
-#if DEBUG
-    printf("RESETFLASHSETTINGS: resetting records anad sector values\n");
-#endif
+    PRINTF("RESETFLASHSETTINGS: resetting records anad sector values\n");
 
     uint16_t reset_flash[256] = {0};
 
@@ -545,9 +558,8 @@ void resetFlashSettings()
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
 
     flash_range_erase(FLASH_DATA_OFFSET, 1024 * 1024);
-#if DEBUG
-    printf("RESETFLASHSETTINGS: erasing is successful.\n");
-#endif
+
+    PRINTF("RESETFLASHSETTINGS: erasing is successful.\n");
 }
 
 void checkSectorContent()
@@ -559,15 +571,15 @@ void checkSectorContent()
 
     for (uint16_t i = 0; i < 256; i++)
     {
-        if (flash_sector_content[i] == 0xFF)
+        if (flash_sector_content[i] == 0xFF){
             ff_count++;
+        }
     }
 
     if (ff_count >= 255)
     {
-#if DEBUG
-        printf("CHECKSECTORCONTENT: sector content is going to set 0.\n");
-#endif
+        PRINTF("CHECKSECTORCONTENT: sector content is going to set 0.\n");
+
         uint16_t sector_buffer[256] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
@@ -586,9 +598,8 @@ void checkThresholdContent()
     // Threshold value control
     if (th_ptr[0] == 0xFFFF)
     {
-#if DEBUG
-        printf("threshold value is empty, setting to 5 as default...\n");
-#endif
+        PRINTF("threshold value is empty, setting to 5 as default...\n");
+
         uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
         th_arr[0] = 5;
         th_arr[1] = th_ptr[1];
@@ -599,9 +610,8 @@ void checkThresholdContent()
     // Threshold Records Sector control
     if (th_ptr[1] == 0xFFFF)
     {
-#if DEBUG
-        printf("threshold record's sector value is empty, setting to 0 as default...\n");
-#endif
+        PRINTF("threshold record's sector value is empty, setting to 0 as default...\n");
+
         th_arr[0] = th_ptr[0];
         th_arr[1] = 0;
 
@@ -629,16 +639,14 @@ void updateThresholdSector(uint16_t sector_val)
 // This function adds serial number to flash area
 void addSerialNumber()
 {
+    PRINTF("ADDSERIALNUMBER: entered addserialnumber function.\n");
+
     uint32_t ints = save_and_disable_interrupts();
-#if DEBUG
-    printf("ADDSERIALNUMBER: entered addserialnumber function.\n");
-#endif
     uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+
     if (snumber[0] == 0xFF)
     {
-#if DEBUG
-        printf("ADDSERIALNUMBER: serial number is going to be added.\n");
-#endif
+        PRINTF("ADDSERIALNUMBER: serial number is going to be added.\n");
 
         flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SERIAL_OFFSET, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
@@ -663,13 +671,14 @@ void setProgramStartDate(datetime_t *ct)
     setDateToCharArray(ct->hour, (char *)current_time_buffer + 6);
     setDateToCharArray(ct->min, (char *)current_time_buffer + 8);
 
-#if DEBUG
-    printf("SETPROGRAMSTARTDATE: Program start date is set to: ");
+    PRINTF("SETPROGRAMSTARTDATE: Program start date is set to: ");
     printBufferHex(current_time_buffer, 10);
-    printf("\n");
-#endif
-    while(offset < FLASH_SECTOR_SIZE){
-        if(flash_reset_count_buffer[offset] == 0xFF || flash_reset_count_offset[offset] == 0x00){
+    PRINTF("\n");
+
+    while (offset < FLASH_SECTOR_SIZE)
+    {
+        if (flash_reset_count_buffer[offset] == 0xFF || flash_reset_count_offset[offset] == 0x00)
+        {
             break;
         }
 
@@ -683,9 +692,7 @@ void setProgramStartDate(datetime_t *ct)
     flash_range_program(FLASH_RESET_COUNT_OFFSET, flash_reset_count_buffer, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
 
-#if DEBUG
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
-#endif
 }
 
 #endif

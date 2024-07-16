@@ -54,7 +54,9 @@ void sendDeviceInfo()
     for (offset = 0; offset < 1556480; offset += 16)
     {
         if (flash_records[offset] == 0xFF)
+        {
             continue;
+        }
 
         char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
         char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
@@ -99,98 +101,76 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
     {
-#if DEBUG
-        printf("CHECKLISTENINGDATA: bcc control error.\n");
-#endif
+        PRINTF("CHECKLISTENINGDATA: bcc control error.\n");
         return DataError;
     }
 
     // Password Control ([SOH]P1[STX])
     if (strncmp((char *)data_buffer, (char *)password, sizeof(password)) == 0)
     {
-#if DEBUG
-        printf("CHECKLISTENINGDATA: Password state is accepted in checklisteningdata\n");
-#endif
+        PRINTF("CHECKLISTENINGDATA: Password state is accepted in checklisteningdata\n");
         return Password;
     }
 
     // Reading Control ([SOH]R2[STX])([SOH]R5[STX]), or Writing Control ([SOH]W2[STX])
     if (strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 || strncmp((char *)data_buffer, (char *)writing_control, sizeof(writing_control)) == 0 || strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0)
     {
-#if DEBUG
-        printf("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
-#endif
+        PRINTF("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
+
         // Reading Control (P.01)
         if (strstr((char *)data_buffer, reading_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Reading state is accepted in checklisteningdata\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Reading state is accepted in checklisteningdata\n");
             return Reading;
         }
 
         // Time Set Control (0.9.1)
         if (strstr((char *)data_buffer, timeset_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
             return TimeSet;
         }
 
         // Date Set Control (0.9.2)
         if (strstr((char *)data_buffer, dateset_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
             return DateSet;
         }
 
         // Production Date Control (96.1.3)
         if (strstr((char *)data_buffer, production_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
             return ProductionInfo;
         }
         // ReProgram Control (!!!!)
         if (strstr((char *)data_buffer, reprogram_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
             return WriteProgram;
         }
         // Set Threshold control (T.V.1)
         if (strstr((char *)data_buffer, threshold_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
             return SetThreshold;
         }
         // Get Threshold control (T.R.1)
         if (strstr((char *)data_buffer, get_threshold_str) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
             return GetThreshold;
         }
         // Set Threshold PIN (T.P.1)
         if (strstr((char *)data_buffer, threshold_pin) != NULL)
         {
-#if DEBUG
-            printf("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
-#endif
+            PRINTF("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
             return ThresholdPin;
         }
     }
-#if DEBUG
-    printf("CHECKLISTENINGDATA: dataerror state is accepted in checklisteningdata\n");
-#endif
+
+    PRINTF("CHECKLISTENINGDATA: dataerror state is accepted in checklisteningdata\n");
     return DataError;
 }
 
@@ -201,7 +181,9 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
     for (i = j = 0; i < len; i++)
     {
         if (str[i] != chr)
+        {
             str[j++] = str[i];
+        }
     }
     str[j] = '\0';
 }
@@ -218,7 +200,9 @@ void parseReadingData(uint8_t *buffer, uint8_t len)
             for (k = i + 1; buffer[k] != 0x3B; k++)
             {
                 if (k == len)
+                {
                     break;
+                }
 
                 reading_state_start_time[k - (i + 1)] = buffer[k];
             }
@@ -235,7 +219,9 @@ void parseReadingData(uint8_t *buffer, uint8_t len)
             for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
             {
                 if (l == len)
+                {
                     break;
+                }
 
                 reading_state_end_time[l - (k + 1)] = buffer[l];
             }
@@ -252,10 +238,8 @@ void parseReadingData(uint8_t *buffer, uint8_t len)
         }
     }
 
-#if DEBUG
-    printf("PARSEREADINGDATA: parsed start time: %s\n", reading_state_start_time);
-    printf("PARSEREADINGDATA: parsed end time: %s\n", reading_state_end_time);
-#endif
+    PRINTF("PARSEREADINGDATA: parsed start time: %s\n", reading_state_start_time);
+    PRINTF("PARSEREADINGDATA: parsed end time: %s\n", reading_state_end_time);
 }
 
 // This function gets the baud rate number like 1-6
@@ -342,9 +326,7 @@ void rebootDevice()
     // check if MD5 is true and program's epochs. If epoch is bigger it means the program is newer
     if (!(strncmp((char *)md5_offset, (char *)md5_local, 16) == 0) || !(epoch_new > epoch_current))
     {
-#if DEBUG
-        printf("REBOOTDEVICE: md5 check is false or new program's epoch is smaller or equal.\n");
-#endif
+        PRINTF("REBOOTDEVICE: md5 check is false or new program's epoch is smaller or equal.\n");
         flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
     }
 
@@ -359,9 +341,8 @@ void resetRxBuffer()
 {
     memset(rx_buffer, 0, 256);
     rx_buffer_len = 0;
-#if DEBUG
-    printf("reset Buffer func!\n");
-#endif
+
+    PRINTF("reset Buffer func!\n");
 }
 
 // This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
@@ -371,9 +352,8 @@ void resetState()
     memset(rx_buffer, 0, 256);
     setProgramBaudRate(0);
     rx_buffer_len = 0;
-#if DEBUG
-    printf("reset state func!\n");
-#endif
+
+    PRINTF("reset state func!\n");
 }
 
 // This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
@@ -396,63 +376,58 @@ void greetingStateHandler(uint8_t *buffer)
     // check greeting head, greeting head new strings and greeting tail. If these checks are true, the message format is true and this block will be executed
     if ((greeting_head_check || greeting_head_new_check) && greeting_tail_check)
     {
-#if DEBUG
-        printf("GREETINGSTATEHANDLER: greeting default control passed.\n");
-#endif
+        PRINTF("GREETINGSTATEHANDLER: greeting default control passed.\n");
+
         // if greeting head does not include [ALP] characters, then serial number beginning offset is just after 0x3F character
         if (greeting_head_check)
+        {
             serial_num = (uint8_t *)strchr((char *)buffer, 0x3F) + 1;
+        }
 
         // if greeting head includes [ALP] characters, then serial number beginning offset is just after 0x50 character
         if (greeting_head_new_check)
+        {
             serial_num = (uint8_t *)strchr((char *)buffer, 0x50) + 1;
+        }
 
-#if DEBUG
-        printf("GREETINGSTATEHANDLER: serial number: %s\n", serial_num);
-#endif
+        PRINTF("GREETINGSTATEHANDLER: serial number: %s\n", serial_num);
+
         // check if greeting message received with serial number
         if (serial_num[0] != 0x21)
         {
-#if DEBUG
-            printf("GREETINGSTATEHANDLER: request came with serial number.\n");
-#endif
+            PRINTF("GREETINGSTATEHANDLER: request came with serial number.\n");
+
             // is serial num 9 character and is it the correct serial number
             if (strncmp((char *)serial_num, (char *)serial_number, 9) == 0 && (buffer_tail - serial_num == 9))
             {
-#if DEBUG
-                printf("GREETINGSTATEHANDLER: serial number is true.\n");
-#endif
+                PRINTF("GREETINGSTATEHANDLER: serial number is true.\n");
+
                 // send handshake message
                 snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
                 uart_puts(UART0_ID, greeting_uart_buffer);
 
                 state = Setting;
-#if DEBUG
-                printf("GREETINGSTATEHANDLER: handshake message sent.\n");
-#endif
+
+                PRINTF("GREETINGSTATEHANDLER: handshake message sent.\n");
             }
             // if the message is not correct, do nothing
             else
             {
-#if DEBUG
-                printf("GREETINGSTATEHANDLER: serial number is false.\n");
-#endif
+                PRINTF("GREETINGSTATEHANDLER: serial number is false.\n");
                 return;
             }
         }
         else
         {
-#if DEBUG
-            printf("GREETINGSTATEHANDLER: request came without serial number.\n");
-#endif
+            PRINTF("GREETINGSTATEHANDLER: request came without serial number.\n");
+
             // send handshake message
             snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
             uart_puts(UART0_ID, greeting_uart_buffer);
 
             state = Setting;
-#if DEBUG
-            printf("GREETINGSTATEHANDLER: handshake message sent.\n");
-#endif
+
+            PRINTF("GREETINGSTATEHANDLER: handshake message sent.\n");
         }
     }
 }
@@ -470,55 +445,48 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     // if default control is true and size of message is 6, it means the message format is true.
     if ((strncmp((char *)buffer, (char *)default_control, sizeof(default_control)) == 0) && (size == 6))
     {
-#if DEBUG
-        printf("SETTINGSTATEHANDLER: default control is passed.\n");
-#endif
+        PRINTF("SETTINGSTATEHANDLER: default control is passed.\n");
+
         uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
         uint8_t modem_baud_rate = buffer[2] - '0';
-#if DEBUG
-        printf("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
-#endif
+
+        PRINTF("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
 
         if (modem_baud_rate > 6)
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than 6 or smaller than 0.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: modem's baud rate is bigger than 6 or smaller than 0.\n");
+
             uart_putc(UART0_ID, 0x15);
             return;
         }
         else if (modem_baud_rate > program_baud_rate)
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: modem's baud rate is bigger than baud rate that device can support.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: modem's baud rate is bigger than baud rate that device can support.\n");
+
             uart_putc(UART0_ID, 0x15);
             return;
         }
         else
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
             setProgramBaudRate(modem_baud_rate);
         }
 
         // Load Profile ([ACK]0Z1[CR][LF])
         if (strncmp((char *)programming_mode, (char *)(buffer + 3), 3) == 0)
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: programming mode accepted.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: programming mode accepted.\n");
+
             // Generate the message to send UART
             uint8_t ack_buff[18] = {0};
             snprintf((char *)ack_buff, 17, "%cP0%c(%s)%c", 0x01, 0x02, serial_number, 0x03);
             // Set BCC to add the message
             setBCC(ack_buff, 16, 0x01);
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: ack message to send:\n");
+
+            PRINTF("SETTINGSTATEHANDLER: ack message to send:\n");
             printBufferHex(ack_buff, 18);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             // SEND Message
             uart_puts(UART0_ID, (char *)ack_buff);
 
@@ -529,9 +497,8 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         // Read Out ([ACK]0Z0[CR][LF]) or ([ACK]0Z6[CR][LF])
         if (strncmp((char *)readout, (char *)(buffer + 3), 3) == 0 || strncmp((char *)short_read, (char *)(buffer + 3), 3) == 0)
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: readout request accepted.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: readout request accepted.\n");
+
             char mread_data_buff[21] = {0};
             int result = 0;
 
@@ -540,54 +507,52 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.0.0(%s)\r\n", serial_number);
             uint8_t readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, 0x00);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
             readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
             readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
             readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
             readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", 0x03);
             readout_xor = bccGenerate((uint8_t *)mread_data_buff, result, readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-#if DEBUG
+
             printBufferHex((uint8_t *)mread_data_buff, result);
-            printf("\n");
-#endif
+            PRINTF("\n");
+
             uart_putc(UART0_ID, readout_xor);
         }
 
         // Debug Mode ([ACK]0Z4[CR][LF])
         if (strncmp((char *)debug_mode, (char *)(buffer + 3), 3) == 0)
         {
-#if DEBUG
-            printf("SETTINGSTATEHANDLER: debug mode accepted.\n");
-#endif
+            PRINTF("SETTINGSTATEHANDLER: debug mode accepted.\n");
             sendDeviceInfo();
         }
     }
@@ -597,7 +562,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 void setTimeFromUART(uint8_t *buffer)
 {
     if (!password_correct_flag)
+    {
         return;
+    }
 
     // initialize variables
     uint8_t time_buffer[9] = {0};
@@ -610,8 +577,9 @@ void setTimeFromUART(uint8_t *buffer)
     start_ptr++;
     char *end_ptr = strchr((char *)buffer, ')');
 
-    if (start_ptr == NULL && end_ptr == NULL)
+    if (start_ptr == NULL && end_ptr == NULL){
         return;
+    }
 
     // copy time data to buffer and delete the ":" character. First two characters of the array is hour info, next 2 character is minute info, last 2 character is the second info. Also there are two ":" characters to seperate informations.
     strncpy((char *)time_buffer, start_ptr, (char *)end_ptr - start_ptr);
@@ -622,17 +590,16 @@ void setTimeFromUART(uint8_t *buffer)
     min = (time_buffer[2] - '0') * 10 + (time_buffer[3] - '0');
     sec = (time_buffer[4] - '0') * 10 + (time_buffer[5] - '0');
 
-#if DEBUG
-    printf("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
-#endif
+    PRINTF("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
 
     // Get the current time and set chip's Time value according to variables and current date values
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
     getTimePt7c4338(&current_time);
 
-    if (current_time.dotw < 0 || current_time.dotw > 6)
+    if (current_time.dotw < 0 || current_time.dotw > 6){
         current_time.dotw = 2;
+    }
 
     bool is_rtc_set = rtc_set_datetime(&current_time);
 
@@ -641,16 +608,12 @@ void setTimeFromUART(uint8_t *buffer)
 
     if (is_rtc_set)
     {
-#if DEBUG
-        printf("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
-#endif
+        PRINTF("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
         uart_putc(UART0_ID, 0x06);
     }
     else
     {
-#if DEBUG
-        printf("SETTTIMEFROMUART: time was not set!\n");
-#endif
+        PRINTF("SETTTIMEFROMUART: time was not set!\n");
         uart_putc(UART0_ID, 0x15);
     }
 }
@@ -658,8 +621,9 @@ void setTimeFromUART(uint8_t *buffer)
 // This function sets date via UART
 void setDateFromUART(uint8_t *buffer)
 {
-    if (!password_correct_flag)
+    if (!password_correct_flag){
         return;
+    }
 
     // initialize variables
     uint8_t date_buffer[9] = {0};
@@ -672,8 +636,9 @@ void setDateFromUART(uint8_t *buffer)
     start_ptr++;
     char *end_ptr = strchr((char *)buffer, ')');
 
-    if (start_ptr == NULL && end_ptr == NULL)
+    if (start_ptr == NULL && end_ptr == NULL){
         return;
+    }
 
     // copy date data to buffer and delete the "-" character. First two characters of the array is year info, next 2 character is month info, last 2 character is the day info. Also there are two "-" characters to seperate informations.
     strncpy((char *)date_buffer, start_ptr, end_ptr - start_ptr);
@@ -684,32 +649,27 @@ void setDateFromUART(uint8_t *buffer)
     month = (date_buffer[2] - '0') * 10 + (date_buffer[3] - '0');
     day = (date_buffer[4] - '0') * 10 + (date_buffer[5] - '0');
 
-#if DEBUG
-    printf("SETDATEFROMUART: year: %d, month: %d, day: %d\n", year, month, day);
-#endif
+    PRINTF("SETDATEFROMUART: year: %d, month: %d, day: %d\n", year, month, day);
 
     // Get the current time and set chip's date value according to variables and current time values
     setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
     // Get new current time from RTC Chip and set to RP2040's RTC module
     getTimePt7c4338(&current_time);
 
-    if (current_time.dotw < 0 || current_time.dotw > 6)
+    if (current_time.dotw < 0 || current_time.dotw > 6){
         current_time.dotw = 2;
+    }
 
     bool is_rtc_set = rtc_set_datetime(&current_time);
 
     if (is_rtc_set)
     {
-#if DEBUG
-        printf("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
-#endif
+        PRINTF("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
         uart_putc(UART0_ID, 0x06);
     }
     else
     {
-#if DEBUG
-        printf("SETDATEFROMUART: date was not set!\n");
-#endif
+        PRINTF("SETDATEFROMUART: date was not set!\n");
         uart_putc(UART0_ID, 0x15);
     }
 }
@@ -747,72 +707,52 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     // controls for the message
     if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is password request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is password request.\n");
         return true;
     }
     else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, sizeof(reprogram)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is reprogram request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is reprogram request.\n");
         return true;
     }
     else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
         return true;
     }
     else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, sizeof(time)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is time change request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is time change request.\n");
         return true;
     }
     else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, sizeof(date)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is date change request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is date change request.\n");
         return true;
     }
     else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, sizeof(production)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is production info request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is production info request.\n");
         return true;
     }
     else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, sizeof(set_threshold_val)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is set threshold value.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
         return true;
     }
     else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, sizeof(get_threshold_val)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is get threshold value.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is get threshold value.\n");
         return true;
     }
     else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
         return true;
     }
     else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
     {
-#if DEBUG
-        printf("CONTROLRXBUFFER: incoming message is end connection request.\n");
-#endif
+        PRINTF("CONTROLRXBUFFER: incoming message is end connection request.\n");
         return true;
     }
 
@@ -828,9 +768,9 @@ void sendProductionInfo()
     // generate the message and add BCC to the message
     snprintf(production_obis, 21, "%c96.1.3(%s)\r\n%c", 0x02, PRODUCTION_DATE, 0x03);
     setBCC((uint8_t *)production_obis, 21, 0x02);
-#if DEBUG
-    printf("SENDPRODUCTIONINFO: production info message to send: %s\n", production_obis);
-#endif
+
+    PRINTF("SENDPRODUCTIONINFO: production info message to send: %s\n", production_obis);
+
     // send the message to UART
     uart_puts(UART0_ID, production_obis);
 }
@@ -846,8 +786,9 @@ void passwordHandler(uint8_t *buffer)
         uart_putc(UART0_ID, 0x06);
         password_correct_flag = true;
     }
-    else
+    else{
         uart_putc(UART0_ID, 0x15);
+    }
 }
 
 // This function handles to request for reprogramming
@@ -855,36 +796,32 @@ void ReProgramHandler()
 {
     // send ACK message to UART
     uart_putc(UART0_ID, 0x06);
-#if DEBUG
-    printf("REPROGRAMHANDLER: ACK send from reprogram handler.\n");
-#endif
+    PRINTF("REPROGRAMHANDLER: ACK send from reprogram handler.\n");
+
     // change the state to reprogram
     state = ReProgram;
-#if DEBUG
-    printf("REPROGRAMHANDLER: state changed from reprogram handler.\n");
-#endif
+    PRINTF("REPROGRAMHANDLER: state changed from reprogram handler.\n");
+
     // delete ADCRead Task. This task also reaches flash so due to prevent conflict, this task is deleted
     vTaskDelete(xADCHandle);
-#if DEBUG
-    printf("REPROGRAMHANDLER: adcread task deleted from reprogram handler.\n");
-#endif
+    PRINTF("REPROGRAMHANDLER: adcread task deleted from reprogram handler.\n");
+
     // delete the reprogram area to write new program
     flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
-#if DEBUG
-    printf("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
-#endif
+    PRINTF("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
+
     return;
 }
 
 // This function handles to reboot device. This function executes when there is no coming character in 5 second in WriteProgram state.
 void RebootHandler()
 {
-#if DEBUG
-    printf("REBOOTHANDLER: reboot Handler entered.\n");
-#endif
+    PRINTF("REBOOTHANDLER: reboot Handler entered.\n");
+
     // if there is any content in buffers, is_program_end flag is set
-    if ((rpb_len > 0) || (data_cnt > 0))
+    if ((rpb_len > 0) || (data_cnt > 0)){
         is_program_end = true;
+    }
 
     // write program execution with null variable and reboot device
     writeProgramToFlash(0x00);
@@ -908,22 +845,20 @@ void concatenateAndPrintHex(uint16_t value, uint8_t *array, size_t arraySize, ui
     {
         combined[2 + i] = array[i];
     }
-#if DEBUG
+
     // Print the combined array in hexadecimal format
     for (size_t i = 0; i < totalSize; ++i)
     {
-        printf("%02X ", combined[i]);
+        PRINTF("%02X ", combined[i]);
     }
-    printf("\n");
-#endif
+    PRINTF("\n");
+
     memcpy(copy_buf, combined, 34);
 }
 
 void setThresholdValue(uint8_t *data)
 {
-#if DEBUG
-    printf("threshold value before change is: %d\n", vrms_threshold);
-#endif
+    PRINTF("threshold value before change is: %d\n", vrms_threshold);
 
     // get value start and end pointers
     char *start_ptr = strchr((char *)data, '(');
@@ -945,10 +880,8 @@ void setThresholdValue(uint8_t *data)
     // convert threshold value to uint16_t type
     threshold_val = atoi((char *)threshold_val_str);
 
-#if DEBUG
-    printf("threshold value as string is: %s\n", threshold_val_str);
-    printf("threshold value as int is: %d\n", threshold_val);
-#endif
+    PRINTF("threshold value as string is: %s\n", threshold_val_str);
+    PRINTF("threshold value as int is: %d\n", threshold_val);
 
     // set the threshold value to use in program
     vrms_threshold = threshold_val;
@@ -963,11 +896,9 @@ void setThresholdValue(uint8_t *data)
     flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
     restore_interrupts(ints);
 
-#if DEBUG
-    printf("threshold info content is:  \n");
+    PRINTF("threshold info content is:  \n");
     printBufferHex((uint8_t *)th_ptr, FLASH_PAGE_SIZE);
-    printf("\n");
-#endif
+    PRINTF("\n");
 }
 
 void getThresholdRecord()
@@ -1004,15 +935,13 @@ void getThresholdRecord()
         variance = (variance << 8);
         variance += record_ptr[i + 12];
 
-#if DEBUG
-        printf("data.year is: %s\n", year);
-        printf("data.month is: %s\n", month);
-        printf("data.day is: %s\n", day);
-        printf("data.hour is: %s\n", hour);
-        printf("data.min is: %s\n", min);
-        printf("data.vrms is: %d\n", vrms);
-        printf("data.variance is: %d\n", variance);
-#endif
+        PRINTF("data.year is: %s\n", year);
+        PRINTF("data.month is: %s\n", month);
+        PRINTF("data.day is: %s\n", day);
+        PRINTF("data.hour is: %s\n", hour);
+        PRINTF("data.min is: %s\n", min);
+        PRINTF("data.vrms is: %d\n", vrms);
+        PRINTF("data.variance is: %d\n", variance);
 
         // format the variables in a buffer
         int result = snprintf((char *)buffer, sizeof(buffer), "(%s-%s-%s,%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, vrms, variance);
@@ -1020,17 +949,13 @@ void getThresholdRecord()
         // xor all bytes of formatted array
         xor_result = bccGenerate(buffer, 29, xor_result);
 
-#if DEBUG
-        printf("threshold record to send is: \n");
+        PRINTF("threshold record to send is: \n");
         printBufferHex(buffer, 29);
-        printf("\n");
-#endif
+        PRINTF("\n");
 
         if (result >= (int)sizeof(buffer))
         {
-#if DEBUG
-            printf("GETTHRESHOLDRECORD: Buffer Overflow! Sending NACK.\n");
-#endif
+            PRINTF("GETTHRESHOLDRECORD: Buffer Overflow! Sending NACK.\n");
             uart_putc(UART0_ID, 0x15);
         }
         else
@@ -1054,20 +979,19 @@ void getThresholdRecord()
 
 void setThresholdPIN()
 {
-    if (!password_correct_flag)
+    if (!password_correct_flag){
         return;
+    }
 
     if (threshold_set_before)
     {
-#if DEBUG
-        printf("Threshold PIN set before, resetting pin...\n");
-#endif
+        PRINTF("Threshold PIN set before, resetting pin...\n");
+
         gpio_put(THRESHOLD_PIN, 0);
         vTaskDelay(10);
         threshold_set_before = 0;
-#if DEBUG
-        printf("Threshold PIN reset\n");
-#endif
+
+        PRINTF("Threshold PIN reset\n");
     }
 }
 

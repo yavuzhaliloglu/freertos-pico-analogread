@@ -7,9 +7,8 @@ uint8_t bccGenerate(uint8_t *data_buffer, uint8_t size, uint8_t xor)
     for (uint8_t i = 0; i < size; i++)
         xor ^= data_buffer[i];
 
-#if DEBUG
-    printf("BCCGENERATE: returned xor result is: %02X\n", xor);
-#endif
+    PRINTF("BCCGENERATE: returned xor result is: %02X\n", xor);
+
     return xor;
 }
 
@@ -21,10 +20,9 @@ bool bccControl(uint8_t *buffer, uint8_t size)
     for (uint8_t i = 0; i < size - 1; i++)
         xor_result ^= buffer[i];
 
-#if DEBUG
-    printf("BCCCONTROL: generated xor result is: %02X\n", xor_result);
-    printf("BCCCONTROL: xor result in coming message is: %02X\n", buffer[size - 1]);
-#endif
+    PRINTF("BCCCONTROL: generated xor result is: %02X\n", xor_result);
+    PRINTF("BCCCONTROL: xor result in coming message is: %02X\n", buffer[size - 1]);
+
     return xor_result == buffer[size - 1];
 }
 
@@ -34,9 +32,8 @@ void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
     for (int i = 0; i < size; i++)
         xor ^= buffer[i];
 
-#if DEBUG
-    printf("SETBCC: generated xor result is: %02X\n", xor);
-#endif
+    PRINTF("SETBCC: generated xor result is: %02X\n", xor);
+
     buffer[size] = xor;
 }
 
