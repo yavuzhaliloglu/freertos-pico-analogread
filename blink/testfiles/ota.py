@@ -162,9 +162,8 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                 # calculate the md5 checksum for the binary and add the binary header array (16 Bytes)
                 md5_csum = hashlib.md5(reprogram_bin).digest()
                 csum_bytearray = bytearray(md5_csum)
-                print("\nMD5 CHECKSUM: ", csum_bytearray)
+                print("\nMD5 Checksum calculated!")
                 binary_header = csum_bytearray + binary_header
-                print("\nbinary header after adding md5 checksum: ", binary_header)
 
                 # add the binary len to the binary header array (4 Bytes)
                 binary_len = len(reprogram_bin)
@@ -173,9 +172,6 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                     + binary_header
                 )
                 print("\nbinary len: ", binary_len)
-                print("\nbinary len as bytes:")
-                printArrayHexBinary(binary_len.to_bytes(4, "big"))
-                print(binary_header)
 
                 # add epoch unix time value (4 Bytes)
                 current_epoch = int(time.time())
@@ -184,12 +180,11 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
                     bytearray(reversed(current_epoch.to_bytes(4, "big")))
                     + binary_header
                 )
-                print("\nbinary header after adding epoch: ", binary_header)
+                print("\nbinary header after adding epoch:")
+                printArrayHexBinary(binary_header)
 
                 # add padding to binary header (should be 256 bytes)
                 binary_header = binary_header + bytearray(256 - len(binary_header))
-                print("\nbinary header after padding: ")
-                printArrayHexBinary(binary_header)
                 print("\nlength of binary header", len(binary_header))
 
                 # add binary header to binary file

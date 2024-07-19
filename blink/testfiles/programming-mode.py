@@ -4,11 +4,17 @@ import argparse
 from datetime import datetime
 from serial.serialutil import SerialException
 
+# --------------------------------------------------------------- BAUD RATE CHECK FUNCTION
+def baud_rate_type(value):
+    if value not in ["0", "1", "2", "3", "4", "5", "6"]:
+        raise argparse.ArgumentTypeError(f"Baud rate must be a string representing a value between 0 and 6. Invalid value: '{value}'")
+    return value
 # ----------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description="A guide to show programming mode options and it's parameters to choose.")
 
 parser.add_argument("--serial_number", type=str, default="", help="Serial number. Should be 9 characters")
+parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud rate. Should be a value between 0 and 6")
 parser.add_argument("-lp", "--load-profile", nargs='*', help="Load Profile Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM:SS, for start and end date respectively.")
 parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Threshold Set Request Option. If selected, you can specify the threshold value in the format XXX (must be 3 characters)")
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
@@ -18,15 +24,16 @@ parser.add_argument("-p", "--production", action="store_true", help="Production 
 
 args = parser.parse_args()
 
-print("load profile args: ",args.load_profile)
-print("threshold set args: ",args.threshold_set)
-print("datetime set args: ",args.datetime_set)
-print("threshold get args: ",args.threshold_get)
-print("threshold pin args: ",args.threshold_pin)
-print("production args: ",args.production)
+print("serial number: ", args.serial_number)
+print("baud rate: ", args.baud_rate)
+print("load profile args: ", args.load_profile)
+print("threshold set args: ", args.threshold_set)
+print("datetime set args: ", args.datetime_set)
+print("threshold get args: ", args.threshold_get)
+print("threshold pin args: ", args.threshold_pin)
+print("production args: ", args.production)
 
 # ----------------------------------------------------------------------------------------
-
 def replaceSerialNumber(byte_data, new_serial_number):
     # if serial number was not provided, return the original bytearray
     if not new_serial_number:
@@ -305,6 +312,11 @@ communication_req_msg_base = bytearray(b"/?!\r\n")
 # serial number is optional
 serial_number = args.serial_number
 
+if(args.baud_rate):
+    b_rate_ascii = ord(args.baud_rate)
+    max_baud_rate = bytes([b_rate_ascii])
+    max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
+
 try:
     seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=2)
 except FileNotFoundError:
@@ -382,6 +394,7 @@ if args.load_profile is not None:
         lp_request_message = prepareLoadProfileRequestWithDate(args.load_profile)
 
     sendLoadProfileRequest(lp_request_message)
+    sendEndConnectionMessage()
 
 
 if args.datetime_set:

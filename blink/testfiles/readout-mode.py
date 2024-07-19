@@ -1,18 +1,25 @@
 import serial
 import time
 import argparse
-from datetime import datetime
 
+# --------------------------------------------------------------- BAUD RATE CHECK FUNCTION
+def baud_rate_type(value):
+    if value not in ["0", "1", "2", "3", "4", "5", "6"]:
+        raise argparse.ArgumentTypeError(f"Baud rate must be a string representing a value between 0 and 6. Invalid value: '{value}'")
+    return value
 # ---------------------------------------------------------------------------------------------------------------------
 
 parser = argparse.ArgumentParser(description="A guide to show readout mode options to choose.")
 
 parser.add_argument("--serial-number", type=str, default="", help="Serial number. Should be 9 characters")
+parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud rate. Should be a value between 0 and 6")
 parser.add_argument("-rm", "--readout-mode", action="store_true", help="Readout mode shows content of device")
 parser.add_argument("-dm", "--debug-mode", action="store_true", help="Debug mode shows content of sector, records and device info")
 
 args = parser.parse_args()
-
+""
+print("serial number: ", args.serial_number)
+print("baud rate: ", args.baud_rate)
 print("readout mode arg: ", args.readout_mode)
 print("debug mode arg: ", args.debug_mode)
 
@@ -107,6 +114,11 @@ readout_buffer = bytearray()
 
 # serial number is optional
 serial_number = args.serial_number
+
+if(args.baud_rate):
+    b_rate_ascii = ord(args.baud_rate)
+    max_baud_rate = bytes([b_rate_ascii])
+    max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 if(serial_number and len(serial_number) != 9):
     print("Wrong serial number format! Serial number should be 9 characters long!")
