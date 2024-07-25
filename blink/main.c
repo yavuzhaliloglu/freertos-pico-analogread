@@ -42,9 +42,6 @@ void vUARTTask(void *pvParameters)
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
-    uint8_t rx_char;
-    char *st_chr_msg;
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q[NULL]
 
     // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
@@ -82,7 +79,7 @@ void vUARTTask(void *pvParameters)
             while (uart_is_readable(UART0_ID))
             {
                 // Get character from UART
-                rx_char = uart_getc(UART0_ID);
+                uint8_t rx_char = uart_getc(UART0_ID);
 
                 // If state is ReProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
                 if (state == ReProgram)
@@ -95,19 +92,16 @@ void vUARTTask(void *pvParameters)
 
                 PRINTF("%02X\n", rx_char);
 
-                // CR/LF control for the message, also this is the end character control for the message
-                if (rx_char != '\n')
-                {
-                    rx_buffer[rx_buffer_len++] = rx_char;
-                }
+                rx_buffer[rx_buffer_len++] = rx_char;
+
                 // The end of the message could be '\n' character or a BCC, so this if block checks if the character is '\n' or the whole message is request message according to its length and order of characters
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
-                    // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
-                    if (state != Listening)
-                    {
-                        rx_buffer[rx_buffer_len++] = rx_char;
-                    }
+                    // // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
+                    // if (state != Listening)
+                    // {
+                    //     rx_buffer[rx_buffer_len++] = rx_char;
+                    // }
 
                     vTaskDelay(pdMS_TO_TICKS(250));
 
@@ -115,12 +109,13 @@ void vUARTTask(void *pvParameters)
                     xTimerStop(ResetBufferTimer, 0);
 
                     PRINTF("UART TASK: message end and entered the processing area\n");
-                    PRINTF("UART TASK: rx len content: ");
+                    PRINTF("UART TASK: rx buffer content: ");
                     printBufferHex(rx_buffer, rx_buffer_len);
                     PRINTF("\n");
-                    PRINTF("UART TASK: rx_buffer_len value: %d\n", rx_buffer_len);
+                    PRINTF("UART TASK: rx buffer len value: %d\n", rx_buffer_len);
 
-                    if (strncmp((char *)rx_buffer, (char *)end_connection_str, 5) == 0)
+                    // check if the message is for end connection
+                    if (is_end_connection_message(rx_buffer))
                     {
                         resetRxBuffer();
                         resetState();
@@ -132,14 +127,12 @@ void vUARTTask(void *pvParameters)
                     {
                     // This is the Initial state in device. In this state, modem and device will handshake.
                     case Greeting:
-
                         PRINTF("UART TASK: entered greeting state\n");
+                        xTimerStart(ResetStateTimer, 0);
 
                         // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
-                        st_chr_msg = strchr((char *)rx_buffer, 0x2F);
+                        char *st_chr_msg = strchr((char *)rx_buffer, 0x2F);
                         greetingStateHandler((uint8_t *)st_chr_msg);
-
-                        xTimerStart(ResetStateTimer, 0);
                         break;
 
                     // This state sets baud rate or sends readout message.
@@ -155,19 +148,22 @@ void vUARTTask(void *pvParameters)
                         PRINTF("UART TASK: entered listening state\n");
                         xTimerStart(ResetStateTimer, 0);
 
-                        // This switch block checks the request message for the which state is going to handled according to message.
+                        // This switch block checks the request message for which state is going to handled according to message.
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
                         case DataError:
                             PRINTF("UART TASK: entered listening-dataerror\n");
+                            sendErrorMessage((char *)"DATAERROR");
+                            break;
 
-                            uart_putc(UART0_ID, 0x15);
+                        case BCCError:
+                            PRINTF("UART TASK: entered listening-bccerror\n");
+                            sendErrorMessage((char *)"BCCERROR");
                             break;
 
                         // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
                             PRINTF("UART TASK: entered listening-reading\n");
-
                             parseReadingData(rx_buffer, rx_buffer_len);
                             searchDataInFlash();
                             break;
@@ -175,8 +171,8 @@ void vUARTTask(void *pvParameters)
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
                         case WriteProgram:
                             PRINTF("UART TASK: entered listening-reprogram\n");
-
                             ReProgramHandler();
+
                             xTimerStop(ResetBufferTimer, 0);
                             xTimerStop(ResetStateTimer, 0);
                             xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
@@ -185,59 +181,50 @@ void vUARTTask(void *pvParameters)
                         // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.
                         case Password:
                             PRINTF("UART TASK: entered listening-password\n");
-
                             passwordHandler(rx_buffer);
                             break;
 
                         // This state changes time of this device.
                         case TimeSet:
                             PRINTF("UART TASK: entered listening-timeset\n");
-
                             setTimeFromUART(rx_buffer);
                             break;
 
                         // This state changes date of this device.
                         case DateSet:
                             PRINTF("UART TASK: entered listening-dateset\n");
-
                             setDateFromUART(rx_buffer);
                             break;
 
                         // This state sends production info for this device.
                         case ProductionInfo:
                             PRINTF("UART TASK: entered listening-productioninfo\n");
-
                             sendProductionInfo();
                             break;
 
                         case SetThreshold:
                             PRINTF("UART TASK: entered listening-setthreshold\n");
-
                             setThresholdValue(rx_buffer);
                             break;
-                            // If the message is not correct, device sends a NACK message (0x15) to modem.
 
                         case GetThreshold:
                             PRINTF("UART TASK: entered listening-getthreshold\n");
-
                             getThresholdRecord();
                             break;
 
                         case ThresholdPin:
                             PRINTF("UART TASK: entered listening-thresholdpin\n");
-
                             setThresholdPIN();
                             break;
+
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
-
-                            uart_putc(UART0_ID, 0x15);
+                            sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
                             break;
                         }
                         break;
                     case ReProgram:
                         PRINTF("UART TASK: entered reprogram state (UNSUPPORTED!)\n");
-
                         break;
                     }
                     // After a request or message, buffers and index variables will be set to zero.
@@ -295,6 +282,7 @@ void vADCReadTask()
             // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
             vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
             vrms = 0.0;
+
             PRINTF("ADC READ TASK: VRMS_VALUES content is: \n");
             for (int8_t i = 0; i < vrms_values_count; i++)
             {
@@ -315,31 +303,33 @@ void vADCReadTask()
             // reset the buffer
             memset(vrms_values, 0, vrms_values_count * sizeof(double));
             vrms_values_count = 0;
-        }
-        // Write a record to the flash memory periodically
-        if ((current_time.sec == 0 && current_time.min % 15 == 0))
-        {
-            PRINTF("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
 
-            if (vrms_buffer_count > VRMS_BUFFER_SIZE)
+            // Write a record to the flash memory periodically
+            if (current_time.min % 15 == 0)
             {
-                vrms_buffer_count = VRMS_BUFFER_SIZE;
+                PRINTF("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
+
+                if (vrms_buffer_count > VRMS_BUFFER_SIZE)
+                {
+                    vrms_buffer_count = VRMS_BUFFER_SIZE;
+                }
+
+                vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+
+                PRINTF("ADC READ TASK: calculated VRMS values.\n");
+
+                SPIWriteToFlash();
+
+                PRINTF("ADC READ TASK: writing flash memory process is completed.\n");
+
+                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(double));
+                vrms_buffer_count = 0;
+
+                PRINTF("ADC READ TASK: buffer content is deleted\n");
             }
-
-            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-
-            PRINTF("ADC READ TASK: calculated VRMS values.\n");
-            PRINTF("ADC READ TASK: vrms max is: %d,vrms min is:%d,vrms mean is: %d,vrms max dec is: %d,vrms min dec is: %d,vrms mean dec is: %d\n", vrms_max, vrms_min, vrms_mean, vrms_max_dec, vrms_min_dec, vrms_mean_dec);
-
-            SPIWriteToFlash();
-
-            PRINTF("ADC READ TASK: writing flash memory process is completed.\n");
-
-            memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(double));
-            vrms_buffer_count = 0;
-
-            PRINTF("ADC READ TASK: buffer content is deleted\n");
         }
+
+        // delay until next cycle
         vTaskDelayUntil(&startTime, xFrequency);
     }
 }
@@ -358,7 +348,7 @@ void vWriteDebugTask()
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
 
-        PRINTF("WRITE DEBUG TASKKK: The Time is:%s \r\n", datetime_str);
+        PRINTF("WRITE DEBUG TASK: The Time is:%s \r\n", datetime_str);
     }
 }
 
@@ -368,7 +358,7 @@ void vResetTask()
     while (1)
     {
         gpio_put(RESET_PULSE_PIN, 1);
-        vTaskDelay(10);
+        vTaskDelay(pdMS_TO_TICKS(10));
         gpio_put(RESET_PULSE_PIN, 0);
         vTaskDelay(INTERVAL_MS);
     }

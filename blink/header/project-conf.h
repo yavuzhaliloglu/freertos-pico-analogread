@@ -8,6 +8,8 @@
 #define DEBUG 1
 // bootloader select
 #define WITHOUT_BOOTLOADER 0
+// vrms multiplier value
+#define VRMS_MULTIPLICATION_VALUE 150
 
 // DEBUG MACRO
 #if DEBUG

@@ -16,8 +16,6 @@ uint8_t vrms_mean_dec = 0;
 uint16_t sample_buffer[VRMS_SAMPLE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
 uint16_t bias_buffer[BIAS_SAMPLE];
-// this flag variable is used to detect if time is changed. If time is changed in device, that flag provides to align the task's execution time to beginning of next minute again
-volatile uint8_t time_change_flag;
 // vrms threshold value
 uint16_t vrms_threshold;
 // threshold flag value, used for set threshold pin and hold it until command comes and resets it
@@ -51,6 +49,7 @@ enum States
 // Password: In this state, device controls password of this device. If password is correct, modem can change time and date in this device.
 enum ListeningStates
 {
+    BCCError = -2,
     DataError = -1,
     Reading = 0,
     TimeSet = 1,
@@ -82,7 +81,8 @@ bool password_correct_flag = false;
 // this is the current sector data variable in flash
 uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 // this is the serial number variable in flash
-uint8_t *serial_number = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+uint8_t serial_number[10] = {0};
 // sector data variable keeps current sector to write records to flash
 static uint16_t sector_data = 0;
 // // threshold records sector data

@@ -35,8 +35,6 @@ target_link_libraries(blink pico_stdlib
                     pico_stdlib_headers
                     hardware_structs
                     hardware_watchdog
-                    FreeRTOS-Kernel
-                    FreeRTOS-Kernel-Heap4
                     hardware_uart
                     hardware_rtc
                     hardware_i2c
@@ -46,6 +44,10 @@ target_link_libraries(blink pico_stdlib
                     hardware_flash
                     hardware_irq
                     hardware_timer
+                    hardware_gpio
+                    hardware_sync
+                    FreeRTOS-Kernel
+                    FreeRTOS-Kernel-Heap4
                     )
 
 # Enable/disable STDIO via USB and UART

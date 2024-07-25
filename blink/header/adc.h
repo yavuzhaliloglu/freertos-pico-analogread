@@ -57,7 +57,7 @@ double calculateVRMS(double bias)
     char deneme[40] = {0};
 #endif
 
-    float mean = bias * conversion_factor / 1000;
+    double mean = bias * conversion_factor / 1000;
 
 #if DEBUG
     deneme[32] = '\0';
@@ -76,8 +76,9 @@ double calculateVRMS(double bias)
     deneme[37] = '\0';
     PRINTF("%s", deneme);
 #endif
+
     vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
-    vrms = vrms * 150;
+    vrms = vrms * VRMS_MULTIPLICATION_VALUE;
 
     return vrms;
 }
@@ -169,18 +170,22 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
     double total = 0;
     uint16_t variance = 0;
 
+    // mean vrms calculation
     for (uint8_t i = 0; i < size; i++)
+    {
         total += buffer[i];
+    }
 
     mean_vrms = total / size;
 
+    // if calculated vrms is bigger than threshold value, set a record to flash memory
     if (mean_vrms >= (double)vrms_threshold)
     {
         if (!threshold_set_before)
         {
             // put THRESHOLD PIN 1 value
             gpio_put(THRESHOLD_PIN, 1);
-            vTaskDelay(10);
+            vTaskDelay(pdMS_TO_TICKS(10));
             // set flag to not put 1 until command comes
             threshold_set_before = 1;
         }

@@ -78,13 +78,18 @@ void getFlashContents()
     // disable interrupts and get the contents
     uint32_t ints = save_and_disable_interrupts();
 
+    // get sector count of records
     sector_data = *(uint16_t *)flash_sector_content;
-    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
-    memcpy(flash_data, flash_target_contents, FLASH_SECTOR_SIZE);
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    memcpy(flash_data, flash_data_contents, FLASH_SECTOR_SIZE);
 
+    // get threshold data
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
     vrms_threshold = th_ptr[0];
     th_sector_data = th_ptr[1];
+
+    // set serial number
+    memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
 
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
     PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);
@@ -97,13 +102,17 @@ void getFlashContents()
 // This function writes current sector data to flash.
 void setSectorData()
 {
+    uint32_t ints = save_and_disable_interrupts();
+
     uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
     sector_buffer[0] = sector_data;
 
     PRINTF("SETSECTORDATA: sector data which is going to be written: %d\n", sector_data);
 
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+
+    restore_interrupts(ints);
 }
 
 // This function converts the datetime value to char array as characters to write flash correctly
@@ -129,7 +138,7 @@ uint8_t doubleFloatingToUint8t(double double_value)
     // get floating value of double value and multiply it with 10, so we can get the first digit. We set that value an uint8_t value because we don't want to get rest of the floating digits.
     uint8_t floating_value = (double_value - floor(double_value)) * 10;
 
-    PRINTF("double value after subtraction: %lf\n", double_value);
+    PRINTF("double value before subtraction: %lf\n", double_value);
     PRINTF("floating value after floor and uint8_t: %d\n\n", floating_value);
 
     return floating_value;
@@ -164,9 +173,9 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
     vrms_min_dec = doubleFloatingToUint8t(buffer_min);
     vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
 
-    PRINTF("buffer max: %lf,vrms_max: %d,vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
-    PRINTF("buffer min: %lf,vrms_min: %d,vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
-    PRINTF("buffer mean: %lf,vrms_mean: %d,vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
+    PRINTF("buffer max: %lf, vrms_max: %d, vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
+    PRINTF("buffer min: %lf, vrms_min: %d, vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
+    PRINTF("buffer mean: %lf, vrms_mean: %d, vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
 }
 
 // This function sets the current time values which are 16 bytes total and calculated VRMS values to flash
@@ -174,7 +183,7 @@ void setFlashData()
 {
     // initialize the variables
     struct FlashData data;
-    uint8_t *flash_target_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
     uint16_t offset;
 
     // set date values and VRMS values to FlashData struct variable
@@ -201,7 +210,7 @@ void setFlashData()
     // find the last offset of flash records and write current values to last offset of flash_data buffer
     for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
     {
-        if (flash_target_contents[offset] == '\0' || flash_target_contents[offset] == 0xff)
+        if (flash_data_contents[offset] == '\0' || flash_data_contents[offset] == 0xff)
         {
             if (offset == 0)
             {
@@ -254,8 +263,10 @@ void SPIWriteToFlash()
     setFlashData();
     // setSectorData();
 
+    uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
+    restore_interrupts(ints);
 }
 
 // this function converts an array to datetime value
@@ -442,12 +453,14 @@ void searchDataInFlash()
     {
         PRINTF("SEARCHDATAINFLASH: Generating messages...\n");
 
-        // initialize the variables. XOR result is 0x02 because message to send UART starts with 0x02 (STX) so in BCC calculation, that byte will be ignored
-        uint8_t xor_result = 0x02;
+        // initialize the variables
+        uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
-        uint8_t first_flag = 0;
         uint32_t end_addr = start_index <= end_index ? end_index : 1572864;
         int result;
+
+        // send STX character
+        uart_putc(UART0_ID, STX);
 
         for (; start_addr <= end_addr;)
         {
@@ -464,41 +477,8 @@ void searchDataInFlash()
             uint8_t mean = flash_start_content[start_addr + 14];
             uint8_t mean_dec = flash_start_content[start_addr + 15];
 
-            // if start address equals to end address, it means there is just one record to send or this record is the last record to send
-            if (start_addr == end_addr)
-            {
-                // if this is the first record, it means there is just one record to send so thsi string include STX and BCC together
-                if (!first_flag)
-                { // 17               19                  4
-                    result = snprintf(load_profile_line, 41, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
-                    first_flag = 1;
-                    xor_result = bccGenerate((uint8_t *)load_profile_line, 40, xor_result);
-                }
-                // if this is the not first record, it means this is the last record to send
-                else
-                { // 16               19               4
-                    result = snprintf(load_profile_line, 40, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n\r%c", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec, 0x03);
-                    xor_result = bccGenerate((uint8_t *)load_profile_line, 39, xor_result);
-                }
-            }
-            // if start address not equals to end address, it means this is the start record or normal record
-            else
-            {
-                // if this record is start record, this string includes STX character
-                if (!first_flag)
-                { // 17               19               2
-                    result = snprintf(load_profile_line, 39, "%c(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", 0x02, year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
-                    xor_result = bccGenerate((uint8_t *)load_profile_line, 38, xor_result);
-                    first_flag = 1;
-                }
-                // if this is not start record, this is the normal record
-                else
-                { // 16                   19               2
-                    result = snprintf(load_profile_line, 38, "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
-                    xor_result = bccGenerate((uint8_t *)load_profile_line, 37, xor_result);
-                }
-            }
-
+            result = snprintf(load_profile_line, sizeof(load_profile_line), "(%s-%s-%s,%s:%s)(%03d.%d,%03d.%d,%03d.%d)\r\n", year, month, day, hour, minute, min, min_dec, max, max_dec, mean, mean_dec);
+            bccGenerate((uint8_t *)load_profile_line, 40, &xor_result);
             PRINTF("SEARCHDATAINFLASH: message to send: %s\n", load_profile_line);
 
             // send the record to UART and wait
@@ -509,15 +489,22 @@ void searchDataInFlash()
             if (result >= (int)sizeof(load_profile_line))
             {
                 PRINTF("SEARCHDATAINFLASH: Buffer Overflow! Sending NACK.\n");
-                uart_putc(UART0_ID, 0x15);
+                sendErrorMessage((char *)"LPBUFFEROVERFLOW");
             }
             else
             {
                 uart_puts(UART0_ID, load_profile_line);
-                if (start_addr == end_addr)
-                {
-                    uart_putc(UART0_ID, xor_result);
-                }
+            }
+
+            // if start address equals to end address, it means there is just one record to send or this record is the last record to send
+            if (start_addr == end_addr)
+            {
+                result = snprintf(load_profile_line, sizeof(load_profile_line), "\r%c", ETX);
+                bccGenerate((uint8_t *)load_profile_line, result, &xor_result);
+
+                uart_puts(UART0_ID, load_profile_line);
+                PRINTF("SEARCHDATAINFLASH: lp data block xor is: %02X\n", xor_result);
+                uart_putc(UART0_ID, xor_result);
             }
 
             sleep_ms(15);
@@ -537,7 +524,7 @@ void searchDataInFlash()
     else
     {
         PRINTF("SEARCHDATAINFLASH: data not found.\n");
-        uart_putc(UART0_ID, 0x15);
+        sendErrorMessage((char *)"NODATAFOUND");
     }
 
     // reset time buffers
@@ -571,7 +558,8 @@ void checkSectorContent()
 
     for (uint16_t i = 0; i < 256; i++)
     {
-        if (flash_sector_content[i] == 0xFF){
+        if (flash_sector_content[i] == 0xFF)
+        {
             ff_count++;
         }
     }

@@ -18,7 +18,7 @@
 
 // this is the start offset of the program
 #define FLASH_PROGRAM_OFFSET 36 * 1024
-// threshold values offset
+// threshold values offset (first 2 byte value is threshold value, second 2 byte value is threshold records sector value)
 #define FLASH_THRESHOLD_INFO_OFFSET (256 * 1024) - (5 * FLASH_SECTOR_SIZE)
 // threshold values offset
 #define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
@@ -44,6 +44,8 @@
 #define FLASH_RECORD_SIZE 16
 // this is the count of total records can be kept in a flash
 #define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
+// serial number size
+#define SERIAL_NUMBER_SIZE 9
 
 // UART DEFINES
 
@@ -110,5 +112,13 @@
 // SDA and SCL pins for I2C
 #define RTC_I2C_SDA_PIN 20
 #define RTC_I2C_SCL_PIN 21
+
+// SPECIAL CHARACTERS
+
+#define SOH 0x01
+#define STX 0x02
+#define ETX 0x03
+#define ACK 0x06
+#define NACK 0x15
 
 #endif

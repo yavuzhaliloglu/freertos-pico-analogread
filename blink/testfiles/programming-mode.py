@@ -15,7 +15,7 @@ parser = argparse.ArgumentParser(description="A guide to show programming mode o
 
 parser.add_argument("--serial_number", type=str, default="", help="Serial number. Should be 9 characters")
 parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud rate. Should be a value between 0 and 6")
-parser.add_argument("-lp", "--load-profile", nargs='*', help="Load Profile Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM:SS, for start and end date respectively.")
+parser.add_argument("-lp", "--load-profile", nargs='*', help="Load Profile Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
 parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Threshold Set Request Option. If selected, you can specify the threshold value in the format XXX (must be 3 characters)")
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
 parser.add_argument("-tg", "--threshold-get", action="store_true", help="Threshold Get Records Request Option.")
@@ -63,7 +63,7 @@ def checkSubstrings(main_string):
 # ---------------------------------------------------------------------------------------------------------------------
 
 def sendEndConnectionMessage():
-    end_connection_bytes = bytearray(b'\x01\x42\x30\x03\x71\x00')
+    end_connection_bytes = bytearray(b'\x01\x42\x30\x03\x71')
     seri.write(end_connection_bytes)
 
 def checkResponseMessage(response_msg):
@@ -194,7 +194,7 @@ def sendLoadProfileRequest(msg):
         record = bytearray(seri.readline())
         
         if(len(record) == 0):
-            print("No data received")
+            print("Incoming data is empty")
             break
 
         if(record[0] == 0x15):
