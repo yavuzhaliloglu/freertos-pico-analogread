@@ -563,6 +563,46 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     }
 }
 
+uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec)
+{
+    if (hour > 23 || hour < 0)
+    {
+        return 0;
+    }
+
+    if (min > 59 || min < 0)
+    {
+        return 0;
+    }
+
+    if (sec > 59 || sec < 0)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
+uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day)
+{
+    if (year > 99 || year < 0)
+    {
+        return 0;
+    }
+
+    if (month > 12 || month < 0)
+    {
+        return 0;
+    }
+
+    if (day > 31 || day < 0)
+    {
+        return 0;
+    }
+
+    return 1;
+}
+
 // This function sets time via UART
 void setTimeFromUART(uint8_t *buffer)
 {
@@ -598,27 +638,35 @@ void setTimeFromUART(uint8_t *buffer)
 
     PRINTF("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
 
-    // Get the current time and set chip's Time value according to variables and current date values
-    setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
-    // Get new current time from RTC Chip and set to RP2040's RTC module
-    getTimePt7c4338(&current_time);
-
-    if (current_time.dotw < 0 || current_time.dotw > 6)
+    if (verifyHourMinSec(hour, min, sec);)
     {
-        current_time.dotw = 2;
-    }
+        // Get the current time and set chip's Time value according to variables and current date values
+        setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
+        // Get new current time from RTC Chip and set to RP2040's RTC module
+        getTimePt7c4338(&current_time);
 
-    bool is_rtc_set = rtc_set_datetime(&current_time);
+        if (current_time.dotw < 0 || current_time.dotw > 6)
+        {
+            current_time.dotw = 2;
+        }
 
-    if (is_rtc_set)
-    {
-        PRINTF("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
-        uart_putc(UART0_ID, ACK);
+        bool is_rtc_set = rtc_set_datetime(&current_time);
+
+        if (is_rtc_set)
+        {
+            PRINTF("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
+            uart_putc(UART0_ID, ACK);
+        }
+        else
+        {
+            PRINTF("SETTTIMEFROMUART: time was not set!\n");
+            sendErrorMessage((char *)"TIMENOTSET");
+        }
     }
     else
     {
-        PRINTF("SETTTIMEFROMUART: time was not set!\n");
-        sendErrorMessage((char *)"TIMENOTSET");
+        PRINTF("SETTIMEFROMUART: invalid tim values!\n");
+        sendErrorMessage((char *)"INVALIDTIMEVAL");
     }
 }
 
@@ -657,27 +705,35 @@ void setDateFromUART(uint8_t *buffer)
 
     PRINTF("SETDATEFROMUART: year: %d, month: %d, day: %d\n", year, month, day);
 
-    // Get the current time and set chip's date value according to variables and current time values
-    setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
-    // Get new current time from RTC Chip and set to RP2040's RTC module
-    getTimePt7c4338(&current_time);
-
-    if (current_time.dotw < 0 || current_time.dotw > 6)
+    if (verifyYearMonthDay(year, month, day))
     {
-        current_time.dotw = 2;
-    }
+        // Get the current time and set chip's date value according to variables and current time values
+        setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
+        // Get new current time from RTC Chip and set to RP2040's RTC module
+        getTimePt7c4338(&current_time);
 
-    bool is_rtc_set = rtc_set_datetime(&current_time);
+        if (current_time.dotw < 0 || current_time.dotw > 6)
+        {
+            current_time.dotw = 2;
+        }
 
-    if (is_rtc_set)
-    {
-        PRINTF("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
-        uart_putc(UART0_ID, ACK);
+        bool is_rtc_set = rtc_set_datetime(&current_time);
+
+        if (is_rtc_set)
+        {
+            PRINTF("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
+            uart_putc(UART0_ID, ACK);
+        }
+        else
+        {
+            PRINTF("SETDATEFROMUART: date was not set!\n");
+            sendErrorMessage((char *)"DATENOTSET");
+        }
     }
     else
     {
-        PRINTF("SETDATEFROMUART: date was not set!\n");
-        sendErrorMessage((char *)"DATENOTSET");
+        PRINTF("SETDATEFROMUART: invalid date values!\n");
+        sendErrorMessage((char *)"INVALIDDATEVAL");
     }
 }
 
