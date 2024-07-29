@@ -198,6 +198,7 @@ def sendLoadProfileRequest(msg):
             break
 
         if(record[0] == 0x15):
+            print("Tariff Device sent NACK.")
             print("No records in this device.")
             break
 
@@ -214,6 +215,9 @@ def sendLoadProfileRequest(msg):
     # print(msg_buffer)
     msg_buffer_bcc = msg_buffer.pop()
     message_buffer_bcc_calculated = calculateBCC(msg_buffer, msg_buffer[0])
+
+    print("incoming buffer bcc: ", msg_buffer_bcc)
+    print("calculated bcc: ", message_buffer_bcc_calculated)
 
     if(msg_buffer_bcc != message_buffer_bcc_calculated):
         print("BCC check failed!")

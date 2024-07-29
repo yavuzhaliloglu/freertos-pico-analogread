@@ -17,7 +17,7 @@ parser.add_argument("-rm", "--readout-mode", action="store_true", help="Readout 
 parser.add_argument("-dm", "--debug-mode", action="store_true", help="Debug mode shows content of sector, records and device info")
 
 args = parser.parse_args()
-""
+
 print("serial number: ", args.serial_number)
 print("baud rate: ", args.baud_rate)
 print("readout mode arg: ", args.readout_mode)
@@ -54,22 +54,22 @@ def checkResponseMessage(response_msg):
 
     if len(response_msg) < 8:
         print("Invalid response message length!")
-        return False
+        return -1
     
     if not checkSubstrings(response_msg.decode("utf-8")):
         print("Meter Generation cannot found!")
-        return False
+        return -1
 
     if(response_max_b_rate > 6 or response_max_b_rate < 0):
         print("Invalid baud rate!")
-        return False
+        return -1
     
     if response_msg[0] != 47:
         print("Invalid message format!")
-        return False
+        return -1
 
     print("Incoming communication response message is valid!")
-    return True
+    return response_max_b_rate
 
 # -------------------------------------------------------------------------------------------------------------
 
@@ -109,16 +109,24 @@ seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopb
 max_baud_rate = b"\x36"
 max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 baud_rates = [300, 600, 1200, 2400, 4800, 9600, 19200]
+selected_baud_rate_integer = max_baud_rate_integer
+selected_baud_rate = max_baud_rate
+
 communication_req_msg_base = bytearray(b"/?!\r\n")
 readout_buffer = bytearray()
+
+print(max_baud_rate_integer)
+print(max_baud_rate)
 
 # serial number is optional
 serial_number = args.serial_number
 
 if(args.baud_rate):
-    b_rate_ascii = ord(args.baud_rate)
-    max_baud_rate = bytes([b_rate_ascii])
-    max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
+    selected_baud_rate = bytes([ord(args.baud_rate)])
+    selected_baud_rate_integer = int(selected_baud_rate.decode("utf-8"))
+
+print(selected_baud_rate)
+print(selected_baud_rate_integer)
 
 if(serial_number and len(serial_number) != 9):
     print("Wrong serial number format! Serial number should be 9 characters long!")
@@ -139,11 +147,11 @@ if(len(communication_request_message_response) == 0):
     print("Communication response message cannot be received!")
     exit(1)
 
+response_max_b_rate = checkResponseMessage(communication_request_message_response)
 # check response, if not valid, exit
-if(not checkResponseMessage(communication_request_message_response)):
+if(response_max_b_rate == -1):
     print("Invalid response message!")
     exit(1)
-
 
 if args.readout_mode:
     information_message = bytearray(b"\x0600\r\n")
@@ -154,14 +162,14 @@ else:
     exit(1)
 
 # put baudrate to information message
-information_message[2:2] = max_baud_rate
+information_message[2:2] = selected_baud_rate
 seri.write(information_message)
 time.sleep(0.25)
 
 seri.close()
 seri = serial.Serial(
     "/dev/ttyUSB0",
-    baudrate=baud_rates[max_baud_rate_integer],
+    baudrate=baud_rates[selected_baud_rate_integer],
     bytesize=7,
     parity="E",
     stopbits=1,

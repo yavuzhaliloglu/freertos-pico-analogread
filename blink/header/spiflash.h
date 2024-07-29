@@ -667,7 +667,7 @@ void addSerialNumber()
 void setProgramStartDate(datetime_t *ct)
 {
     uint8_t *flash_reset_count_offset = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
-    uint8_t current_time_buffer[10] = {0};
+    uint8_t current_time_buffer[16] = {0};
     uint8_t flash_reset_count_buffer[FLASH_SECTOR_SIZE] = {0};
     uint16_t offset = 0;
 
@@ -678,19 +678,31 @@ void setProgramStartDate(datetime_t *ct)
     setDateToCharArray(ct->day, (char *)current_time_buffer + 4);
     setDateToCharArray(ct->hour, (char *)current_time_buffer + 6);
     setDateToCharArray(ct->min, (char *)current_time_buffer + 8);
+    setDateToCharArray(ct->sec, (char *)current_time_buffer + 10);
+
+    current_time_buffer[12] = 0x7F;
+    current_time_buffer[13] = 0x7F;
+    current_time_buffer[14] = 0x7F;
+    current_time_buffer[15] = 0x7F;
 
     PRINTF("SETPROGRAMSTARTDATE: Program start date is set to: ");
     printBufferHex(current_time_buffer, 10);
     PRINTF("\n");
 
-    while (offset < FLASH_SECTOR_SIZE)
+    for (uint16_t i = 0; i < FLASH_SECTOR_SIZE; i += 16)
     {
         if (flash_reset_count_buffer[offset] == 0xFF || flash_reset_count_offset[offset] == 0x00)
         {
             break;
         }
 
-        offset++;
+        offset += 16;
+    }
+
+    if (offset >= FLASH_SECTOR_SIZE)
+    {
+        memset(flash_reset_count_buffer, 0, FLASH_SECTOR_SIZE);
+        offset = 0;
     }
 
     memcpy(flash_reset_count_buffer + offset, current_time_buffer, sizeof(current_time_buffer));

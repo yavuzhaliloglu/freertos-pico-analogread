@@ -34,6 +34,39 @@ void initUART()
     uart_set_translate_crlf(UART0_ID, true);
 }
 
+void sendResetDates()
+{
+    uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
+    char date_buffer[20] = {0};
+    uint16_t date_offset;
+    int result;
+
+    for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16)
+    {
+        if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00)
+        {
+            break;
+        }
+
+        char year[3] = {reset_dates_flash[date_offset], reset_dates_flash[date_offset + 1], 0x00};
+        char month[3] = {reset_dates_flash[date_offset + 2], reset_dates_flash[date_offset + 3], 0x00};
+        char day[3] = {reset_dates_flash[date_offset + 4], reset_dates_flash[date_offset + 5], 0x00};
+        char hour[3] = {reset_dates_flash[date_offset + 6], reset_dates_flash[date_offset + 7], 0x00};
+        char min[3] = {reset_dates_flash[date_offset + 8], reset_dates_flash[date_offset + 9], 0x00};
+        char sec[3] = {reset_dates_flash[date_offset + 10], reset_dates_flash[date_offset + 11], 0x00};
+
+        result = snprintf(date_buffer, sizeof(date_buffer), "%s-%s-%s,%s:%s:%s\r\n", year, month, day, hour, min, sec);
+
+        if (result >= (int)sizeof(date_buffer))
+        {
+            sendErrorMessage((char *)"DATEBUFFERSMALL");
+            continue;
+        }
+
+        uart_puts(UART0_ID, date_buffer);
+    }
+}
+
 void sendDeviceInfo()
 {
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
@@ -77,6 +110,8 @@ void sendDeviceInfo()
 
     sprintf(debug_uart_buffer, "usage of flash is: %d/%d bytes\n", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET));
     uart_puts(UART0_ID, debug_uart_buffer);
+
+    sendResetDates();
 }
 
 // This function check the data which comes when State is Listening, and compares the message to defined strings, and returns a ListeningState value to process the request

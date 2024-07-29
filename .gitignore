@@ -54,3 +54,4 @@ dkms.conf
 # build folder and pico-sdk folder
 /blink/build/
 /pico-sdk/
+/.vscode/
