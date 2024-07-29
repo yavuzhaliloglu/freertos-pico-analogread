@@ -5,6 +5,8 @@
 
 // ADC VARIABLES
 
+// load profile record period value
+uint8_t load_profile_record_period = 15;
 // these 3 variables keeps max,m,n and mean values of vrms_buffer content
 uint8_t vrms_max = 0;
 uint8_t vrms_min = 0;
@@ -12,6 +14,10 @@ uint8_t vrms_mean = 0;
 uint8_t vrms_max_dec = 0;
 uint8_t vrms_min_dec = 0;
 uint8_t vrms_mean_dec = 0;
+// last record double values
+double vrms_max_last = 0.0;
+double vrms_min_last = 0.0;
+double vrms_mean_last = 0.0;
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
 uint16_t sample_buffer[VRMS_SAMPLE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
@@ -80,8 +86,7 @@ bool password_correct_flag = false;
 
 // this is the current sector data variable in flash
 uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
-// this is the serial number variable in flash
-uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+// serial number buffer
 uint8_t serial_number[10] = {0};
 // sector data variable keeps current sector to write records to flash
 static uint16_t sector_data = 0;
@@ -116,8 +121,7 @@ struct ThresholdData
     uint16_t variance;
     uint8_t padding[2];
 };
-// Threshold buffer that can keep 1 Sector size threshold record
-struct ThresholdData flash_th_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)] = {0};
+struct ThresholdData th_flash_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)] = {0};
 // this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.
 uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
 // this small buffer keeps 8 bytes of program data and this buffer is converted 8-bit from 7-bit

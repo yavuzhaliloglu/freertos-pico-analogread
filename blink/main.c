@@ -6,13 +6,12 @@
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "math.h"
+#include <math.h>
 #include "timers.h"
 #include "pico/util/datetime.h"
 #include "pico/binary_info.h"
 #include "pico/bootrom.h"
 #include "pico/time.h"
-#include "hardware/sync.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/rtc.h"
@@ -22,6 +21,7 @@
 #include "hardware/dma.h"
 #include "hardware/irq.h"
 #include "hardware/flash.h"
+#include "hardware/sync.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
 #include "hardware/timer.h"
@@ -164,7 +164,7 @@ void vUARTTask(void *pvParameters)
                         // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
                             PRINTF("UART TASK: entered listening-reading\n");
-                            parseReadingData(rx_buffer, rx_buffer_len);
+                            parseLoadProfileDates(rx_buffer, rx_buffer_len);
                             searchDataInFlash();
                             break;
 
@@ -305,9 +305,9 @@ void vADCReadTask()
             vrms_values_count = 0;
 
             // Write a record to the flash memory periodically
-            if (current_time.min % 15 == 0)
+            if (current_time.min % load_profile_record_period == 0)
             {
-                PRINTF("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
+                PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\n", load_profile_record_period);
 
                 if (vrms_buffer_count > VRMS_BUFFER_SIZE)
                 {

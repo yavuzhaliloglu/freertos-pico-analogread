@@ -1,18 +1,38 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//    36kb                236kB 256kB                    512kB                                                                                                                                         2048kB
+//    36kb                236kB 256kB               504kB 512kB                                                                                                                                         2048kB
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-// |   |                    | | |                        | | |                                                                                                                                           |
-// | B |      Main Program  |X|T|      OTA Program       |N|S|                                                            Records                                                                        |
-// |   |                    | | |                        | | |                                                                                                                                           |
+// |   |                    | | |                      | | | |                                                                                                                                           |
+// | B |      Main Program  |X|T|      OTA Program     |R|N|S|                                                            Records                                                                        |
+// |   |                    | | |                      | | | |                                                                                                                                           |
 // |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 //                          240kB                      508kB 516kB
-//  B -> Bootloader
+//  B -> Bootloader (26kB)
+//  X -> Threshold Variable and Sector Contents
 //  T -> Threshold Contents
+//  R -> Reset Count Contents
 //  N -> Serial Number Contents
 //  S -> Sector Contents
-//  X -> Threshold Sector and Variable Contents
+
+// MESSAGES THAT THIS DEVICE ACCEPTS
+
+// Request Message Without Serial Number and Flag:  /?!\r\n                                                     -> Length: 5
+// Request Message Without Serial Number:           /?ALP!\r\n                                                  -> Length: 8
+// Request Message with Serial Number and Flag:     /?ALP612400001!\r\n                                         -> Length: 17
+
+// Acknowledgement Message:                         [ACK]0ZX\r\n                                                -> Length: 6
+
+// Password:                                        [SOH]P1[STX](12345678)[ETX][BCC]                            -> Length: 16
+// Load Profile with Dates:                         [SOH]R2[STX]P.01(24-07-13,13:00;24-07-14,14:00)[ETX][BCC]   -> Length: 41
+// Load Profile without Dates:                      [SOH]R2[STX]P.01(;)[ETX][BCC]                               -> Length: 13
+// Time Set:                                        [SOH]W2[STX]0.9.1(13:00:00)[ETX][BCC]                       -> Length: 21
+// Date Set:                                        [SOH]W2[STX]0.9.2(24-07-15)[ETX][BCC]                       -> Length: 21
+// Production Information:                          [SOH]R2[STX]96.1.3()[ETX][BCC]                              -> Length: 14
+// Set Threshold Value:                             [SOH]W2[STX]T.V.1(000)[ETX][BCC]                            -> Length: 16
+// Get Threshold Value:                             [SOH]R2[STX]T.R.1()[ETX][BCC]                               -> Length: 13
+// Set Threshold PIN:                               [SOH]W2[STX]T.P.1()[ETX][BCC]                               -> Length: 13
+// End Connection:                                  [SOH]B0[ETX]q                                               -> Length: 5
 
 // FLASH DEFINES
 
@@ -32,10 +52,8 @@
 #define FLASH_SECTOR_OFFSET 512 * 1024
 // this is the start offset of load profile records will written
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
-// this is the size of reprogram area
-#define FLASH_PROGRAM_SIZE 220 * 1024
 // repgrogram area size
-#define FLASH_REPROGRAM_SIZE 256 * 1024 - FLASH_SECTOR_SIZE
+#define FLASH_REPROGRAM_SIZE FLASH_RESET_COUNT_OFFSET - FLASH_REPROGRAM_OFFSET 
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))

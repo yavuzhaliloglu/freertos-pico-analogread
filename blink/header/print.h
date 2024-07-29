@@ -21,20 +21,20 @@ void printBufferHex(uint8_t *buf, size_t len)
 #if DEBUG
     for (size_t i = 0; i < len; ++i)
     {
-        PRINTF("%02X", buf[i]);
+        printf("%02X", buf[i]);
+
         if (i % 16 == 15)
         {
-            PRINTF("\n");
+            printf("\n");
         }
         else
         {
-            PRINTF(" ");
+            printf(" ");
         }
 
-        if (i % 256 == 0 && i != 0)
+        if (i % 256 == 255)
         {
-            PRINTF("\n\n");
-            PRINTF("page %d\n", i / 256);
+            printf("page %d\n\n", i / 256);
         }
     }
 #else

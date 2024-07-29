@@ -83,7 +83,6 @@ void sendDeviceInfo()
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
     // define the process strings
-    // uint8_t reprogram[4] = {0x21, 0x21, 0x21, 0x21};
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};            // [SOH]P1[STX]
     uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};     // [SOH]R2[STX]
     uint8_t reading_control_alt[4] = {0x01, 0x52, 0x35, 0x02}; // [SOH]R5[STX]
@@ -125,45 +124,49 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         }
 
         // Time Set Control (0.9.1)
-        if (strstr((char *)data_buffer, timeset_str) != NULL)
+        else if (strstr((char *)data_buffer, timeset_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
             return TimeSet;
         }
 
         // Date Set Control (0.9.2)
-        if (strstr((char *)data_buffer, dateset_str) != NULL)
+        else if (strstr((char *)data_buffer, dateset_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
             return DateSet;
         }
 
         // Production Date Control (96.1.3)
-        if (strstr((char *)data_buffer, production_str) != NULL)
+        else if (strstr((char *)data_buffer, production_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
             return ProductionInfo;
         }
+
         // ReProgram Control (!!!!)
-        if (strstr((char *)data_buffer, reprogram_str) != NULL)
+        else if (strstr((char *)data_buffer, reprogram_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
             return WriteProgram;
         }
+
         // Set Threshold control (T.V.1)
-        if (strstr((char *)data_buffer, threshold_str) != NULL)
+        else if (strstr((char *)data_buffer, threshold_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
             return SetThreshold;
         }
+
         // Get Threshold control (T.R.1)
-        if (strstr((char *)data_buffer, get_threshold_str) != NULL)
+        else if (strstr((char *)data_buffer, get_threshold_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
             return GetThreshold;
         }
+
         // Set Threshold PIN (T.P.1)
-        if (strstr((char *)data_buffer, threshold_pin) != NULL)
+        else if (strstr((char *)data_buffer, threshold_pin) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
             return ThresholdPin;
@@ -189,7 +192,7 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
 }
 
 // This function gets the load profile data and finds the date characters and add them to time arrays
-void parseReadingData(uint8_t *buffer, uint8_t len)
+void parseLoadProfileDates(uint8_t *buffer, uint8_t len)
 {
     for (uint8_t i = 0; i < len; i++)
     {
@@ -238,8 +241,8 @@ void parseReadingData(uint8_t *buffer, uint8_t len)
         }
     }
 
-    PRINTF("PARSEREADINGDATA: parsed start time: %s\n", reading_state_start_time);
-    PRINTF("PARSEREADINGDATA: parsed end time: %s\n", reading_state_end_time);
+    PRINTF("PARSELOADPROFILEDATES: parsed start time: %s\n", reading_state_start_time);
+    PRINTF("PARSELOADPROFILEDATES: parsed end time: %s\n", reading_state_end_time);
 }
 
 uint8_t is_end_connection_message(uint8_t *msg_buf)
@@ -282,7 +285,7 @@ uint8_t getProgramBaudRate(uint16_t b_rate)
     return baudrate;
 }
 
-// This function sets the device's baud rate according to given number like 1,2,3,4,5
+// This function sets the device's baud rate according to given number like 0,1,2,3,4,5,6
 uint setProgramBaudRate(uint8_t b_rate)
 {
     uint selected_baud_rate = 300;
@@ -319,7 +322,7 @@ uint setProgramBaudRate(uint8_t b_rate)
 
 // This function reboots this device. This function checks new program area and get the new program area contents and compares if the program written true.
 // If program is written correctly, device will be rebooted but if it's not, new program area will be deleted and device won't be rebooted
-void rebootDevice()
+void rebootProgram()
 {
     // get contents of new program area
     uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
@@ -332,12 +335,15 @@ void rebootDevice()
     unsigned char md5_local[MD5_DIGEST_LENGTH];
     calculateMD5((char *)program, program_len, md5_local);
 
+    uint32_t ints = save_and_disable_interrupts();
+
     // check if MD5 is true and program's epochs. If epoch is bigger it means the program is newer
     if (!(strncmp((char *)md5_offset, (char *)md5_local, 16) == 0) || !(epoch_new > epoch_current))
     {
-        PRINTF("REBOOTDEVICE: md5 check is false or new program's epoch is smaller or equal.\n");
-        flash_range_erase(FLASH_REPROGRAM_OFFSET, (256 * 1024) - FLASH_SECTOR_SIZE);
+        PRINTF("REBOOTPROGRAM: md5 check is false or new program's epoch is smaller or equal.\n");
+        flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
     }
+    restore_interrupts(ints);
 
     hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
     watchdog_hw->scratch[5] = ENTRY_MAGIC;
@@ -405,7 +411,7 @@ void greetingStateHandler(uint8_t *buffer)
             PRINTF("GREETINGSTATEHANDLER: request came with serial number.\n");
 
             // if the message is not correct, do nothing
-            if (strncmp((char *)serial_num, (char *)serial_number, SERIAL_NUMBER_SIZE) != 0 || (buffer_tail - serial_num != 9))
+            if (strncmp((char *)serial_num, (char *)serial_number, SERIAL_NUMBER_SIZE) != 0 || (buffer_tail - serial_num != SERIAL_NUMBER_SIZE))
             {
                 PRINTF("GREETINGSTATEHANDLER: serial number is false.\n");
                 return;
@@ -422,7 +428,14 @@ void greetingStateHandler(uint8_t *buffer)
         }
 
         // send handshake message
-        snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
+        int result = snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
+
+        if (result >= (int)sizeof(greeting_uart_buffer))
+        {
+            PRINTF("GREETINGSTATEHANDLER: handshake message is too big.\n");
+            sendErrorMessage((char *)"GREETINGBUFOVERFLOW");
+            return;
+        }
 
         PRINTF("GREETINGSTATEHANDLER: handshake message:\n");
         printBufferHex((uint8_t *)greeting_uart_buffer, 20);
@@ -482,9 +495,18 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
             // Generate the message to send UART
             uint8_t ack_buff[18] = {0};
-            snprintf((char *)ack_buff, 17, "%cP0%c(%s)%c", SOH, STX, serial_number, ETX);
-            // Set BCC to add the message
-            setBCC(ack_buff, 16, SOH);
+            uint8_t ack_bcc = SOH;
+
+            int result = snprintf((char *)ack_buff, sizeof(ack_buff), "%cP0%c(%s)%c", SOH, STX, serial_number, ETX);
+            if (result >= (int)sizeof(ack_buff))
+            {
+                PRINTF("SETTINGSTATEHANDLER: ack message is too big.\n");
+                sendErrorMessage((char *)"ACKBUFOVERFLOW");
+                return;
+            }
+
+            // Generate BCC for acknowledgement message
+            bccGenerate(ack_buff, result, &ack_bcc);
 
             PRINTF("SETTINGSTATEHANDLER: ack message to send:\n");
             printBufferHex(ack_buff, 18);
@@ -492,6 +514,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
             // SEND Message
             uart_puts(UART0_ID, (char *)ack_buff);
+            uart_putc(UART0_ID, ack_bcc);
 
             // Change state
             state = Listening;
@@ -506,51 +529,73 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             int result = 0;
             uint8_t readout_xor = 0x00;
 
+            PRINTF("SETTINGSTATEHANDLER: data buffer before starting: \n");
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
             uart_putc(UART0_ID, STX);
 
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.0.0(%s)\r\n", serial_number);
             bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
-            printBufferHex((uint8_t *)mread_data_buff, result);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-
-            printBufferHex((uint8_t *)mread_data_buff, result);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-
-            printBufferHex((uint8_t *)mread_data_buff, result);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-
-            printBufferHex((uint8_t *)mread_data_buff, result);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
 
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
             bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
 
-            printBufferHex((uint8_t *)mread_data_buff, result);
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.8.4(%d*min)\r\n", load_profile_record_period);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "52.7.0(%.2f)\r\n", vrms_min_last);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "72.7.0(%.2f)\r\n", vrms_mean_last);
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
 
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", ETX);
             bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
             uart_puts(UART0_ID, mread_data_buff);
-
-            printBufferHex((uint8_t *)mread_data_buff, result);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
-            PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
 
+            PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
             uart_putc(UART0_ID, readout_xor);
         }
 
@@ -565,17 +610,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
 uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec)
 {
-    if (hour > 23 || hour < 0)
-    {
-        return 0;
-    }
-
-    if (min > 59 || min < 0)
-    {
-        return 0;
-    }
-
-    if (sec > 59 || sec < 0)
+    if (hour > 23 || min > 59 || sec > 59)
     {
         return 0;
     }
@@ -585,17 +620,7 @@ uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec)
 
 uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day)
 {
-    if (year > 99 || year < 0)
-    {
-        return 0;
-    }
-
-    if (month > 12 || month < 0)
-    {
-        return 0;
-    }
-
-    if (day > 31 || day < 0)
+    if (year > 99 || month > 12 || day > 31)
     {
         return 0;
     }
@@ -628,7 +653,7 @@ void setTimeFromUART(uint8_t *buffer)
     }
 
     // copy time data to buffer and delete the ":" character. First two characters of the array is hour info, next 2 character is minute info, last 2 character is the second info. Also there are two ":" characters to seperate informations.
-    strncpy((char *)time_buffer, start_ptr, (char *)end_ptr - start_ptr);
+    strncpy((char *)time_buffer, start_ptr, end_ptr - start_ptr);
     deleteChar(time_buffer, strlen((char *)time_buffer), ':');
 
     // set hour,min and sec variables to change time.
@@ -638,17 +663,20 @@ void setTimeFromUART(uint8_t *buffer)
 
     PRINTF("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
 
-    if (verifyHourMinSec(hour, min, sec);)
+    if (verifyHourMinSec(hour, min, sec))
     {
         // Get the current time and set chip's Time value according to variables and current date values
         setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
         // Get new current time from RTC Chip and set to RP2040's RTC module
         getTimePt7c4338(&current_time);
 
+        // ??
         if (current_time.dotw < 0 || current_time.dotw > 6)
         {
+            PRINTF("SETTIMEFROMUART: invalid day of the week: %d!\n", current_time.dotw);
             current_time.dotw = 2;
         }
+        //
 
         bool is_rtc_set = rtc_set_datetime(&current_time);
 
@@ -714,6 +742,7 @@ void setDateFromUART(uint8_t *buffer)
 
         if (current_time.dotw < 0 || current_time.dotw > 6)
         {
+            PRINTF("SETDATEFROMUART: invalid day of the week: %d!\n", current_time.dotw);
             current_time.dotw = 2;
         }
 
@@ -752,7 +781,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};        // [SOH]W2[STX]T.V.1
     uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};        // [SOH]R2[STX]T.R.1
     uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};        // [SOH]W2[STX]T.P.1
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                               // [SOH]B0[ETX]q[NULL]
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                               // [SOH]B0[ETX]q
 
     // length of message that should be
     uint8_t time_len = 21;
@@ -826,16 +855,24 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 void sendProductionInfo()
 {
     // initialize the buffer and get the current time
-    char production_obis[22] = {0};
+    char production_obis_buffer[24] = {0};
+    uint8_t production_bcc = STX;
 
     // generate the message and add BCC to the message
-    snprintf(production_obis, 21, "%c96.1.3(%s)\r\n%c", STX, PRODUCTION_DATE, ETX);
-    setBCC((uint8_t *)production_obis, 21, STX);
+    int result = snprintf(production_obis_buffer, sizeof(production_obis_buffer), "%c96.1.3(%s)\r\n%c", STX, PRODUCTION_DATE, ETX);
+    if (result >= (int)sizeof(production_obis_buffer))
+    {
+        PRINTF("SENDPRODUCTIONINFO: production buffer is too small.\n");
+        uart_putc(UART0_ID, NACK);
+        return;
+    }
 
-    PRINTF("SENDPRODUCTIONINFO: production info message to send: %s\n", production_obis);
+    bccGenerate((uint8_t *)production_obis_buffer, result, &production_bcc);
+    PRINTF("SENDPRODUCTIONINFO: production info message to send: %s\n", production_obis_buffer);
 
     // send the message to UART
-    uart_puts(UART0_ID, production_obis);
+    uart_puts(UART0_ID, production_obis_buffer);
+    uart_putc(UART0_ID, production_bcc);
 }
 
 // This function gets a password and controls the password, if password is true, device sends an ACK message, if not, device sends NACK message
@@ -851,7 +888,7 @@ void passwordHandler(uint8_t *buffer)
     }
     else
     {
-        sendErrorMessage((char *)"PWNOTSET");
+        sendErrorMessage((char *)"PWNOTCORRECT");
     }
 }
 
@@ -873,8 +910,6 @@ void ReProgramHandler()
     // delete the reprogram area to write new program
     flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
     PRINTF("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
-
-    return;
 }
 
 // This function handles to reboot device. This function executes when there is no coming character in 5 second in WriteProgram state.
@@ -890,35 +925,7 @@ void RebootHandler()
 
     // write program execution with null variable and reboot device
     writeProgramToFlash(0x00);
-    rebootDevice();
-}
-
-void concatenateAndPrintHex(uint16_t value, uint8_t *array, size_t arraySize, uint8_t *copy_buf)
-{
-    // Calculate total size (2 bytes for uint16_t + array size)
-    size_t totalSize = 2 + arraySize;
-
-    // Create a buffer to hold the combined data
-    uint8_t combined[totalSize];
-
-    // Place the uint16_t value into the combined array
-    combined[0] = value & 0xFF;        // High byte
-    combined[1] = (value >> 8) & 0xFF; // Low byte
-
-    // Copy the uint8_t array into the combined array
-    for (size_t i = 0; i < arraySize; ++i)
-    {
-        combined[2 + i] = array[i];
-    }
-
-    // Print the combined array in hexadecimal format
-    for (size_t i = 0; i < totalSize; ++i)
-    {
-        PRINTF("%02X ", combined[i]);
-    }
-    PRINTF("\n");
-
-    memcpy(copy_buf, combined, 34);
+    rebootProgram();
 }
 
 void setThresholdValue(uint8_t *data)
@@ -964,6 +971,9 @@ void setThresholdValue(uint8_t *data)
     PRINTF("threshold info content is:  \n");
     printBufferHex((uint8_t *)th_ptr, FLASH_PAGE_SIZE);
     PRINTF("\n");
+
+    uart_putc(UART0_ID, ACK);
+    PRINTF("SETTHRESHOLDVALUE: ACK send from set threshold value.\n");
 }
 
 void getThresholdRecord()
@@ -1052,14 +1062,17 @@ void setThresholdPIN()
 
     if (threshold_set_before)
     {
-        PRINTF("Threshold PIN set before, resetting pin...\n");
+        PRINTF("SETTHRESHOLDPIN: Threshold PIN set before, resetting pin...\n");
 
         gpio_put(THRESHOLD_PIN, 0);
         vTaskDelay(pdMS_TO_TICKS(10));
         threshold_set_before = 0;
 
-        PRINTF("Threshold PIN reset\n");
+        PRINTF("SETTHRESHOLDPIN: Threshold PIN reset\n");
     }
+
+    uart_putc(UART0_ID, ACK);
+    PRINTF("SETTHRESHOLDPIN: ACK send from set threshold pin.\n");
 }
 
 #endif

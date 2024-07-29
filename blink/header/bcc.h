@@ -10,7 +10,7 @@ void bccGenerate(uint8_t *data_buffer, uint8_t size, uint8_t *xor)
     PRINTF("BCCGENERATE: returned xor result is: %02X\n", *xor);
 }
 
-// Generate a BCC for a buffer and control.
+// Generate a BCC for a buffer which starts with SOH character and compare with buffer's last character, which is BCC of buffer.
 bool bccControl(uint8_t *buffer, uint8_t size)
 {
     uint8_t xor_result = SOH;
@@ -24,7 +24,7 @@ bool bccControl(uint8_t *buffer, uint8_t size)
     return xor_result == buffer[size - 1];
 }
 
-// Generate a BCC and add it to end of a buffer.n
+// Generate a BCC and add it to end of a buffer. Buffer size should be 1 byte more than the buffer size.
 void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
 {
     for (int i = 0; i < size; i++)

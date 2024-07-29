@@ -51,7 +51,7 @@ void writeBlock(uint8_t *buffer, uint8_t size)
     }
 }
 
-// this functiın gets the character coming from UART and adds it to data_pck buffer and copies it to rpb buffer.
+// this function gets the character coming from UART and adds it to data_pck buffer and copies it to rpb buffer.
 void writeProgramToFlash(uint8_t chr)
 {
     // copy character to data_pack value. If is_program_end flag is set it means there is no character coming from UART the no need to copy a NULL value to data_pack buffer.
@@ -89,6 +89,7 @@ void getFlashContents()
     th_sector_data = th_ptr[1];
 
     // set serial number
+    uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
     memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
 
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
@@ -168,14 +169,28 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
 
     vrms_max = (uint8_t)floor(buffer_max);
     vrms_min = (uint8_t)floor(buffer_min);
-    vrms_mean = (uint8_t)(buffer_sum / size);
     vrms_max_dec = doubleFloatingToUint8t(buffer_max);
     vrms_min_dec = doubleFloatingToUint8t(buffer_min);
-    vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
+
+    if (size == 0)
+    {
+        vrms_mean = 0;
+        vrms_mean_dec = 0;
+    }
+    else
+    {
+        vrms_mean = (uint8_t)(buffer_sum / size);
+        vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
+    }
 
     PRINTF("buffer max: %lf, vrms_max: %d, vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
     PRINTF("buffer min: %lf, vrms_min: %d, vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
     PRINTF("buffer mean: %lf, vrms_mean: %d, vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
+}
+
+double convertVRMSValueToDouble(uint8_t value, uint8_t value_dec)
+{
+    return value + value_dec / 10.0;
 }
 
 // This function sets the current time values which are 16 bytes total and calculated VRMS values to flash
@@ -198,6 +213,11 @@ void setFlashData()
     data.max_volt_dec = vrms_max_dec;
     data.min_volt_dec = vrms_min_dec;
     data.mean_volt_dec = vrms_mean_dec;
+
+    // convert last record vrms values to double
+    vrms_max_last = convertVRMSValueToDouble(vrms_max, vrms_max_dec);
+    vrms_min_last = convertVRMSValueToDouble(vrms_min, vrms_min_dec);
+    vrms_mean_last = convertVRMSValueToDouble(vrms_mean, vrms_mean_dec);
 
     // reset VRMS values
     vrms_max = 0;
@@ -333,8 +353,6 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
 
     for (unsigned int i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
     {
-        // uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-
         // this is the end index control. if start index occurs and current index starts with FF or current index is NULL which means this is the last index of records
         if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
         {
@@ -541,11 +559,13 @@ void resetFlashSettings()
 
     uint16_t reset_flash[256] = {0};
 
+    uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
 
-    flash_range_erase(FLASH_DATA_OFFSET, 1024 * 1024);
+    flash_range_erase(FLASH_DATA_OFFSET, FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE);
 
+    restore_interrupts(ints);
     PRINTF("RESETFLASHSETTINGS: erasing is successful.\n");
 }
 
@@ -556,7 +576,7 @@ void checkSectorContent()
     uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
     uint16_t ff_count = 0;
 
-    for (uint16_t i = 0; i < 256; i++)
+    for (uint16_t i = 0; i < FLASH_PAGE_SIZE; i++)
     {
         if (flash_sector_content[i] == 0xFF)
         {
@@ -564,9 +584,9 @@ void checkSectorContent()
         }
     }
 
-    if (ff_count >= 255)
+    if (ff_count == FLASH_PAGE_SIZE)
     {
-        PRINTF("CHECKSECTORCONTENT: sector content is going to set 0.\n");
+        PRINTF("CHECKSECTORCONTENT: sector area is empty. Sector content is going to set 0.\n");
 
         uint16_t sector_buffer[256] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
@@ -614,7 +634,7 @@ void updateThresholdSector(uint16_t sector_val)
 {
     uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
 
-    th_arr[0] = 5;
+    th_arr[0] = vrms_threshold;
     th_arr[1] = sector_val;
 
     uint32_t ints = save_and_disable_interrupts();

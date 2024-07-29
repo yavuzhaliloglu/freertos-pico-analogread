@@ -39,9 +39,17 @@ uint16_t calculateVariance(double *buffer, size_t size)
     PRINTF("\nmean of samples is: %f\n", mean);
     PRINTF("\nvariance total of samples is: %f\n", variance_total);
     PRINTF("\nvariance of samples is: %f\n", (variance_total / (size - 1)));
-    PRINTF("\nvariance of samples as uint32_t is: %ld\n", (uint32_t)(variance_total / (size - 1)));
 
-    return (uint16_t)(variance_total / (size - 1));
+    if (size <= 1)
+    {
+        PRINTF("variance of samples is 1 or 0\n");
+        return 0;
+    }
+    else
+    {
+        PRINTF("variance of samples is bigger than 1\n");
+        return (uint16_t)(variance_total / (size - 1));
+    }
 }
 
 double calculateVRMS(double bias)
@@ -90,16 +98,28 @@ double getMean(uint16_t *buffer, size_t size)
     for (size_t i = 0; i < size; i++)
         total += (double)buffer[i];
 
-    return (total / size);
+    if (size == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        return (total / size);
+    }
 }
 
+// Write threshold data to flash
 void writeThresholdRecord(double vrms, uint16_t variance)
 {
-    // set datetime variables
+    PRINTF("writing threshold record\n");
+    // initialize the variables
     struct ThresholdData data;
-    uint8_t *threshold_recs = (uint8_t *)(XIP_BASE + (FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE)));
-    unsigned int l_offset;
-    uint8_t record_count = 0;
+    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE));
+    uint8_t *flash_threshold_recs_start = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    uint8_t *flash_threshold_recs_end = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (3 * FLASH_SECTOR_SIZE) + 14 * FLASH_PAGE_SIZE);
+    uint16_t offset;
+
+    memcpy(th_flash_buf, flash_threshold_recs, FLASH_SECTOR_SIZE);
 
     // set struct data parameters
     setDateToCharArray(current_time.year, data.year);
@@ -109,59 +129,70 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     setDateToCharArray(current_time.min, data.min);
     data.vrms = vrms;
     data.variance = variance;
-    data.padding[0] = 0x00;
-    data.padding[1] = 0x00;
+    data.padding[0] = 0x7F;
+    data.padding[1] = 0x7F;
 
-    // // format the variables to create a record
-    // snprintf(threshold_buffer, 17, "%02d%02d%02d%02d%02d%03d%03d", year, month, day, hour, min, (uint16_t)vrms, variance);
-
-    // find last record offset of the sector
-    for (l_offset = 0; l_offset < FLASH_SECTOR_SIZE; l_offset += 16)
+    // find the last offset of flash records and write current values to last offset of flash_data buffer
+    for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
     {
-        if (threshold_recs[l_offset] == 0xFF || threshold_recs[l_offset] == 0x00)
+        if (flash_threshold_recs[offset] == 0x00 || flash_threshold_recs[offset] == 0xFF)
         {
+            if (offset == 0)
+            {
+                PRINTF("SETFLASHDATA: last record is not found.\n");
+            }
+            else
+            {
+                PRINTF("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
+            }
+
+            th_flash_buf[offset / FLASH_RECORD_SIZE] = data;
+
+            PRINTF("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
+
             break;
         }
-        record_count++;
     }
 
-    // if offset is equal to flash sector size, it means sector is full, so update sector and write data to the next sector
-    if (l_offset == FLASH_SECTOR_SIZE)
+    // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
+    if (offset >= FLASH_SECTOR_SIZE)
     {
-        if (th_sector_data == 4)
+        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_data);
+
+        // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
+        if (th_sector_data == 3)
         {
             th_sector_data = 0;
-            updateThresholdSector(th_sector_data);
         }
         else
         {
             th_sector_data++;
-            updateThresholdSector(th_sector_data);
         }
-    }
 
-    // if l_offset is equals to flash sector size and sector data is 4, it means the area for threshold records is full, so clean the first sector and write record there
-    if (l_offset == FLASH_SECTOR_SIZE && th_sector_data == 4)
-    {
-        l_offset = 0;
-    }
+        PRINTF("SETFLASHDATA: new sector value is: %d\n", th_sector_data);
 
-    // copy the records in a sector in the buffer
-    memcpy(flash_th_buf, threshold_recs, l_offset);
-    // copy next record after the buffer's last record
-    memcpy((flash_th_buf + record_count), (void *)&data, 16);
+        // reset variables and call setSectorData()
+        memset(th_flash_buf, 0, FLASH_SECTOR_SIZE);
+        th_flash_buf[0] = data;
+        updateThresholdSector(th_sector_data);
+
+        PRINTF("SETFLASHDATA: Sector changing written to flash.\n");
+    }
 
     PRINTF("WRITETHRESHOLDDATA: flash_th_buf as hexadecimal: \n");
-    printBufferHex((uint8_t *)flash_th_buf, FLASH_PAGE_SIZE);
+    printBufferHex((uint8_t *)th_flash_buf, FLASH_PAGE_SIZE);
 
     // write buffer in flash
     uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_th_buf, FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
 
-    PRINTF("WRITETHRESHOLDDATA: threshold records as hexadecimal: \n");
-    printBufferHex(threshold_recs, FLASH_PAGE_SIZE);
+    PRINTF("WRITETHRESHOLDDATA: threshold records start area: \n");
+    printBufferHex(flash_threshold_recs_start, FLASH_PAGE_SIZE);
+
+    PRINTF("WRITETHRESHOLDDATA: threshold records end area: \n");
+    printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
 double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
@@ -176,7 +207,14 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
         total += buffer[i];
     }
 
-    mean_vrms = total / size;
+    if (size == 0)
+    {
+        mean_vrms = 0;
+    }
+    else
+    {
+        mean_vrms = total / size;
+    }
 
     // if calculated vrms is bigger than threshold value, set a record to flash memory
     if (mean_vrms >= (double)vrms_threshold)
