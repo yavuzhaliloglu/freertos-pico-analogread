@@ -1,3 +1,0 @@
-/home/yavuz/pico/freertos-pico/blink/build/pioasm/CMakeFiles/pioasm.dir
-/home/yavuz/pico/freertos-pico/blink/build/pioasm/CMakeFiles/edit_cache.dir
-/home/yavuz/pico/freertos-pico/blink/build/pioasm/CMakeFiles/rebuild_cache.dir
