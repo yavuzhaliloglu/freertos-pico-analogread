@@ -158,4 +158,44 @@ datetime_t current_time = {
 // This is ADCTaskHandler. This handler is used to delete ADCReadTask in ReProgram State.
 TaskHandle_t xADCHandle;
 
+uint16_t getRecordSectorValue()
+{
+    return sector_data;
+}
+
+void setRecordSectorValue(uint16_t value)
+{
+    sector_data = value;
+}
+
+uint16_t getThresholdSectorValue()
+{
+    return th_sector_data;
+}
+
+void setThresholdSectorValue(uint16_t value)
+{
+    th_sector_data = value;
+}
+
+uint16_t getVRMSThresholdValue()
+{
+    return vrms_threshold;
+}
+
+void setVRMSThresholdValue(uint16_t value)
+{
+    vrms_threshold = value;
+}
+
+uint8_t getThresholdSetBeforeFlag()
+{
+    return threshold_set_before;
+}
+
+void setThresholdSetBeforeFlag(uint8_t value)
+{
+    threshold_set_before = value;
+}
+
 #endif
