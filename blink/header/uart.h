@@ -965,7 +965,7 @@ void RebootHandler()
 
 void setThresholdValue(uint8_t *data)
 {
-    PRINTF("threshold value before change is: %d\n", vrms_threshold);
+    PRINTF("threshold value before change is: %d\n", getVRMSThresholdValue());
 
     // get value start and end pointers
     char *start_ptr = strchr((char *)data, '(');
@@ -991,10 +991,10 @@ void setThresholdValue(uint8_t *data)
     PRINTF("threshold value as int is: %d\n", threshold_val);
 
     // set the threshold value to use in program
-    vrms_threshold = threshold_val;
+    setVRMSThresholdValue(threshold_val);
 
     // set array variables to updated values (just threshold changed)
-    th_arr[0] = vrms_threshold;
+    th_arr[0] = getVRMSThresholdValue();
     th_arr[1] = th_ptr[1];
 
     // write updated values to flash
@@ -1095,13 +1095,13 @@ void setThresholdPIN()
         return;
     }
 
-    if (threshold_set_before)
+    if (getThresholdSetBeforeFlag())
     {
         PRINTF("SETTHRESHOLDPIN: Threshold PIN set before, resetting pin...\n");
 
         gpio_put(THRESHOLD_PIN, 0);
         vTaskDelay(pdMS_TO_TICKS(10));
-        threshold_set_before = 0;
+        setThresholdSetBeforeFlag(0);
 
         PRINTF("SETTHRESHOLDPIN: Threshold PIN reset\n");
     }

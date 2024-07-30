@@ -79,36 +79,37 @@ void getFlashContents()
     uint32_t ints = save_and_disable_interrupts();
 
     // get sector count of records
-    sector_data = *(uint16_t *)flash_sector_content;
-    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint16_t sector_temp = *(uint16_t *)flash_sector_content;
+    setRecordSectorValue(sector_temp);
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (getRecordSectorValue() * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_data_contents, FLASH_SECTOR_SIZE);
 
     // get threshold data
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
-    vrms_threshold = th_ptr[0];
-    th_sector_data = th_ptr[1];
+    setVRMSThresholdValue(th_ptr[0]);
+    setThresholdSectorValue(th_ptr[1]);
 
     // set serial number
     uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
     memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
 
-    PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
-    PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);
-    PRINTF("GETFLASHCONTENTS: threshold sector is: %d\n", th_sector_data);
+    PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", getVRMSThresholdValue());
+    PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", getRecordSectorValue());
+    PRINTF("GETFLASHCONTENTS: threshold sector is: %d\n", getThresholdSectorValue());
 
     // enable interrupts
     restore_interrupts(ints);
 }
 
 // This function writes current sector data to flash.
-void setSectorData()
+void setSectorData(uint16_t sector_value)
 {
     uint32_t ints = save_and_disable_interrupts();
 
     uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
-    sector_buffer[0] = sector_data;
+    sector_buffer[0] = sector_value;
 
-    PRINTF("SETSECTORDATA: sector data which is going to be written: %d\n", sector_data);
+    PRINTF("SETSECTORDATA: sector data which is going to be written: %d\n", sector_value);
 
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
     flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
@@ -198,7 +199,7 @@ void setFlashData()
 {
     // initialize the variables
     struct FlashData data;
-    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (getRecordSectorValue() * FLASH_SECTOR_SIZE));
     uint16_t offset;
 
     // set date values and VRMS values to FlashData struct variable
@@ -252,24 +253,27 @@ void setFlashData()
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
     if (offset >= FLASH_SECTOR_SIZE)
     {
-        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_data);
+        uint16_t sector_val = getRecordSectorValue();
+        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_val);
 
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
-        if (sector_data == FLASH_TOTAL_SECTORS)
+        if (sector_val == FLASH_TOTAL_SECTORS)
         {
-            sector_data = 0;
+            sector_val = 0;
         }
         else
         {
-            sector_data++;
+            sector_val++;
         }
 
-        PRINTF("SETFLASHDATA: new sector value is: %d\n", sector_data);
+        setRecordSectorValue(sector_val);
+        sector_val = getRecordSectorValue();
+        PRINTF("SETFLASHDATA: new sector value is: %d\n", getRecordSectorValue());
 
         // reset variables and call setSectorData()
         memset(flash_data, 0, FLASH_SECTOR_SIZE);
         flash_data[0] = data;
-        setSectorData();
+        setSectorData(sector_val);
 
         PRINTF("SETFLASHDATA: Sector changing written to flash.\n");
     }
@@ -283,9 +287,11 @@ void SPIWriteToFlash()
     setFlashData();
     // setSectorData();
 
+    uint16_t sector_val = getRecordSectorValue();
+
     uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
+    flash_range_erase(FLASH_DATA_OFFSET + (sector_val * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_DATA_OFFSET + (sector_val * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
 }
 
@@ -599,7 +605,7 @@ void checkThresholdContent()
         PRINTF("threshold value is empty, setting to 5 as default...\n");
 
         uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
-        th_arr[0] = vrms_threshold;
+        th_arr[0] = getVRMSThresholdValue();
         th_arr[1] = th_ptr[1];
 
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
@@ -624,7 +630,7 @@ void updateThresholdSector(uint16_t sector_val)
 {
     uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
 
-    th_arr[0] = vrms_threshold;
+    th_arr[0] = getVRMSThresholdValue();
     th_arr[1] = sector_val;
 
     uint32_t ints = save_and_disable_interrupts();
