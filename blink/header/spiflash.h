@@ -79,8 +79,11 @@ void getFlashContents()
     uint32_t ints = save_and_disable_interrupts();
 
     // get sector count of records
-    uint16_t sector_temp = *(uint16_t *)flash_sector_content;
+    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
+    uint16_t sector_temp = flash_sector_content[0];
     setRecordSectorValue(sector_temp);
+    
+    // get record data
     uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (getRecordSectorValue() * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_data_contents, FLASH_SECTOR_SIZE);
 
@@ -558,12 +561,12 @@ void searchDataInFlash()
     PRINTF("SEARCHDATAINFLASH: time values are deleted.\n");
 }
 
-// This function resets records and sector data and set sector data to 0
+// This function resets records and sector data and set sector data to 0 (UNUSUED FUNCTION)
 void resetFlashSettings()
 {
     PRINTF("RESETFLASHSETTINGS: resetting records anad sector values\n");
 
-    uint16_t reset_flash[256] = {0};
+    uint16_t reset_flash[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
 
     uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
@@ -584,7 +587,7 @@ void checkSectorContent()
     if (flash_sector_content[0] == 0xFFFF)
     {
         PRINTF("CHECKSECTORCONTENT: sector area is empty. Sector content is going to set 0.\n");
-        uint16_t sector_buffer[256 / sizeof(uint16_t)] = {0};
+        uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
     }

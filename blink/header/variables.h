@@ -84,8 +84,6 @@ bool password_correct_flag = false;
 
 // SPI VARIABLES
 
-// this is the current sector data variable in flash
-uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 // serial number buffer
 uint8_t serial_number[10] = {0};
 // sector data variable keeps current sector to write records to flash

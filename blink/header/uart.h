@@ -70,6 +70,7 @@ void sendResetDates()
 void sendDeviceInfo()
 {
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
     int offset;
     uint16_t record_count = 0;
 
