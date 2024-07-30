@@ -115,18 +115,12 @@ selected_baud_rate = max_baud_rate
 communication_req_msg_base = bytearray(b"/?!\r\n")
 readout_buffer = bytearray()
 
-print(max_baud_rate_integer)
-print(max_baud_rate)
-
 # serial number is optional
 serial_number = args.serial_number
 
 if(args.baud_rate):
     selected_baud_rate = bytes([ord(args.baud_rate)])
     selected_baud_rate_integer = int(selected_baud_rate.decode("utf-8"))
-
-print(selected_baud_rate)
-print(selected_baud_rate_integer)
 
 if(serial_number and len(serial_number) != 9):
     print("Wrong serial number format! Serial number should be 9 characters long!")

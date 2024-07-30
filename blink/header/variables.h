@@ -23,7 +23,7 @@ uint16_t sample_buffer[VRMS_SAMPLE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
 uint16_t bias_buffer[BIAS_SAMPLE];
 // vrms threshold value
-uint16_t vrms_threshold;
+uint16_t vrms_threshold = 5;
 // threshold flag value, used for set threshold pin and hold it until command comes and resets it
 uint8_t threshold_set_before = 0;
 

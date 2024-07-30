@@ -573,22 +573,12 @@ void checkSectorContent()
 {
     uint32_t ints = save_and_disable_interrupts();
 
-    uint8_t *flash_sector_content = (uint8_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
-    uint16_t ff_count = 0;
+    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 
-    for (uint16_t i = 0; i < FLASH_PAGE_SIZE; i++)
-    {
-        if (flash_sector_content[i] == 0xFF)
-        {
-            ff_count++;
-        }
-    }
-
-    if (ff_count == FLASH_PAGE_SIZE)
+    if (flash_sector_content[0] == 0xFFFF)
     {
         PRINTF("CHECKSECTORCONTENT: sector area is empty. Sector content is going to set 0.\n");
-
-        uint16_t sector_buffer[256] = {0};
+        uint16_t sector_buffer[256 / sizeof(uint16_t)] = {0};
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
     }
@@ -609,7 +599,7 @@ void checkThresholdContent()
         PRINTF("threshold value is empty, setting to 5 as default...\n");
 
         uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
-        th_arr[0] = 5;
+        th_arr[0] = vrms_threshold;
         th_arr[1] = th_ptr[1];
 
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);

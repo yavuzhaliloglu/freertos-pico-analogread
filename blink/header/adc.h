@@ -157,7 +157,7 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
     if (offset >= FLASH_SECTOR_SIZE)
     {
-        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_data);
+        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", th_sector_data);
 
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
         if (th_sector_data == 3)
