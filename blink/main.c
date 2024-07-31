@@ -233,7 +233,7 @@ void vUARTTask(void *pvParameters)
 }
 
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
-void vADCReadTask()
+void vADCHandleTask()
 {
     // Set the parameters for this task.
     TickType_t startTime;
@@ -359,6 +359,22 @@ void vResetTask()
     }
 }
 
+void vADCSampleTask()
+{
+    TickType_t startTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(5);
+    startTime = xTaskGetTickCount();
+    uint16_t adc_sample;
+
+    while (1)
+    {
+        adc_sample = adc_read();
+        PRINTF("Got ADC Sample is: %d\n", adc_sample);
+
+        vTaskDelayUntil(&startTime, xFrequency);
+    }
+}
+
 int main()
 {
     sleep_ms(100);
@@ -461,10 +477,11 @@ int main()
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCHandleTask, "ADCHandleTask", 1024, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 256, NULL, 2, NULL);
 
         vTaskStartScheduler();
     }
