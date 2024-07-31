@@ -1,7 +1,7 @@
 import serial
 import time
 import argparse
-from datetime import datetime
+from datetime import datetime, timedelta
 from serial.serialutil import SerialException
 
 # --------------------------------------------------------------- BAUD RATE CHECK FUNCTION
@@ -119,7 +119,11 @@ def calculateBCC(data, xor):
 
 def getCurrentTime():
     current_time = datetime.now()
-                
+    print("current time: ",current_time)
+
+    current_time = current_time + timedelta(seconds=2)
+    print("current time (+3 seconds): ",current_time)
+
     year = current_time.year - 2000
     month = current_time.month
     day = current_time.day

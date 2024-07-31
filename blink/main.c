@@ -97,12 +97,7 @@ void vUARTTask(void *pvParameters)
                 // The end of the message could be '\n' character or a BCC, so this if block checks if the character is '\n' or the whole message is request message according to its length and order of characters
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
-                    // // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
-                    // if (state != Listening)
-                    // {
-                    //     rx_buffer[rx_buffer_len++] = rx_char;
-                    // }
-
+                    // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
                     vTaskDelay(pdMS_TO_TICKS(250));
 
                     xTimerReset(ResetStateTimer, 0);
