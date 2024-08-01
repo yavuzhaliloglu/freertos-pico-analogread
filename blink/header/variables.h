@@ -28,6 +28,8 @@ uint8_t vrms_mean_dec = 0;
 double vrms_max_last = 0.0;
 double vrms_min_last = 0.0;
 double vrms_mean_last = 0.0;
+// 
+uint16_t adc_samples_for_second[ADC_SAMPLE_SIZE_SECOND] = {0};
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
 uint16_t bias_buffer[BIAS_SAMPLE];
 // vrms threshold value
@@ -126,8 +128,6 @@ struct ThresholdData
     uint16_t vrms;
     uint16_t variance;
     uint8_t padding[2];
-
-    
 };
 struct ThresholdData th_flash_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)] = {0};
 // this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.

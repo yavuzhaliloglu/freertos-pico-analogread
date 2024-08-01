@@ -243,7 +243,6 @@ void vADCHandleTask()
     double bias_voltage;
     double vrms_values[VRMS_VALUES_BUFFER_SIZE] = {0};
     uint8_t vrms_values_count = 0;
-    uint16_t temp_buffer[100] = {0};
     startTime = xTaskGetTickCount();
 
     while (1)
@@ -253,28 +252,19 @@ void vADCHandleTask()
 
         // displayFIFO(&adc_fifo);
         displayFIFOStats(&adc_fifo);
-        getLastNElementsToBuffer(&adc_fifo, temp_buffer, 100);
-        PRINTF("ADC READ TASK: Got last 100 element. Buffer content: ");
-        for (int i = 0; i < 100; i++)
-        {
-            if (i % 10 == 0)
-            {
-                PRINTF("\n");
-            }
+        getLastNElementsToBuffer(&adc_fifo, adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
 
-            PRINTF("%u ", temp_buffer[i]);
-        }
-        PRINTF("\n");
+        PRINTF("ADC READ TASK: Got last %d element. Buffer content:\n", ADC_SAMPLE_SIZE_SECOND);
+        printBufferUint16T(adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
 
         // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
         bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
+        PRINTF("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
 
         adc_select_input(ADC_SELECT_INPUT);
-        vrms = calculateVRMS(bias_voltage, temp_buffer, 100);
-
-        PRINTF("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
+        vrms = calculateVRMS(bias_voltage, adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
         PRINTF("ADC READ TASK: calculated vrms is: %lf\n", vrms);
 
         // set the vrms value to vrms_values buffer
@@ -294,7 +284,7 @@ void vADCHandleTask()
                 setThresholdSetBeforeFlag(1);
             }
 
-            variance = calculateVariance(temp_buffer, 100);
+            variance = calculateVariance(adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
             writeThresholdRecord(vrms, variance);
         }
 
@@ -398,12 +388,9 @@ void vADCSampleTask()
     const TickType_t xFrequency = pdMS_TO_TICKS(10);
     startTime = xTaskGetTickCount();
     uint16_t adc_sample;
-    uint adc_input;
 
     while (1)
     {
-        adc_input = adc_get_selected_input();
-        PRINTF("ADCSAMPLETASK: adc_input: %d\n", adc_input);
         adc_sample = adc_read();
         bool isadded = addToFIFO(&adc_fifo, adc_sample);
 

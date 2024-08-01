@@ -43,4 +43,32 @@ void printBufferHex(uint8_t *buf, size_t len)
 #endif
 }
 
+// This function prints a buffer as hexadecimal values
+void printBufferUint16T(uint16_t *buf, size_t len)
+{
+#if DEBUG
+    for (size_t i = 0; i < len; ++i)
+    {
+        printf("%d", buf[i]);
+
+        if (i % 10 == 9)
+        {
+            printf("\n");
+        }
+        else
+        {
+            printf(" ");
+        }
+
+        if (i % 100 == 99)
+        {
+            printf("\n");
+        }
+    }
+#else
+    (void)buf;
+    (void)len;
+#endif
+}
+
 #endif

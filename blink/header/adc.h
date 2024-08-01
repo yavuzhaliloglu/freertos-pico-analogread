@@ -3,19 +3,14 @@
 
 void adcCapture(uint16_t *buf, size_t count)
 {
-    // Set ADC FIFO and get the samples with adc_run()
-    adc_fifo_setup(true, false, 0, false, false);
-    adc_run(true);
-
     // Get FIFO contents and copy them to buffer
     for (size_t i = 0; i < count; i++)
     {
-        buf[i] = adc_fifo_get();
+        buf[i] = adc_read();
     }
 
-    // End sampling and drain the FIFO
-    adc_run(false);
-    adc_fifo_drain();
+    PRINTF("BIAS Samples:\n");
+    printBufferUint16T(buf, count);
 }
 
 uint16_t calculateVariance(uint16_t *buffer, size_t size)
@@ -33,22 +28,20 @@ uint16_t calculateVariance(uint16_t *buffer, size_t size)
 
     for (size_t i = 0; i < size; i++)
     {
-        variance_total += pow(buffer[i] - mean, 2);
+        variance_total = (uint32_t)pow((double)(buffer[i] - mean), 2);
     }
 
     PRINTF("\ntotal of samples is: %ld\n", total);
-    PRINTF("\nmean of samples is: %ld\n", mean);
-    PRINTF("\nvariance total of samples is: %ld\n", variance_total);
-    PRINTF("\nvariance of samples is: %ld\n", (variance_total / size));
+    PRINTF("mean of samples is: %ld\n", mean);
+    PRINTF("variance total of samples is: %lu\n", variance_total);
+    PRINTF("variance of samples is: %ld\n\n", (variance_total / size));
 
     if (size == 0)
     {
-        PRINTF("variance of samples is 1 or 0\n");
         return 0;
     }
     else
     {
-        PRINTF("variance of samples is bigger than 1\n");
         return (uint16_t)(variance_total / size);
     }
 }
