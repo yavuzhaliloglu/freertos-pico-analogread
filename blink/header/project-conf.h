@@ -10,6 +10,8 @@
 #define WITHOUT_BOOTLOADER 0
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
+// ADC FIFO Size
+#define ADC_FIFO_SIZE 1000
 
 // DEBUG MACRO
 #if DEBUG

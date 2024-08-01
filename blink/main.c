@@ -28,6 +28,7 @@
 #include "header/defines.h"
 #include "header/variables.h"
 #include "header/print.h"
+#include "header/fifo.h"
 #include "header/md5.h"
 #include "header/bcc.h"
 #include "header/rtc.h"
@@ -242,25 +243,60 @@ void vADCHandleTask()
     double bias_voltage;
     double vrms_values[VRMS_VALUES_BUFFER_SIZE] = {0};
     uint8_t vrms_values_count = 0;
+    uint16_t temp_buffer[100] = {0};
+    startTime = xTaskGetTickCount();
 
     while (1)
     {
-        startTime = xTaskGetTickCount();
+        // delay until next cycle
+        vTaskDelayUntil(&startTime, xFrequency);
+
+        // displayFIFO(&adc_fifo);
+        displayFIFOStats(&adc_fifo);
+        getLastNElementsToBuffer(&adc_fifo, temp_buffer, 100);
+        PRINTF("ADC READ TASK: Got last 100 element. Buffer content: ");
+        for (int i = 0; i < 100; i++)
+        {
+            if (i % 10 == 0)
+            {
+                PRINTF("\n");
+            }
+
+            PRINTF("%u ", temp_buffer[i]);
+        }
+        PRINTF("\n");
 
         // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
         bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
 
-        // Select the ADC input to voltage PIN and calculate VRMS value
         adc_select_input(ADC_SELECT_INPUT);
-        vrms = calculateVRMS(bias_voltage);
+        vrms = calculateVRMS(bias_voltage, temp_buffer, 100);
 
         PRINTF("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
         PRINTF("ADC READ TASK: calculated vrms is: %lf\n", vrms);
 
         // set the vrms value to vrms_values buffer
         vrms_values[(vrms_values_count++) % VRMS_VALUES_BUFFER_SIZE] = vrms;
+
+        // if calculated vrms is bigger than threshold value, set a record to flash memory
+        if (vrms >= (double)getVRMSThresholdValue())
+        {
+            uint16_t variance = 0;
+
+            if (!getThresholdSetBeforeFlag())
+            {
+                // put THRESHOLD PIN 1 value
+                gpio_put(THRESHOLD_PIN, 1);
+                vTaskDelay(pdMS_TO_TICKS(10));
+                // set flag to not put 1 until command comes
+                setThresholdSetBeforeFlag(1);
+            }
+
+            variance = calculateVariance(temp_buffer, 100);
+            writeThresholdRecord(vrms, variance);
+        }
 
         // if time is beginning of a minute, set the vrms value to buffer
         if (current_time.sec == 0)
@@ -272,7 +308,7 @@ void vADCHandleTask()
             }
 
             // get mean of vrms values and if the mean of vrms values is bigger than threshold value, calculate variance
-            vrms = getMeanVarianceVRMSValues(vrms_values, vrms_values_count);
+            vrms = calcMeanOfVRMSMinutePeriod(vrms_values, vrms_values_count);
 
             // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
             vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
@@ -323,9 +359,6 @@ void vADCHandleTask()
                 PRINTF("ADC READ TASK: buffer content is deleted\n");
             }
         }
-
-        // delay until next cycle
-        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -362,14 +395,22 @@ void vResetTask()
 void vADCSampleTask()
 {
     TickType_t startTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(5);
+    const TickType_t xFrequency = pdMS_TO_TICKS(10);
     startTime = xTaskGetTickCount();
     uint16_t adc_sample;
+    uint adc_input;
 
     while (1)
     {
+        adc_input = adc_get_selected_input();
+        PRINTF("ADCSAMPLETASK: adc_input: %d\n", adc_input);
         adc_sample = adc_read();
-        PRINTF("Got ADC Sample is: %d\n", adc_sample);
+        bool isadded = addToFIFO(&adc_fifo, adc_sample);
+
+        if (!isadded)
+        {
+            removeFirstElementAddNewElement(&adc_fifo, adc_sample);
+        }
 
         vTaskDelayUntil(&startTime, xFrequency);
     }
@@ -406,10 +447,6 @@ int main()
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
-    sleep_ms(100);
-
-    adc_set_clkdiv(CLOCK_DIV);
-    adcCapture(sample_buffer, VRMS_SAMPLE);
     sleep_ms(100);
 
     // I2C Init
@@ -469,8 +506,8 @@ int main()
     setProgramStartDate(&current_time);
     sleep_ms(100);
 
-    // wait for a while
-    sleep_ms(100);
+    // init ADC FIFO
+    initADCFIFO(&adc_fifo);
 
     // if time is set correctly, start the processes.
     if (is_time_set)

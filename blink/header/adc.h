@@ -9,18 +9,20 @@ void adcCapture(uint16_t *buf, size_t count)
 
     // Get FIFO contents and copy them to buffer
     for (size_t i = 0; i < count; i++)
-        buf[i] = adc_fifo_get_blocking();
+    {
+        buf[i] = adc_fifo_get();
+    }
 
     // End sampling and drain the FIFO
     adc_run(false);
     adc_fifo_drain();
 }
 
-uint16_t calculateVariance(double *buffer, size_t size)
+uint16_t calculateVariance(uint16_t *buffer, size_t size)
 {
-    double total = 0;
-    double mean;
-    double variance_total = 0;
+    uint32_t total = 0;
+    uint32_t mean;
+    uint32_t variance_total = 0;
 
     for (size_t i = 0; i < size; i++)
     {
@@ -31,16 +33,15 @@ uint16_t calculateVariance(double *buffer, size_t size)
 
     for (size_t i = 0; i < size; i++)
     {
-        double mult = buffer[i] - mean;
-        variance_total += mult * mult;
+        variance_total += pow(buffer[i] - mean, 2);
     }
 
-    PRINTF("\ntotal of samples is: %f\n", total);
-    PRINTF("\nmean of samples is: %f\n", mean);
-    PRINTF("\nvariance total of samples is: %f\n", variance_total);
-    PRINTF("\nvariance of samples is: %f\n", (variance_total / (size - 1)));
+    PRINTF("\ntotal of samples is: %ld\n", total);
+    PRINTF("\nmean of samples is: %ld\n", mean);
+    PRINTF("\nvariance total of samples is: %ld\n", variance_total);
+    PRINTF("\nvariance of samples is: %ld\n", (variance_total / size));
 
-    if (size <= 1)
+    if (size == 0)
     {
         PRINTF("variance of samples is 1 or 0\n");
         return 0;
@@ -48,18 +49,16 @@ uint16_t calculateVariance(double *buffer, size_t size)
     else
     {
         PRINTF("variance of samples is bigger than 1\n");
-        return (uint16_t)(variance_total / (size - 1));
+        return (uint16_t)(variance_total / size);
     }
 }
 
-double calculateVRMS(double bias)
+double calculateVRMS(double bias, uint16_t *sample_buffer, uint16_t size)
 {
     // Initialize the variables for VRMS calculation
     double vrms = 0.0;
     double vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
-    // Get samples
-    adcCapture(sample_buffer, VRMS_SAMPLE);
 
 #if DEBUG
     char deneme[40] = {0};
@@ -73,9 +72,9 @@ double calculateVRMS(double bias)
     PRINTF("%s", deneme);
 #endif
 
-    for (uint16_t i = 0; i < VRMS_SAMPLE; i++)
+    for (uint16_t i = 0; i < size; i++)
     {
-        double production = (double)(sample_buffer[i] * conversion_factor) / 1000;
+        double production = ((double)sample_buffer[i] * conversion_factor) / 1000;
         vrms_accumulator += pow((production - mean), 2);
     }
 
@@ -85,7 +84,7 @@ double calculateVRMS(double bias)
     PRINTF("%s", deneme);
 #endif
 
-    vrms = sqrt(vrms_accumulator / VRMS_SAMPLE);
+    vrms = sqrt(vrms_accumulator / size);
     vrms = vrms * VRMS_MULTIPLICATION_VALUE;
 
     return vrms;
@@ -112,7 +111,7 @@ double getMean(uint16_t *buffer, size_t size)
 void writeThresholdRecord(double vrms, uint16_t variance)
 {
     PRINTF("writing threshold record\n");
- 
+
     uint16_t th_sector_val = getThresholdSectorValue();
     // initialize the variables
     struct ThresholdData data;
@@ -200,11 +199,10 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
-double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
+double calcMeanOfVRMSMinutePeriod(double *buffer, uint8_t size)
 {
     double mean_vrms = 0;
     double total = 0;
-    uint16_t variance = 0;
 
     // mean vrms calculation
     for (uint8_t i = 0; i < size; i++)
@@ -219,22 +217,6 @@ double getMeanVarianceVRMSValues(double *buffer, uint8_t size)
     else
     {
         mean_vrms = total / size;
-    }
-
-    // if calculated vrms is bigger than threshold value, set a record to flash memory
-    if (mean_vrms >= (double)getVRMSThresholdValue())
-    {
-        if (!getThresholdSetBeforeFlag())
-        {
-            // put THRESHOLD PIN 1 value
-            gpio_put(THRESHOLD_PIN, 1);
-            vTaskDelay(pdMS_TO_TICKS(10));
-            // set flag to not put 1 until command comes
-            setThresholdSetBeforeFlag(1);
-        }
-
-        variance = calculateVariance(buffer, size);
-        writeThresholdRecord(mean_vrms, variance);
     }
 
     PRINTF("GETMEANVARIANCEVRMSVALUES: calculated vrms value from vrms_values array is: %f\n", mean_vrms);
