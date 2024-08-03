@@ -118,6 +118,8 @@
 #define ADC_BIAS_INPUT 1
 // BIAS Sample count
 #define BIAS_SAMPLE 100
+// amplitude threshold
+#define AMPLITUDE_THRESHOLD 150
 
 // RTC DEFINES
 

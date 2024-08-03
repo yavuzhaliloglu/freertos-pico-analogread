@@ -189,4 +189,20 @@ void writeThresholdRecord(float vrms, uint16_t variance)
     printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
+uint8_t detectSuddenAmplitudeChangeWithDerivative(uint16_t *sample_buf, size_t buffer_size)
+{
+    for (uint16_t i = 1; i < buffer_size; i++)
+    {
+        int16_t derivative = sample_buf[i] - sample_buf[i - 1];
+
+        if (abs(derivative) > AMPLITUDE_THRESHOLD)
+        {
+            printf("Sudden amplitude change detected at index %d: %d\n", i, abs(derivative));
+            return 1;
+        }
+    }
+
+    return 0;
+}
+
 #endif

@@ -234,6 +234,36 @@ void vUARTTask(void *pvParameters)
     }
 }
 
+uint16_t getMin(uint16_t *buffer, size_t size)
+{
+    uint16_t min_value = buffer[0];
+
+    for (size_t i = 1; i < size; i++)
+    {
+        if (buffer[i] < min_value)
+        {
+            min_value = buffer[i];
+        }
+    }
+
+    return min_value;
+}
+
+uint16_t getMax(uint16_t *buffer, size_t size)
+{
+    uint16_t max_value = buffer[0];
+
+    for (size_t i = 1; i < size; i++)
+    {
+        if (buffer[i] > max_value)
+        {
+            max_value = buffer[i];
+        }
+    }
+
+    return max_value;
+}
+
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask()
 {
@@ -248,6 +278,14 @@ void vADCReadTask()
         vTaskDelayUntil(&startTime, xFrequency);
 
         getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+
+        // FOR TEST
+        uint16_t min_sample = getMin(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        uint16_t max_sample = getMax(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        PRINTF("min sample is: %d\n", min_sample);
+        PRINTF("max sample is: %d\n", max_sample);
+        //
 
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
@@ -263,15 +301,18 @@ void vADCReadTask()
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
+        if (vrms >= (float)getVRMSThresholdValue())
+        {
+            setThresholdPIN();
+        }
+
+        if (detectSuddenAmplitudeChangeWithDerivative(adc_samples_buffer, VRMS_SAMPLE_SIZE))
+        {
+            PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
+        }
+
         if (current_time.sec == 0)
         {
-            // TODO: CONTROL THRESHOLD
-            if (vrms >= (float)getVRMSThresholdValue())
-            {
-                setThresholdPIN();
-                writeThresholdRecord(vrms, variance);
-            }
-
             if (current_time.min % load_profile_record_period == 0)
             {
                 PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\n", load_profile_record_period);
@@ -322,6 +363,7 @@ void vADCSampleTask()
     while (1)
     {
         adc_sample = adc_read(); // ADC'den örnek al
+        PRINTF("ADC SAMPLE TASK: adc sample is: %d\n", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 

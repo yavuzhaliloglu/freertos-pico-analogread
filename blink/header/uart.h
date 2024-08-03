@@ -1123,9 +1123,6 @@ void setThresholdPIN()
 
         PRINTF("SETTHRESHOLDPIN: Threshold PIN set\n");
     }
-
-    uart_putc(UART0_ID, ACK);
-    PRINTF("SETTHRESHOLDPIN: ACK send from set threshold pin.\n");
 }
 
 #endif
