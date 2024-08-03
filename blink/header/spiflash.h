@@ -137,26 +137,26 @@ void setDateToCharArray(int value, char *array)
     }
 }
 
-// this function converts a double value's floating value to uint8_t value.
-uint8_t doubleFloatingToUint8t(double double_value)
+// this function converts a float value's floating value to uint8_t value.
+uint8_t floatDecimalDigitToUint8t(float float_value)
 {
-    // get floating value of double value and multiply it with 10, so we can get the first digit. We set that value an uint8_t value because we don't want to get rest of the floating digits.
-    uint8_t floating_value = (double_value - floor(double_value)) * 10;
+    // get floating value of float value and multiply it with 10, so we can get the first digit. We set that value an uint8_t value because we don't want to get rest of the floating digits.
+    uint8_t floating_value = (float_value - (float)floor(float_value)) * 10;
 
-    PRINTF("double value before subtraction: %lf\n", double_value);
+    PRINTF("float value before subtraction: %lf\n", float_value);
     PRINTF("floating value after floor and uint8_t: %d\n\n", floating_value);
 
     return floating_value;
 }
 
 // This function gets a buffer which includes VRMS values, and calculate the max, min and mean values of this buffer and sets the variables.
-void vrmsSetMinMaxMean(double *buffer, uint8_t size)
+void vrmsSetMinMaxMean(float *buffer, uint16_t size)
 {
-    double buffer_max = buffer[0];
-    double buffer_min = buffer[0];
-    double buffer_sum = buffer[0];
+    float buffer_max = buffer[0];
+    float buffer_min = buffer[0];
+    float buffer_sum = buffer[0];
 
-    for (uint8_t i = 1; i < size; i++)
+    for (uint16_t i = 1; i < size; i++)
     {
         if (buffer[i] > buffer_max)
         {
@@ -173,8 +173,8 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
 
     vrms_max = (uint8_t)floor(buffer_max);
     vrms_min = (uint8_t)floor(buffer_min);
-    vrms_max_dec = doubleFloatingToUint8t(buffer_max);
-    vrms_min_dec = doubleFloatingToUint8t(buffer_min);
+    vrms_max_dec = floatDecimalDigitToUint8t(buffer_max);
+    vrms_min_dec = floatDecimalDigitToUint8t(buffer_min);
 
     if (size == 0)
     {
@@ -184,7 +184,7 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
     else
     {
         vrms_mean = (uint8_t)(buffer_sum / size);
-        vrms_mean_dec = doubleFloatingToUint8t(buffer_sum / size);
+        vrms_mean_dec = floatDecimalDigitToUint8t(buffer_sum / size);
     }
 
     PRINTF("buffer max: %lf, vrms_max: %d, vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
@@ -192,7 +192,7 @@ void vrmsSetMinMaxMean(double *buffer, uint8_t size)
     PRINTF("buffer mean: %lf, vrms_mean: %d, vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
 }
 
-double convertVRMSValueToDouble(uint8_t value, uint8_t value_dec)
+float convertVRMSValueToFloat(uint8_t value, uint8_t value_dec)
 {
     return value + value_dec / 10.0;
 }
@@ -218,10 +218,10 @@ void setFlashData()
     data.min_volt_dec = vrms_min_dec;
     data.mean_volt_dec = vrms_mean_dec;
 
-    // convert last record vrms values to double
-    vrms_max_last = convertVRMSValueToDouble(vrms_max, vrms_max_dec);
-    vrms_min_last = convertVRMSValueToDouble(vrms_min, vrms_min_dec);
-    vrms_mean_last = convertVRMSValueToDouble(vrms_mean, vrms_mean_dec);
+    // convert last record vrms values to float
+    vrms_max_last = convertVRMSValueToFloat(vrms_max, vrms_max_dec);
+    vrms_min_last = convertVRMSValueToFloat(vrms_min, vrms_min_dec);
+    vrms_mean_last = convertVRMSValueToFloat(vrms_mean, vrms_mean_dec);
 
     // reset VRMS values
     vrms_max = 0;

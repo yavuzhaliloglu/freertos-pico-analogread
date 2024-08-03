@@ -1089,7 +1089,7 @@ void getThresholdRecord()
     uart_putc(UART0_ID, xor_result);
 }
 
-void setThresholdPIN()
+void resetThresholdPIN()
 {
     if (!password_correct_flag)
     {
@@ -1098,13 +1098,30 @@ void setThresholdPIN()
 
     if (getThresholdSetBeforeFlag())
     {
-        PRINTF("SETTHRESHOLDPIN: Threshold PIN set before, resetting pin...\n");
+        PRINTF("RESETTHRESHOLDPIN: Threshold PIN set before, resetting pin...\n");
 
         gpio_put(THRESHOLD_PIN, 0);
         vTaskDelay(pdMS_TO_TICKS(10));
         setThresholdSetBeforeFlag(0);
 
-        PRINTF("SETTHRESHOLDPIN: Threshold PIN reset\n");
+        PRINTF("RESETTHRESHOLDPIN: Threshold PIN reset\n");
+    }
+
+    uart_putc(UART0_ID, ACK);
+    PRINTF("RESETTHRESHOLDPIN: ACK send from set threshold pin.\n");
+}
+
+void setThresholdPIN()
+{
+    if (!getThresholdSetBeforeFlag())
+    {
+        PRINTF("SETTHRESHOLDPIN: Threshold PIN set before, setting pin...\n");
+
+        gpio_put(THRESHOLD_PIN, 1);
+        vTaskDelay(pdMS_TO_TICKS(10));
+        setThresholdSetBeforeFlag(1);
+
+        PRINTF("SETTHRESHOLDPIN: Threshold PIN set\n");
     }
 
     uart_putc(UART0_ID, ACK);

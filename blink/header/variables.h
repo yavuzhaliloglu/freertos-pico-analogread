@@ -5,6 +5,7 @@
 
 // ADC VARIABLES
 
+// adc fifo struct
 typedef struct
 {
     uint16_t data[ADC_FIFO_SIZE];
@@ -12,9 +13,10 @@ typedef struct
     uint16_t tail;
     uint16_t count;
 } ADC_FIFO;
-
+// adc fifo
 ADC_FIFO adc_fifo;
-
+// clock division value for adc sampling
+float clkdiv = (2e-3 * 48000000) / 96;
 // load profile record period value
 uint8_t load_profile_record_period = 15;
 // these 3 variables keeps max,m,n and mean values of vrms_buffer content
@@ -24,12 +26,12 @@ uint8_t vrms_mean = 0;
 uint8_t vrms_max_dec = 0;
 uint8_t vrms_min_dec = 0;
 uint8_t vrms_mean_dec = 0;
-// last record double values
-double vrms_max_last = 0.0;
-double vrms_min_last = 0.0;
-double vrms_mean_last = 0.0;
-// 
-uint16_t adc_samples_for_second[ADC_SAMPLE_SIZE_SECOND] = {0};
+// last record float values
+float vrms_max_last = 0.0;
+float vrms_min_last = 0.0;
+float vrms_mean_last = 0.0;
+// this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
+uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
 // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
 uint16_t bias_buffer[BIAS_SAMPLE];
 // vrms threshold value
@@ -37,8 +39,8 @@ uint16_t vrms_threshold = 5;
 // threshold flag value, used for set threshold pin and hold it until command comes and resets it
 uint8_t threshold_set_before = 0;
 
-uint8_t vrms_buffer_count = 0;
-double vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+uint16_t vrms_buffer_count = 0;
+float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
 // UART VARIABLES
 

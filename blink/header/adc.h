@@ -3,61 +3,58 @@
 
 void adcCapture(uint16_t *buf, size_t count)
 {
+    // Set ADC FIFO and get the samples with adc_run()
+    adc_fifo_setup(true, false, 0, false, false);
+    adc_run(true);
+
     // Get FIFO contents and copy them to buffer
     for (size_t i = 0; i < count; i++)
-    {
-        buf[i] = adc_read();
-    }
+        buf[i] = adc_fifo_get_blocking();
 
-    PRINTF("BIAS Samples:\n");
-    printBufferUint16T(buf, count);
+    // End sampling and drain the FIFO
+    adc_run(false);
+    adc_fifo_drain();
 }
 
-uint16_t calculateVariance(uint16_t *buffer, size_t size)
+uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
 {
-    uint32_t total = 0;
-    uint32_t mean;
-    uint32_t variance_total = 0;
+    int total = 0;
+    int mean;
+    int variance_total = 0;
 
-    for (size_t i = 0; i < size; i++)
+    for (uint16_t i = 0; i < size; i++)
     {
         total += buffer[i];
     }
 
     mean = total / size;
 
-    for (size_t i = 0; i < size; i++)
+    for (uint16_t i = 0; i < size; i++)
     {
-        variance_total = (uint32_t)pow((double)(buffer[i] - mean), 2);
+        int mult = buffer[i] - mean;
+        variance_total += mult * mult;
     }
 
-    PRINTF("\ntotal of samples is: %ld\n", total);
-    PRINTF("mean of samples is: %ld\n", mean);
-    PRINTF("variance total of samples is: %lu\n", variance_total);
-    PRINTF("variance of samples is: %ld\n\n", (variance_total / size));
+    PRINTF("\ntotal of samples is: %d\n", total);
+    PRINTF("\nmean of samples is: %d\n", mean);
+    PRINTF("\nvariance total of samples is: %d\n", variance_total);
+    PRINTF("\nvariance of samples is: %d\n", (variance_total / (size - 1)));
 
-    if (size == 0)
-    {
-        return 0;
-    }
-    else
-    {
-        return (uint16_t)(variance_total / size);
-    }
+    return (uint16_t)(variance_total / (size - 1));
 }
 
-double calculateVRMS(double bias, uint16_t *sample_buffer, uint16_t size)
+float calculateVRMS(float bias, uint16_t *buffer)
 {
     // Initialize the variables for VRMS calculation
-    double vrms = 0.0;
-    double vrms_accumulator = 0.0;
+    float vrms = 0.0;
+    float vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
 
 #if DEBUG
     char deneme[40] = {0};
 #endif
 
-    double mean = bias * conversion_factor / 1000;
+    float mean = bias * conversion_factor / 1000;
 
 #if DEBUG
     deneme[32] = '\0';
@@ -65,10 +62,10 @@ double calculateVRMS(double bias, uint16_t *sample_buffer, uint16_t size)
     PRINTF("%s", deneme);
 #endif
 
-    for (uint16_t i = 0; i < size; i++)
+    for (uint16_t i = 0; i < VRMS_SAMPLE_SIZE; i++)
     {
-        double production = ((double)sample_buffer[i] * conversion_factor) / 1000;
-        vrms_accumulator += pow((production - mean), 2);
+        float production = (float)(buffer[i] * conversion_factor) / 1000;
+        vrms_accumulator += (float)pow((production - mean), 2);
     }
 
 #if DEBUG
@@ -77,18 +74,18 @@ double calculateVRMS(double bias, uint16_t *sample_buffer, uint16_t size)
     PRINTF("%s", deneme);
 #endif
 
-    vrms = sqrt(vrms_accumulator / size);
+    vrms = sqrt(vrms_accumulator / VRMS_SAMPLE_SIZE);
     vrms = vrms * VRMS_MULTIPLICATION_VALUE;
 
     return vrms;
 }
 
-double getMean(uint16_t *buffer, size_t size)
+float getMean(uint16_t *buffer, size_t size)
 {
-    double total = 0;
+    float total = 0;
 
     for (size_t i = 0; i < size; i++)
-        total += (double)buffer[i];
+        total += (float)buffer[i];
 
     if (size == 0)
     {
@@ -101,7 +98,7 @@ double getMean(uint16_t *buffer, size_t size)
 }
 
 // Write threshold data to flash
-void writeThresholdRecord(double vrms, uint16_t variance)
+void writeThresholdRecord(float vrms, uint16_t variance)
 {
     PRINTF("writing threshold record\n");
 
@@ -192,28 +189,4 @@ void writeThresholdRecord(double vrms, uint16_t variance)
     printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
-double calcMeanOfVRMSMinutePeriod(double *buffer, uint8_t size)
-{
-    double mean_vrms = 0;
-    double total = 0;
-
-    // mean vrms calculation
-    for (uint8_t i = 0; i < size; i++)
-    {
-        total += buffer[i];
-    }
-
-    if (size == 0)
-    {
-        mean_vrms = 0;
-    }
-    else
-    {
-        mean_vrms = total / size;
-    }
-
-    PRINTF("GETMEANVARIANCEVRMSVALUES: calculated vrms value from vrms_values array is: %f\n", mean_vrms);
-
-    return mean_vrms;
-}
 #endif

@@ -2,6 +2,7 @@
 #include "header/project-conf.h"
 #include <time.h>
 #include <string.h>
+#include <float.h>
 #include <stdlib.h>
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
@@ -210,7 +211,7 @@ void vUARTTask(void *pvParameters)
 
                         case ThresholdPin:
                             PRINTF("UART TASK: entered listening-thresholdpin\n");
-                            setThresholdPIN();
+                            resetThresholdPIN();
                             break;
 
                         default:
@@ -234,98 +235,43 @@ void vUARTTask(void *pvParameters)
 }
 
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
-void vADCHandleTask()
+void vADCReadTask()
 {
     // Set the parameters for this task.
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
-    double vrms = 0.0;
-    double bias_voltage;
-    double vrms_values[VRMS_VALUES_BUFFER_SIZE] = {0};
-    uint8_t vrms_values_count = 0;
     startTime = xTaskGetTickCount();
 
     while (1)
     {
-        // delay until next cycle
+        // // delay until next cycle
         vTaskDelayUntil(&startTime, xFrequency);
 
-        // displayFIFO(&adc_fifo);
-        displayFIFOStats(&adc_fifo);
-        getLastNElementsToBuffer(&adc_fifo, adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
+        getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
 
-        PRINTF("ADC READ TASK: Got last %d element. Buffer content:\n", ADC_SAMPLE_SIZE_SECOND);
-        printBufferUint16T(adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
-
-        // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
-        bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
-        PRINTF("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
+        float bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
+        PRINTF("bias voltage is: %lf\n", bias_voltage);
 
         adc_select_input(ADC_SELECT_INPUT);
-        vrms = calculateVRMS(bias_voltage, adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
-        PRINTF("ADC READ TASK: calculated vrms is: %lf\n", vrms);
+        float vrms = calculateVRMS(bias_voltage, adc_samples_buffer);
+        PRINTF("vrms is: %lf\n", vrms);
 
-        // set the vrms value to vrms_values buffer
-        vrms_values[(vrms_values_count++) % VRMS_VALUES_BUFFER_SIZE] = vrms;
+        uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        PRINTF("variance is: %d\n", variance);
 
-        // if calculated vrms is bigger than threshold value, set a record to flash memory
-        if (vrms >= (double)getVRMSThresholdValue())
-        {
-            uint16_t variance = 0;
+        vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
-            if (!getThresholdSetBeforeFlag())
-            {
-                // put THRESHOLD PIN 1 value
-                gpio_put(THRESHOLD_PIN, 1);
-                vTaskDelay(pdMS_TO_TICKS(10));
-                // set flag to not put 1 until command comes
-                setThresholdSetBeforeFlag(1);
-            }
-
-            variance = calculateVariance(adc_samples_for_second, ADC_SAMPLE_SIZE_SECOND);
-            writeThresholdRecord(vrms, variance);
-        }
-
-        // if time is beginning of a minute, set the vrms value to buffer
         if (current_time.sec == 0)
         {
-            // if vrms values count is changed, the count of the buffer might be bigger than expected (60), so set it to 60.
-            if (vrms_values_count > VRMS_VALUES_BUFFER_SIZE)
+            // TODO: CONTROL THRESHOLD
+            if (vrms >= (float)getVRMSThresholdValue())
             {
-                vrms_values_count = VRMS_VALUES_BUFFER_SIZE;
+                setThresholdPIN();
+                writeThresholdRecord(vrms, variance);
             }
 
-            // get mean of vrms values and if the mean of vrms values is bigger than threshold value, calculate variance
-            vrms = calcMeanOfVRMSMinutePeriod(vrms_values, vrms_values_count);
-
-            // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
-            vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
-            vrms = 0.0;
-
-            PRINTF("ADC READ TASK: VRMS_VALUES content is: \n");
-            for (int8_t i = 0; i < vrms_values_count; i++)
-            {
-                if (i % 8 == 0 && i != 0)
-                {
-                    PRINTF("\n");
-                }
-
-                PRINTF("%lf ", vrms_values[i]);
-            }
-            PRINTF("\n");
-
-            PRINTF("ADC READ TASK: VRMS_BUFFER content is: \n");
-            for (int8_t i = 0; i < vrms_buffer_count; i++)
-                PRINTF("%lf\n", vrms_buffer[i]);
-            PRINTF("\n");
-
-            // reset the buffer
-            memset(vrms_values, 0, vrms_values_count * sizeof(double));
-            vrms_values_count = 0;
-
-            // Write a record to the flash memory periodically
             if (current_time.min % load_profile_record_period == 0)
             {
                 PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\n", load_profile_record_period);
@@ -336,16 +282,13 @@ void vADCHandleTask()
                 }
 
                 vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-
                 PRINTF("ADC READ TASK: calculated VRMS values.\n");
 
                 SPIWriteToFlash();
-
                 PRINTF("ADC READ TASK: writing flash memory process is completed.\n");
 
-                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(double));
+                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
                 vrms_buffer_count = 0;
-
                 PRINTF("ADC READ TASK: buffer content is deleted\n");
             }
         }
@@ -370,6 +313,27 @@ void vWriteDebugTask()
     }
 }
 
+void vADCSampleTask()
+{
+    TickType_t startTime;
+    const TickType_t xFrequency = pdMS_TO_TICKS(2);
+    startTime = xTaskGetTickCount();
+    uint16_t adc_sample;
+    while (1)
+    {
+        adc_sample = adc_read(); // ADC'den örnek al
+
+        bool is_added = addToFIFO(&adc_fifo, adc_sample);
+
+        if (!is_added)
+        {
+            removeFirstElementAddNewElement(&adc_fifo, adc_sample);
+        }
+
+        vTaskDelayUntil(&startTime, xFrequency); // 2 ms bekle
+    }
+}
+
 // RESET TASK: This task sends a pulse to reset PIN.
 void vResetTask()
 {
@@ -382,32 +346,10 @@ void vResetTask()
     }
 }
 
-void vADCSampleTask()
-{
-    TickType_t startTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(10);
-    startTime = xTaskGetTickCount();
-    uint16_t adc_sample;
-
-    while (1)
-    {
-        adc_sample = adc_read();
-        bool isadded = addToFIFO(&adc_fifo, adc_sample);
-
-        if (!isadded)
-        {
-            removeFirstElementAddNewElement(&adc_fifo, adc_sample);
-        }
-
-        vTaskDelayUntil(&startTime, xFrequency);
-    }
-}
-
 int main()
 {
-    sleep_ms(100);
     stdio_init_all();
-    sleep_ms(2000);
+    sleep_ms(500);
 
     // UART INIT
     uart_init(UART0_ID, BAUD_RATE);
@@ -419,8 +361,6 @@ int main()
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
-    gpio_init(3);
-    gpio_set_dir(3, GPIO_OUT);
     sleep_ms(100);
 
     // THRESHOLD GPIO INIT
@@ -434,6 +374,7 @@ int main()
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
+    adc_set_clkdiv(clkdiv);
     sleep_ms(100);
 
     // I2C Init
@@ -489,23 +430,22 @@ int main()
         PRINTF("Time is not GET. Please check the time setting.\n");
     }
 
+    initADCFIFO(&adc_fifo);
+
     // set when program started
     setProgramStartDate(&current_time);
     sleep_ms(100);
-
-    // init ADC FIFO
-    initADCFIFO(&adc_fifo);
 
     // if time is set correctly, start the processes.
     if (is_time_set)
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCHandleTask, "ADCHandleTask", 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 256, NULL, 2, NULL);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 512, NULL, 2, NULL);
 
         vTaskStartScheduler();
     }
