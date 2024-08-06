@@ -148,6 +148,14 @@ struct AmplitudeChangeData
 };
 // amplitude change data buffer
 struct AmplitudeChangeData ac_flash_data;
+// amplitude change timer data struct
+struct AmplitudeChangeTimerCallbackParameters
+{
+    float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t variance;
+    size_t adc_fifo_size;
+    size_t vrms_values_buffer_size_bytes;
+};
 // this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.
 uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
 // this small buffer keeps 8 bytes of program data and this buffer is converted 8-bit from 7-bit

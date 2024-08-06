@@ -238,11 +238,19 @@ void vUARTTask(void *pvParameters)
 void vADCReadTask()
 {
     // Set the parameters for this task.
+    float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
-    startTime = xTaskGetTickCount();
-    float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
 
+    TimerHandle_t ADCAmplitudeChangeTimer = xTimerCreate(
+        "ADCAmplitudeChangeTimer",
+        pdMS_TO_TICKS(1000),
+        pdFALSE,
+        &ac_data,
+        ADCAmplitudeChangeTimerCallback);
+
+    startTime = xTaskGetTickCount();
     while (1)
     {
         // // delay until next cycle
@@ -276,8 +284,9 @@ void vADCReadTask()
 
         if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC))
         {
+            setAmplitudeChangeParameters(&ac_data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
+            xTimerStart(ADCAmplitudeChangeTimer, 0);
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
-            writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
         }
 
         if (current_time.sec == 0)

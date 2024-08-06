@@ -714,7 +714,7 @@ void setProgramStartDate(datetime_t *ct)
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
 }
 
-void writeSuddenAmplitudeChangeRecordToFlash(uint16_t *sample_buffer, float *vrms_values_buffer_per_second, uint16_t variance, size_t sample_buffer_size, size_t vrms_values_buffer_size)
+void writeSuddenAmplitudeChangeRecordToFlash(uint16_t *sample_buffer, struct AmplitudeChangeTimerCallbackParameters *ac_params)
 {
     PRINTF("write sudden amplitude change record to flash\n");
 
@@ -750,13 +750,13 @@ void writeSuddenAmplitudeChangeRecordToFlash(uint16_t *sample_buffer, float *vrm
     setDateToCharArray(current_time.sec, ac_flash_data.sec);
 
     // set samples
-    memcpy(ac_flash_data.sample_buffer, sample_buffer, sample_buffer_size * sizeof(uint16_t));
+    memcpy(ac_flash_data.sample_buffer, sample_buffer, ac_params->adc_fifo_size * sizeof(uint16_t));
 
     // set vrms values
-    memcpy(ac_flash_data.vrms_values_buffer, vrms_values_buffer_per_second, vrms_values_buffer_size);
+    memcpy(ac_flash_data.vrms_values_buffer, ac_params->vrms_values_buffer, ac_params->vrms_values_buffer_size_bytes);
 
     // set variance
-    ac_flash_data.variance = variance;
+    ac_flash_data.variance = ac_params->variance;
 
     // set padding
     memset(ac_flash_data.padding, 0, sizeof(ac_flash_data.padding));
