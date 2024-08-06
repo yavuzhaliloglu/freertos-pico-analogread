@@ -234,36 +234,6 @@ void vUARTTask(void *pvParameters)
     }
 }
 
-uint16_t getMin(uint16_t *buffer, size_t size)
-{
-    uint16_t min_value = buffer[0];
-
-    for (size_t i = 1; i < size; i++)
-    {
-        if (buffer[i] < min_value)
-        {
-            min_value = buffer[i];
-        }
-    }
-
-    return min_value;
-}
-
-uint16_t getMax(uint16_t *buffer, size_t size)
-{
-    uint16_t max_value = buffer[0];
-
-    for (size_t i = 1; i < size; i++)
-    {
-        if (buffer[i] > max_value)
-        {
-            max_value = buffer[i];
-        }
-    }
-
-    return max_value;
-}
-
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask()
 {
@@ -281,13 +251,6 @@ void vADCReadTask()
         getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
         displayFIFOStats(&adc_fifo);
         // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-
-        // FOR TEST
-        uint16_t min_sample = getMin(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-        uint16_t max_sample = getMax(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-        PRINTF("min sample is: %d\n", min_sample);
-        PRINTF("max sample is: %d\n", max_sample);
-        //
 
         adc_select_input(ADC_BIAS_INPUT);
         adcCapture(bias_buffer, BIAS_SAMPLE);
@@ -308,11 +271,13 @@ void vADCReadTask()
         if (vrms >= (float)getVRMSThresholdValue())
         {
             setThresholdPIN();
+            writeThresholdRecord(vrms, variance);
         }
 
         if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC))
         {
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
+            writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
         }
 
         if (current_time.sec == 0)

@@ -21,20 +21,20 @@ void printBufferHex(uint8_t *buf, size_t len)
 #if DEBUG
     for (size_t i = 0; i < len; ++i)
     {
-        printf("%02X", buf[i]);
+        PRINTF("%02X", buf[i]);
 
         if (i % 16 == 15)
         {
-            printf("\n");
+            PRINTF("\n");
         }
         else
         {
-            printf(" ");
+            PRINTF(" ");
         }
 
         if (i % 256 == 255)
         {
-            printf("page %d\n\n", i / 256);
+            PRINTF("page %d\n\n", i / 256);
         }
     }
 #else
@@ -49,22 +49,43 @@ void printBufferUint16T(uint16_t *buf, size_t len)
 #if DEBUG
     for (size_t i = 0; i < len; ++i)
     {
-        printf("%d", buf[i]);
+        PRINTF("%d", buf[i]);
 
         if (i % 10 == 9)
         {
-            printf("\n");
+            PRINTF("\n");
         }
         else
         {
-            printf(" ");
+            PRINTF(" ");
         }
 
         if (i % 100 == 99)
         {
-            printf("\n");
+            PRINTF("\n");
         }
     }
+#else
+    (void)buf;
+    (void)len;
+#endif
+}
+
+// This function prints a buffer as hexadecimal values
+void printBufferFloat(float *buf, size_t len)
+{
+#if DEBUG
+    for (size_t i = 0; i < len; ++i)
+    {
+
+        if (i % 5 == 0)
+        {
+            PRINTF("\n");
+        }
+        PRINTF("%f ", buf[i]);
+    }
+
+    PRINTF("\n");
 #else
     (void)buf;
     (void)len;

@@ -82,7 +82,7 @@ void getFlashContents()
     uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
     uint16_t sector_temp = flash_sector_content[0];
     setRecordSectorValue(sector_temp);
-    
+
     // get record data
     uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (getRecordSectorValue() * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_data_contents, FLASH_SECTOR_SIZE);
@@ -712,6 +712,59 @@ void setProgramStartDate(datetime_t *ct)
     restore_interrupts(ints);
 
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
+}
+
+void writeSuddenAmplitudeChangeRecordToFlash(uint16_t *sample_buffer, float *vrms_values_buffer_per_second, uint16_t variance, size_t sample_buffer_size, size_t vrms_values_buffer_size)
+{
+    PRINTF("write sudden amplitude change record to flash\n");
+
+    uint16_t ac_sector = 0;
+    uint8_t *flash_ac_records = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
+
+    for (size_t sector_count = 0; sector_count < FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE; sector_count += FLASH_SECTOR_SIZE)
+    {
+        if (flash_ac_records[sector_count] == 0xFF)
+        {
+            break;
+        }
+        else
+        {
+            ac_sector++;
+        }
+
+        if (ac_sector == FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR)
+        {
+            ac_sector = 0;
+            break;
+        }
+    }
+
+    PRINTF("ac sector = %d\n", ac_sector);
+
+    // set current date
+    setDateToCharArray(current_time.year, ac_flash_data.year);
+    setDateToCharArray(current_time.month, ac_flash_data.month);
+    setDateToCharArray(current_time.day, ac_flash_data.day);
+    setDateToCharArray(current_time.hour, ac_flash_data.hour);
+    setDateToCharArray(current_time.min, ac_flash_data.min);
+    setDateToCharArray(current_time.sec, ac_flash_data.sec);
+
+    // set samples
+    memcpy(ac_flash_data.sample_buffer, sample_buffer, sample_buffer_size * sizeof(uint16_t));
+
+    // set vrms values
+    memcpy(ac_flash_data.vrms_values_buffer, vrms_values_buffer_per_second, vrms_values_buffer_size);
+
+    // set variance
+    ac_flash_data.variance = variance;
+
+    // set padding
+    memset(ac_flash_data.padding, 0, sizeof(ac_flash_data.padding));
+
+    uint32_t ints = save_and_disable_interrupts();
+    flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+    flash_range_program(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), (const uint8_t *)&ac_flash_data, FLASH_SECTOR_SIZE);
+    restore_interrupts(ints);
 }
 
 #endif

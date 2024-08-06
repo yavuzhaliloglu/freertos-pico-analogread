@@ -118,10 +118,9 @@ void writeThresholdRecord(float vrms, uint16_t variance)
     setDateToCharArray(current_time.day, data.day);
     setDateToCharArray(current_time.hour, data.hour);
     setDateToCharArray(current_time.min, data.min);
+    setDateToCharArray(current_time.sec, data.sec);
     data.vrms = vrms;
     data.variance = variance;
-    data.padding[0] = 0x7F;
-    data.padding[1] = 0x7F;
 
     // find the last offset of flash records and write current values to last offset of flash_data buffer
     for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
@@ -197,7 +196,7 @@ uint8_t detectSuddenAmplitudeChangeWithDerivative(float *sample_buf, size_t buff
 
         if (fabs(derivative) > AMPLITUDE_THRESHOLD)
         {
-            printf("Sudden amplitude change detected at index %d: %f\n", i, fabs(derivative));
+            PRINTF("Sudden amplitude change detected at index %d: %f\n", i, fabs(derivative));
             return 1;
         }
     }
@@ -214,15 +213,7 @@ void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size
     }
 
     PRINTF("VRMS VALUES PER SECOND: \n");
-    for (uint16_t i = 0; i < buffer_size / sample_size_per_vrms_calc; i++)
-    {
-        if (i % 5 == 0)
-        {
-            PRINTF("\n");
-        }
-        PRINTF("%f ", vrms_buffer[i]);
-    }
-    PRINTF("\n");
+    printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
 }
 
 #endif

@@ -52,12 +52,16 @@
 #define FLASH_SECTOR_OFFSET 512 * 1024
 // this is the start offset of load profile records will written
 #define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
+// amplitude change records offset
+#define FLASH_AMPLITUDE_CHANGE_OFFSET FLASH_DATA_OFFSET + (FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE)
 // repgrogram area size
 #define FLASH_REPROGRAM_SIZE FLASH_RESET_COUNT_OFFSET - FLASH_REPROGRAM_OFFSET
 // this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
 #define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
-#define FLASH_TOTAL_SECTORS 380
+#define FLASH_TOTAL_SECTORS 280
+// amplitude records size as sectors
+#define FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR 100
 // this is the size of one load profile record
 #define FLASH_RECORD_SIZE 16
 // this is the count of total records can be kept in a flash
@@ -101,7 +105,7 @@
 
 // ADC DEFINES
 
-#define ADC_FIFO_SIZE 500
+#define ADC_FIFO_SIZE 2000
 // samples to collect from ADC Pin
 #define VRMS_SAMPLE_SIZE 500
 // sample size per vrms calculation

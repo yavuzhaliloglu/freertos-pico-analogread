@@ -127,11 +127,27 @@ struct ThresholdData
     char day[2];
     char hour[2];
     char min[2];
+    char sec[2];
     uint16_t vrms;
     uint16_t variance;
-    uint8_t padding[2];
 };
 struct ThresholdData th_flash_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)] = {0};
+// amplitude change data struct
+struct AmplitudeChangeData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    char sec[2];
+    uint16_t sample_buffer[ADC_FIFO_SIZE];
+    float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t variance;
+    uint8_t padding[62];
+};
+// amplitude change data buffer
+struct AmplitudeChangeData ac_flash_data;
 // this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.
 uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
 // this small buffer keeps 8 bytes of program data and this buffer is converted 8-bit from 7-bit
