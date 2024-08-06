@@ -167,6 +167,8 @@ datetime_t current_time = {
 
 // This is ADCTaskHandler. This handler is used to delete ADCReadTask in ReProgram State.
 TaskHandle_t xADCHandle;
+TaskHandle_t xADCSampleHandle;
+TaskHandle_t xUARTHandle;
 
 uint16_t getRecordSectorValue()
 {

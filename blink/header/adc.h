@@ -43,38 +43,38 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
     return (uint16_t)(variance_total / (size - 1));
 }
 
-float calculateVRMS(float bias, uint16_t *buffer)
+float calculateVRMS(float bias, uint16_t *buffer, size_t size)
 {
     // Initialize the variables for VRMS calculation
     float vrms = 0.0;
     float vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
 
-#if DEBUG
-    char deneme[40] = {0};
-#endif
+    // #if DEBUG
+    //     char deneme[40] = {0};
+    // #endif
 
     float mean = bias * conversion_factor / 1000;
 
-#if DEBUG
-    deneme[32] = '\0';
-    snprintf(deneme, 31, "CALCULATEVRMS: mean: %f\n", mean);
-    PRINTF("%s", deneme);
-#endif
+    // #if DEBUG
+    //     deneme[32] = '\0';
+    //     snprintf(deneme, 31, "CALCULATEVRMS: mean: %f\n", mean);
+    //     PRINTF("%s", deneme);
+    // #endif
 
-    for (uint16_t i = 0; i < VRMS_SAMPLE_SIZE; i++)
+    for (uint16_t i = 0; i < size; i++)
     {
         float production = (float)(buffer[i] * conversion_factor) / 1000;
         vrms_accumulator += (float)pow((production - mean), 2);
     }
 
-#if DEBUG
-    snprintf(deneme, 36, "CALCULATEVRMS: vrmsAc: %f\n", vrms_accumulator);
-    deneme[37] = '\0';
-    PRINTF("%s", deneme);
-#endif
+    // #if DEBUG
+    //     snprintf(deneme, 36, "CALCULATEVRMS: vrmsAc: %f\n", vrms_accumulator);
+    //     deneme[37] = '\0';
+    //     PRINTF("%s", deneme);
+    // #endif
 
-    vrms = sqrt(vrms_accumulator / VRMS_SAMPLE_SIZE);
+    vrms = sqrt(vrms_accumulator / size);
     vrms = vrms * VRMS_MULTIPLICATION_VALUE;
 
     return vrms;
@@ -189,20 +189,40 @@ void writeThresholdRecord(float vrms, uint16_t variance)
     printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
-uint8_t detectSuddenAmplitudeChangeWithDerivative(uint16_t *sample_buf, size_t buffer_size)
+uint8_t detectSuddenAmplitudeChangeWithDerivative(float *sample_buf, size_t buffer_size)
 {
     for (uint16_t i = 1; i < buffer_size; i++)
     {
-        int16_t derivative = sample_buf[i] - sample_buf[i - 1];
+        float derivative = sample_buf[i] - sample_buf[i - 1];
 
-        if (abs(derivative) > AMPLITUDE_THRESHOLD)
+        if (fabs(derivative) > AMPLITUDE_THRESHOLD)
         {
-            printf("Sudden amplitude change detected at index %d: %d\n", i, abs(derivative));
+            printf("Sudden amplitude change detected at index %d: %f\n", i, fabs(derivative));
             return 1;
         }
     }
 
     return 0;
+}
+
+void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size_t buffer_size, size_t sample_size_per_vrms_calc, float bias_voltage)
+{
+    for (uint16_t i = 0; i < buffer_size; i += sample_size_per_vrms_calc)
+    {
+        float vrms = calculateVRMS(bias_voltage, sample_buf + i, sample_size_per_vrms_calc);
+        vrms_buffer[i / sample_size_per_vrms_calc] = vrms;
+    }
+
+    PRINTF("VRMS VALUES PER SECOND: \n");
+    for (uint16_t i = 0; i < buffer_size / sample_size_per_vrms_calc; i++)
+    {
+        if (i % 5 == 0)
+        {
+            PRINTF("\n");
+        }
+        PRINTF("%f ", vrms_buffer[i]);
+    }
+    PRINTF("\n");
 }
 
 #endif

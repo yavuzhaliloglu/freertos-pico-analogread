@@ -271,6 +271,7 @@ void vADCReadTask()
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
     startTime = xTaskGetTickCount();
+    float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
 
     while (1)
     {
@@ -278,6 +279,7 @@ void vADCReadTask()
         vTaskDelayUntil(&startTime, xFrequency);
 
         getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        displayFIFOStats(&adc_fifo);
         // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
 
         // FOR TEST
@@ -293,11 +295,13 @@ void vADCReadTask()
         PRINTF("bias voltage is: %lf\n", bias_voltage);
 
         adc_select_input(ADC_SELECT_INPUT);
-        float vrms = calculateVRMS(bias_voltage, adc_samples_buffer);
+        float vrms = calculateVRMS(bias_voltage, adc_samples_buffer, VRMS_SAMPLE_SIZE);
         PRINTF("vrms is: %lf\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
         PRINTF("variance is: %d\n", variance);
+
+        calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
@@ -306,7 +310,7 @@ void vADCReadTask()
             setThresholdPIN();
         }
 
-        if (detectSuddenAmplitudeChangeWithDerivative(adc_samples_buffer, VRMS_SAMPLE_SIZE))
+        if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC))
         {
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
         }
@@ -357,13 +361,14 @@ void vWriteDebugTask()
 void vADCSampleTask()
 {
     TickType_t startTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(2);
+    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / VRMS_SAMPLE_SIZE);
     startTime = xTaskGetTickCount();
     uint16_t adc_sample;
+
     while (1)
     {
-        adc_sample = adc_read(); // ADC'den örnek al
-        PRINTF("ADC SAMPLE TASK: adc sample is: %d\n", adc_sample);
+        adc_sample = adc_read();
+        // PRINTF("ADC SAMPLE TASK: adc sample is: %d\n", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 
@@ -372,7 +377,7 @@ void vADCSampleTask()
             removeFirstElementAddNewElement(&adc_fifo, adc_sample);
         }
 
-        vTaskDelayUntil(&startTime, xFrequency); // 2 ms bekle
+        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -416,7 +421,7 @@ int main()
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
-    adc_set_clkdiv(clkdiv);
+    // adc_set_clkdiv(clkdiv);
     sleep_ms(100);
 
     // I2C Init
@@ -484,10 +489,14 @@ int main()
         PRINTF("Time is set. Starting tasks...\n");
 
         xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
-        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
+        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, &xUARTHandle);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 512, NULL, 2, NULL);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 512, NULL, 2, &xADCSampleHandle);
+
+        vTaskCoreAffinitySet(xADCHandle, 1 << 0);
+        vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
+        vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
 
         vTaskStartScheduler();
     }

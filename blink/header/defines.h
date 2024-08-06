@@ -104,6 +104,8 @@
 #define ADC_FIFO_SIZE 500
 // samples to collect from ADC Pin
 #define VRMS_SAMPLE_SIZE 500
+// sample size per vrms calculation
+#define SAMPLE_SIZE_PER_VRMS_CALC 100
 // VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 900
 // VRMS values buffer size, is the size of calculated VRMS values in a minute
@@ -119,7 +121,7 @@
 // BIAS Sample count
 #define BIAS_SAMPLE 100
 // amplitude threshold
-#define AMPLITUDE_THRESHOLD 150
+#define AMPLITUDE_THRESHOLD 5
 
 // RTC DEFINES
 
