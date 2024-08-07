@@ -34,6 +34,7 @@ set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
                     pico_stdlib_headers
+                    pico_multicore
                     hardware_structs
                     hardware_watchdog
                     hardware_uart

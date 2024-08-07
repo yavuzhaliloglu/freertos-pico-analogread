@@ -358,7 +358,7 @@ uint setProgramBaudRate(uint8_t b_rate)
 
 // This function reboots this device. This function checks new program area and get the new program area contents and compares if the program written true.
 // If program is written correctly, device will be rebooted but if it's not, new program area will be deleted and device won't be rebooted
-void rebootProgram()
+void __not_in_flash_func(rebootProgram)()
 {
     // get contents of new program area
     uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
@@ -377,7 +377,15 @@ void rebootProgram()
     if (!(strncmp((char *)md5_offset, (char *)md5_local, 16) == 0) || !(epoch_new > epoch_current))
     {
         PRINTF("REBOOTPROGRAM: md5 check is false or new program's epoch is smaller or equal.\n");
-        flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+        {
+            flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+            xSemaphoreGive(xFlashMutex);
+        }
+        else
+        {
+            PRINTF("MUTEX CANNOT RECEIVED!\n");
+        }
     }
     restore_interrupts(ints);
 
@@ -929,7 +937,7 @@ void passwordHandler(uint8_t *buffer)
 }
 
 // This function handles to request for reprogramming
-void ReProgramHandler()
+void __not_in_flash_func(ReProgramHandler)()
 {
     // send ACK message to UART
     uart_putc(UART0_ID, ACK);
@@ -944,7 +952,16 @@ void ReProgramHandler()
     PRINTF("REPROGRAMHANDLER: adcread task deleted from reprogram handler.\n");
 
     // delete the reprogram area to write new program
-    flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+        xSemaphoreGive(xFlashMutex);
+    }
+    else
+    {
+        PRINTF("MUTEX CANNOT RECEIVED!\n");
+    }
+
     PRINTF("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
 }
 
@@ -964,7 +981,7 @@ void RebootHandler()
     rebootProgram();
 }
 
-void setThresholdValue(uint8_t *data)
+void __not_in_flash_func(setThresholdValue)(uint8_t *data)
 {
     PRINTF("threshold value before change is: %d\n", getVRMSThresholdValue());
 
@@ -999,10 +1016,16 @@ void setThresholdValue(uint8_t *data)
     th_arr[1] = th_ptr[1];
 
     // write updated values to flash
-    uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-    restore_interrupts(ints);
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        xSemaphoreGive(xFlashMutex);
+    }
+    else
+    {
+        PRINTF("MUTEX CANNOT RECEIVED!\n");
+    }
 
     PRINTF("threshold info content is:  \n");
     printBufferHex((uint8_t *)th_ptr, FLASH_PAGE_SIZE);

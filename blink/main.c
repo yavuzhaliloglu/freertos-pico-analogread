@@ -4,15 +4,17 @@
 #include <string.h>
 #include <float.h>
 #include <stdlib.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include <math.h>
 #include "timers.h"
+#include "semphr.h"
 #include "pico/util/datetime.h"
 #include "pico/binary_info.h"
 #include "pico/bootrom.h"
 #include "pico/time.h"
+#include "pico/multicore.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/rtc.h"
@@ -242,13 +244,7 @@ void vADCReadTask()
     TickType_t startTime;
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
     struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
-
-    TimerHandle_t ADCAmplitudeChangeTimer = xTimerCreate(
-        "ADCAmplitudeChangeTimer",
-        pdMS_TO_TICKS(1000),
-        pdFALSE,
-        &ac_data,
-        ADCAmplitudeChangeTimerCallback);
+    uint8_t amplitude_change_detect_flag = 0;
 
     startTime = xTaskGetTickCount();
     while (1)
@@ -282,11 +278,19 @@ void vADCReadTask()
             writeThresholdRecord(vrms, variance);
         }
 
-        if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC))
+        if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC) || amplitude_change_detect_flag)
         {
-            setAmplitudeChangeParameters(&ac_data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
-            xTimerStart(ADCAmplitudeChangeTimer, 0);
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
+            if (amplitude_change_detect_flag)
+            {
+                writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, &ac_data);
+                amplitude_change_detect_flag = 0;
+            }
+            else
+            {
+                setAmplitudeChangeParameters(&ac_data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
+                amplitude_change_detect_flag = 1;
+            }
         }
 
         if (current_time.sec == 0)
@@ -327,7 +331,7 @@ void vWriteDebugTask()
 
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-
+        PRINTF("------------------------------------------------------------------------------------------------------------\n");
         PRINTF("WRITE DEBUG TASK: The Time is:%s \r\n", datetime_str);
     }
 }
@@ -457,20 +461,32 @@ int main()
     setProgramStartDate(&current_time);
     sleep_ms(100);
 
+    // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
+    // printBufferHex(flash_ac_buf, 2 * FLASH_SECTOR_SIZE);
+
+    xFlashMutex = xSemaphoreCreateMutex();
+    if (xFlashMutex == NULL)
+    {
+        PRINTF("Flash mutex is not created.\n");
+        while (1)
+            ;
+    }
+
     // if time is set correctly, start the processes.
     if (is_time_set)
     {
         PRINTF("Time is set. Starting tasks...\n");
 
         xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
-        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, &xUARTHandle);
-        xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
-        xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
+        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
+        xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
+        xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
         xTaskCreate(vADCSampleTask, "ADCSampleTask", 512, NULL, 2, &xADCSampleHandle);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
         vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
+        vTaskCoreAffinitySet(xWriteDebugHandle, 1 << 1);
 
         vTaskStartScheduler();
     }

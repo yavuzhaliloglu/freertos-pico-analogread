@@ -35,10 +35,10 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
         variance_total += mult * mult;
     }
 
-    PRINTF("\ntotal of samples is: %d\n", total);
-    PRINTF("\nmean of samples is: %d\n", mean);
-    PRINTF("\nvariance total of samples is: %d\n", variance_total);
-    PRINTF("\nvariance of samples is: %d\n", (variance_total / (size - 1)));
+    // PRINTF("\ntotal of samples is: %d\n", total);
+    // PRINTF("\nmean of samples is: %d\n", mean);
+    // PRINTF("\nvariance total of samples is: %d\n", variance_total);
+    PRINTF("variance of samples is: %d\n", (variance_total / (size - 1)));
 
     return (uint16_t)(variance_total / (size - 1));
 }
@@ -98,7 +98,7 @@ float getMean(uint16_t *buffer, size_t size)
 }
 
 // Write threshold data to flash
-void writeThresholdRecord(float vrms, uint16_t variance)
+void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
 {
     PRINTF("writing threshold record\n");
 
@@ -176,11 +176,17 @@ void writeThresholdRecord(float vrms, uint16_t variance)
     // printBufferHex((uint8_t *)th_flash_buf, FLASH_PAGE_SIZE);
 
     // write buffer in flash
-    uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
-    restore_interrupts(ints);
-
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
+        xSemaphoreGive(xFlashMutex);
+        PRINTF("WRITETHRESHOLDDATA: threshold record written to flash.\n");
+    }
+    else
+    {
+        PRINTF("MUTEX CANNOT RECEIVED!\n");
+    }
     // PRINTF("WRITETHRESHOLDDATA: threshold records start area: \n");
     // printBufferHex(flash_threshold_recs_start, FLASH_PAGE_SIZE);
 
@@ -212,7 +218,7 @@ void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size
         vrms_buffer[i / sample_size_per_vrms_calc] = vrms;
     }
 
-    PRINTF("VRMS VALUES PER SECOND: \n");
+    PRINTF("VRMS VALUES PER SECOND:");
     printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
 }
 
@@ -224,14 +230,4 @@ void setAmplitudeChangeParameters(struct AmplitudeChangeTimerCallbackParameters 
     ac_data->adc_fifo_size = adc_fifo_size;
 }
 
-void ADCAmplitudeChangeTimerCallback(TimerHandle_t xTimer)
-{
-    struct AmplitudeChangeTimerCallbackParameters *timerParams = (struct AmplitudeChangeTimerCallbackParameters *)pvTimerGetTimerID(xTimer);
-
-    if (timerParams != NULL)
-    {
-        // writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
-        writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, timerParams);
-    }
-}
 #endif

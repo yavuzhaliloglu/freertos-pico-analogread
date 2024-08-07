@@ -144,7 +144,7 @@ struct AmplitudeChangeData
     uint16_t sample_buffer[ADC_FIFO_SIZE];
     float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t variance;
-    uint8_t padding[62];
+    uint8_t padding[42];
 };
 // amplitude change data buffer
 struct AmplitudeChangeData ac_flash_data;
@@ -193,6 +193,11 @@ datetime_t current_time = {
 TaskHandle_t xADCHandle;
 TaskHandle_t xADCSampleHandle;
 TaskHandle_t xUARTHandle;
+TaskHandle_t xResetHandle;
+TaskHandle_t xWriteDebugHandle;
+
+// mutex variable to protect flash
+SemaphoreHandle_t xFlashMutex;
 
 uint16_t getRecordSectorValue()
 {
