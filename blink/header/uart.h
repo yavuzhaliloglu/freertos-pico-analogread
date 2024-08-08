@@ -1048,7 +1048,7 @@ void getThresholdRecord()
     uart_putc(UART0_ID, STX);
 
     // find the records and format it in a string buffer
-    for (unsigned int i = 0; i < 4 * FLASH_SECTOR_SIZE; i += 16)
+    for (unsigned int i = 0; i < 4 * FLASH_SECTOR_SIZE; i += FLASH_RECORD_SIZE)
     {
         // if beginning offset of a record starts with FF or 00, it means it is an empty record, so finish the formatting process
         if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
@@ -1062,23 +1062,25 @@ void getThresholdRecord()
         uint8_t day[3] = {record_ptr[i + 4], record_ptr[i + 5], 0x00};
         uint8_t hour[3] = {record_ptr[i + 6], record_ptr[i + 7], 0x00};
         uint8_t min[3] = {record_ptr[i + 8], record_ptr[i + 9], 0x00};
-        uint16_t vrms = record_ptr[i + 11];
+        uint8_t sec[3] = {record_ptr[i + 10], record_ptr[i + 11], 0x00};
+        uint16_t vrms = record_ptr[i + 13];
         vrms = (vrms << 8);
-        vrms += record_ptr[i + 10];
-        uint16_t variance = record_ptr[i + 13];
+        vrms += record_ptr[i + 12];
+        uint16_t variance = record_ptr[i + 15];
         variance = (variance << 8);
-        variance += record_ptr[i + 12];
+        variance += record_ptr[i + 14];
 
         PRINTF("data.year is: %s\n", year);
         PRINTF("data.month is: %s\n", month);
         PRINTF("data.day is: %s\n", day);
         PRINTF("data.hour is: %s\n", hour);
         PRINTF("data.min is: %s\n", min);
+        PRINTF("data.sec is: %s\n", sec);
         PRINTF("data.vrms is: %d\n", vrms);
         PRINTF("data.variance is: %d\n", variance);
 
         // format the variables in a buffer
-        int result = snprintf((char *)buffer, sizeof(buffer), "(%s-%s-%s,%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, vrms, variance);
+        int result = snprintf((char *)buffer, sizeof(buffer), "(%s-%s-%s,%s:%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, sec, vrms, variance);
 
         // xor all bytes of formatted array
         bccGenerate(buffer, 29, &xor_result);
