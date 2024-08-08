@@ -749,7 +749,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
         }
     }
 
-    if (ac_sector >= FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR)
+    if (ac_sector == FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR)
     {
         ac_sector = 0;
     }
@@ -778,7 +778,14 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        if (ac_sector == (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR - 1))
+        {
+            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        }
+        else
+        {
+            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), 2 * FLASH_SECTOR_SIZE);
+        }
         flash_range_program(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), (const uint8_t *)&ac_flash_data, FLASH_SECTOR_SIZE);
         xSemaphoreGive(xFlashMutex);
     }

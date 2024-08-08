@@ -249,7 +249,7 @@ void vADCReadTask()
     startTime = xTaskGetTickCount();
     while (1)
     {
-        // // delay until next cycle
+        // delay until next cycle
         vTaskDelayUntil(&startTime, xFrequency);
 
         getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
