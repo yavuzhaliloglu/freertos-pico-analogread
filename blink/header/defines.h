@@ -107,7 +107,7 @@
 
 #define ADC_FIFO_SIZE 2000
 // samples to collect from ADC Pin
-#define VRMS_SAMPLE_SIZE 500
+#define VRMS_SAMPLE_SIZE 1000
 // sample size per vrms calculation
 #define SAMPLE_SIZE_PER_VRMS_CALC 50
 // VRMS buffer size to calculate min, max and mean values and write to flash

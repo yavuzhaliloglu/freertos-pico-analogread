@@ -331,7 +331,7 @@ void vWriteDebugTask()
 
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-        PRINTF("------------------------------------------------------------------------------------------------------------\n");
+        PRINTF("---------------------------------------------------------------------------------------------------------\n");
         PRINTF("WRITE DEBUG TASK: The Time is:%s \r\n", datetime_str);
     }
 }

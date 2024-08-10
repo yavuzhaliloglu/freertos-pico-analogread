@@ -28,7 +28,7 @@ add_executable(blink main.c
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 pico_set_binary_type(blink copy_to_ram)
-pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
+# pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
 set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
 
 # pull in common dependencies
