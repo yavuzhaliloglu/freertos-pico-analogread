@@ -373,25 +373,26 @@ void vResetTask()
 
 int main()
 {
+#if DEBUG
     stdio_init_all();
-    sleep_ms(500);
-
+    while (!stdio_usb_connected())
+        ;
+#endif
     // UART INIT
-    uart_init(UART0_ID, BAUD_RATE);
-    initUART();
+    if (!initUART())
+    {
+        return 0;
+    }
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
-    sleep_ms(100);
 
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
-    sleep_ms(100);
 
     // THRESHOLD GPIO INIT
     gpio_init(THRESHOLD_PIN);
     gpio_set_dir(THRESHOLD_PIN, GPIO_OUT);
-    sleep_ms(100);
     gpio_put(THRESHOLD_PIN, 0);
 
     // ADC INIT
@@ -399,39 +400,38 @@ int main()
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
-    // adc_set_clkdiv(clkdiv);
-    sleep_ms(100);
+    adc_set_clkdiv(clkdiv);
 
     // I2C Init
-    i2c_init(i2c0, 400 * 1000);
+    if (!initI2C())
+    {
+        return 0;
+    }
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
-    sleep_ms(100);
 
 #if WITHOUT_BOOTLOADER
     addSerialNumber();
-    sleep_ms(100);
 #endif
 
     // sector content control
     checkSectorContent();
     checkThresholdContent();
-    sleep_ms(100);
 
     // // Reset Record Settings
     // resetFlashSettings();
 
     // FLASH CONTENTS
     getFlashContents();
-    sleep_ms(100);
 
     // RTC Init
     rtc_init();
-    sleep_ms(100);
 
     // Get PT7C4338's Time information and set RP2040's RTC module
-    getTimePt7c4338(&current_time);
-    sleep_ms(100);
+    if (!getTimePt7c4338(&current_time))
+    {
+        return 0;
+    }
 
     // If current time which is get from Chip has invalid value, adjust the value.
     if (current_time.dotw < 0 || current_time.dotw > 6)
@@ -443,7 +443,6 @@ int main()
     bool is_time_set = rtc_set_datetime(&current_time);
     sleep_ms(100);
     bool is_time_get = rtc_get_datetime(&current_time);
-    sleep_ms(100);
 
     // if time is get correctly, set string datetime.
     if (is_time_get)
@@ -459,7 +458,6 @@ int main()
 
     // set when program started
     setProgramStartDate(&current_time);
-    sleep_ms(100);
 
     // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
     // printBufferHex(flash_ac_buf, 2 * FLASH_SECTOR_SIZE);
@@ -468,8 +466,7 @@ int main()
     if (xFlashMutex == NULL)
     {
         PRINTF("Flash mutex is not created.\n");
-        while (1)
-            ;
+        return 0;
     }
 
     // if time is set correctly, start the processes.
@@ -493,7 +490,7 @@ int main()
     else
     {
         PRINTF("Time is not SET. Please check the time setting.\n");
-        watchdog_reboot(0, 0, 0);
+        return 0;
     }
 
     while (true)

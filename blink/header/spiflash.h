@@ -75,9 +75,6 @@ void writeProgramToFlash(uint8_t chr)
 // This function gets the contents like sector data, last records contents from flash and sets them to variables.
 void getFlashContents()
 {
-    // disable interrupts and get the contents
-    uint32_t ints = save_and_disable_interrupts();
-
     // get sector count of records
     uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
     uint16_t sector_temp = flash_sector_content[0];
@@ -99,9 +96,6 @@ void getFlashContents()
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", getVRMSThresholdValue());
     PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", getRecordSectorValue());
     PRINTF("GETFLASHCONTENTS: threshold sector is: %d\n", getThresholdSectorValue());
-
-    // enable interrupts
-    restore_interrupts(ints);
 }
 
 // This function writes current sector data to flash.
@@ -589,7 +583,6 @@ void __not_in_flash_func(resetFlashSettings)()
 
 void __not_in_flash_func(checkSectorContent)()
 {
-    uint32_t ints = save_and_disable_interrupts();
 
     uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
 
@@ -598,19 +591,17 @@ void __not_in_flash_func(checkSectorContent)()
         PRINTF("CHECKSECTORCONTENT: sector area is empty. Sector content is going to set 0.\n");
         uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
 
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+        restore_interrupts(ints);
     }
-
-    restore_interrupts(ints);
 }
 
 void __not_in_flash_func(checkThresholdContent)()
 {
-    uint32_t ints = save_and_disable_interrupts();
 
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
-    uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
 
     // Threshold value control
     if (th_ptr[0] == 0xFFFF)
@@ -621,22 +612,25 @@ void __not_in_flash_func(checkThresholdContent)()
         th_arr[0] = getVRMSThresholdValue();
         th_arr[1] = th_ptr[1];
 
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        restore_interrupts(ints);
     }
     // Threshold Records Sector control
     if (th_ptr[1] == 0xFFFF)
     {
         PRINTF("threshold record's sector value is empty, setting to 0 as default...\n");
 
+        uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
         th_arr[0] = th_ptr[0];
         th_arr[1] = 0;
 
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        restore_interrupts(ints);
     }
-
-    restore_interrupts(ints);
 }
 
 void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val)

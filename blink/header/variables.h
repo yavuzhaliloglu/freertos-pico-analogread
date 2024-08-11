@@ -16,7 +16,7 @@ typedef struct
 // adc fifo
 ADC_FIFO adc_fifo;
 // clock division value for adc sampling
-float clkdiv = (2e-3 * 48000000) / 96;
+float clkdiv = (1e-3 * 48000000) / 96;
 // load profile record period value
 uint8_t load_profile_record_period = 15;
 // these 3 variables keeps max,m,n and mean values of vrms_buffer content
@@ -144,7 +144,7 @@ struct AmplitudeChangeData
     uint16_t sample_buffer[ADC_FIFO_SIZE];
     float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t variance;
-    uint8_t padding[42];
+    uint8_t padding[2];
 };
 // amplitude change data buffer
 struct AmplitudeChangeData ac_flash_data;

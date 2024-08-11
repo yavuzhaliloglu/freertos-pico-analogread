@@ -24,14 +24,24 @@ void UARTIsr()
 }
 
 // UART Initialization
-void initUART()
+uint8_t initUART()
 {
+    uint set_brate = 0;
+    set_brate = uart_init(UART0_ID, BAUD_RATE);
+    if (set_brate == 0)
+    {
+        PRINTF("UART INIT ERROR!\n");
+        return 0;
+    }
+
     uart_set_format(UART0_ID, DATA_BITS, STOP_BITS, PARITY);
     uart_set_fifo_enabled(UART0_ID, true);
     int UART_IRQ = UART0_ID == uart0 ? UART0_IRQ : UART1_IRQ;
     irq_set_exclusive_handler(UART_IRQ, UARTIsr);
     irq_set_enabled(UART_IRQ, true);
     uart_set_translate_crlf(UART0_ID, true);
+
+    return 1;
 }
 
 void sendResetDates()
