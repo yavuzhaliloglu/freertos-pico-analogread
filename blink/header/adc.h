@@ -102,10 +102,9 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
 {
     PRINTF("writing threshold record\n");
 
-    uint16_t th_sector_val = getThresholdSectorValue();
     // initialize the variables
     struct ThresholdData data;
-    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE));
+    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE));
     // uint8_t *flash_threshold_recs_start = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
     // uint8_t *flash_threshold_recs_end = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (3 * FLASH_SECTOR_SIZE) + 14 * FLASH_PAGE_SIZE);
     uint16_t offset;
@@ -147,27 +146,24 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
     if (offset >= FLASH_SECTOR_SIZE)
     {
-        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", th_sector_val);
+        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", th_sector_data);
 
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
-        if (th_sector_val == 3)
+        if (th_sector_data == 3)
         {
-            th_sector_val = 0;
+            th_sector_data = 0;
         }
         else
         {
-            th_sector_val++;
+            th_sector_data++;
         }
 
-        setThresholdSectorValue(th_sector_val);
-        th_sector_val = getThresholdSectorValue();
-
-        PRINTF("SETFLASHDATA: new sector value is: %d\n", th_sector_val);
+        PRINTF("SETFLASHDATA: new sector value is: %d\n", th_sector_data);
 
         // reset variables and call setSectorData()
         memset(th_flash_buf, 0, FLASH_SECTOR_SIZE);
         th_flash_buf[0] = data;
-        updateThresholdSector(th_sector_val);
+        updateThresholdSector(th_sector_data);
 
         PRINTF("SETFLASHDATA: Sector changing written to flash.\n");
     }
@@ -178,8 +174,8 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     // write buffer in flash
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_val * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
         xSemaphoreGive(xFlashMutex);
         PRINTF("WRITETHRESHOLDDATA: threshold record written to flash.\n");
     }

@@ -467,28 +467,14 @@ int main()
     // set when program started
     setProgramStartDate(&current_time);
 
+    if (!setMutexes())
+    {
+        PRINTF("Failed to set mutexes!\n");
+        return 0;
+    }
+
     // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
     // printBufferHex(flash_ac_buf, 2 * FLASH_SECTOR_SIZE);
-
-    xFlashMutex = xSemaphoreCreateMutex();
-    if (xFlashMutex == NULL)
-    {
-        PRINTF("Flash mutex is not created.\n");
-        return 0;
-    }
-
-    xFIFOMutex = xSemaphoreCreateMutex();
-    if (xFIFOMutex == NULL)
-    {
-        PRINTF("FIFO mutex is not created.\n");
-        return 0;
-    }
-    xVRMSLastValuesMutex = xSemaphoreCreateMutex();
-    if (xVRMSLastValuesMutex == NULL)
-    {
-        PRINTF("VRMSLastValues mutex is not created.\n");
-        return 0;
-    }
 
     // if time is set correctly, start the processes.
     if (is_time_set)
