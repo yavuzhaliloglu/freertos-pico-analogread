@@ -46,6 +46,10 @@ void vUARTTask(void *pvParameters)
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
+    // this buffer stores start time for load profile data
+    uint8_t reading_state_start_time[14] = {0};
+    // this buffer stores end time for load profile data
+    uint8_t reading_state_end_time[14] = {0};
 
     // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
@@ -163,8 +167,8 @@ void vUARTTask(void *pvParameters)
                         // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
                             PRINTF("UART TASK: entered listening-reading\n");
-                            parseLoadProfileDates(rx_buffer, rx_buffer_len);
-                            searchDataInFlash();
+                            parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
+                            searchDataInFlash(reading_state_start_time, reading_state_end_time);
                             break;
 
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
@@ -245,6 +249,10 @@ void vADCReadTask()
     TickType_t xFrequency = pdMS_TO_TICKS(1000);
     struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
     uint8_t amplitude_change_detect_flag = 0;
+    // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
+    uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
+    // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
+    uint16_t bias_buffer[BIAS_SAMPLE];
 
     startTime = xTaskGetTickCount();
     while (1)
@@ -304,10 +312,10 @@ void vADCReadTask()
                     vrms_buffer_count = VRMS_BUFFER_SIZE;
                 }
 
-                vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+                VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
                 PRINTF("ADC READ TASK: calculated VRMS values.\n");
 
-                SPIWriteToFlash();
+                SPIWriteToFlash(&vrms_values);
                 PRINTF("ADC READ TASK: writing flash memory process is completed.\n");
 
                 memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
@@ -400,7 +408,7 @@ int main()
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_select_input(ADC_SELECT_INPUT);
-    adc_set_clkdiv(clkdiv);
+    adc_set_clkdiv((1e-3 * 48000000) / 96);
 
     // I2C Init
     if (!initI2C())
@@ -466,6 +474,19 @@ int main()
     if (xFlashMutex == NULL)
     {
         PRINTF("Flash mutex is not created.\n");
+        return 0;
+    }
+
+    xFIFOMutex = xSemaphoreCreateMutex();
+    if (xFIFOMutex == NULL)
+    {
+        PRINTF("FIFO mutex is not created.\n");
+        return 0;
+    }
+    xVRMSLastValuesMutex = xSemaphoreCreateMutex();
+    if (xVRMSLastValuesMutex == NULL)
+    {
+        PRINTF("VRMSLastValues mutex is not created.\n");
         return 0;
     }
 

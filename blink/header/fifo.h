@@ -17,27 +17,42 @@ bool isFIFOEmpty(ADC_FIFO *f)
 
 bool addToFIFO(ADC_FIFO *f, uint16_t data)
 {
-    if (isFIFOFull(f))
+    bool result = false;
+
+    if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
     {
-        // PRINTF("ADDTOFIFO: FIFO is full. cannot add %u to FIFO!\n", data);
-        return false;
+        if (!isFIFOFull(f))
+        {
+            f->data[f->tail] = data;
+            f->tail = (f->tail + 1) % ADC_FIFO_SIZE;
+            f->count++;
+            result = true;
+        }
+
+        xSemaphoreGive(xFIFOMutex);
     }
-    f->data[f->tail] = data;
-    f->tail = (f->tail + 1) % ADC_FIFO_SIZE;
-    f->count++;
-    return true;
+
+    return result;
 }
 
 bool removeFromFIFO(ADC_FIFO *f)
 {
-    if (isFIFOEmpty(f))
+
+    bool result = false;
+
+    if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
     {
-        // PRINTF("REMOVEFROMFIFO: FIFO is empty. cannot remove from FIFO!\n");
-        return false;
+        if (!isFIFOEmpty(f))
+        {
+            f->head = (f->head + 1) % ADC_FIFO_SIZE;
+            f->count--;
+            result = true;
+        }
+
+        xSemaphoreGive(xFIFOMutex);
     }
-    f->head = (f->head + 1) % ADC_FIFO_SIZE;
-    f->count--;
-    return true;
+
+    return result;
 }
 
 void displayFIFO(ADC_FIFO *f)

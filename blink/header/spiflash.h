@@ -148,11 +148,12 @@ uint8_t floatDecimalDigitToUint8t(float float_value)
 }
 
 // This function gets a buffer which includes VRMS values, and calculate the max, min and mean values of this buffer and sets the variables.
-void vrmsSetMinMaxMean(float *buffer, uint16_t size)
+VRMS_VALUES_RECORD vrmsSetMinMaxMean(float *buffer, uint16_t size)
 {
     float buffer_max = buffer[0];
     float buffer_min = buffer[0];
     float buffer_sum = buffer[0];
+    VRMS_VALUES_RECORD vrms_values;
 
     for (uint16_t i = 1; i < size; i++)
     {
@@ -169,25 +170,27 @@ void vrmsSetMinMaxMean(float *buffer, uint16_t size)
         buffer_sum += buffer[i];
     }
 
-    vrms_max = (uint8_t)floor(buffer_max);
-    vrms_min = (uint8_t)floor(buffer_min);
-    vrms_max_dec = floatDecimalDigitToUint8t(buffer_max);
-    vrms_min_dec = floatDecimalDigitToUint8t(buffer_min);
+    vrms_values.vrms_max = (uint8_t)floor(buffer_max);
+    vrms_values.vrms_min = (uint8_t)floor(buffer_min);
+    vrms_values.vrms_max_dec = floatDecimalDigitToUint8t(buffer_max);
+    vrms_values.vrms_min_dec = floatDecimalDigitToUint8t(buffer_min);
 
     if (size == 0)
     {
-        vrms_mean = 0;
-        vrms_mean_dec = 0;
+        vrms_values.vrms_mean = 0;
+        vrms_values.vrms_mean_dec = 0;
     }
     else
     {
-        vrms_mean = (uint8_t)(buffer_sum / size);
-        vrms_mean_dec = floatDecimalDigitToUint8t(buffer_sum / size);
+        vrms_values.vrms_mean = (uint8_t)(buffer_sum / size);
+        vrms_values.vrms_mean_dec = floatDecimalDigitToUint8t(buffer_sum / size);
     }
 
-    PRINTF("buffer max: %lf, vrms_max: %d, vrms_max_dec: %d\n", buffer_max, vrms_max, vrms_max_dec);
-    PRINTF("buffer min: %lf, vrms_min: %d, vrms_min_dec: %d\n", buffer_min, vrms_min, vrms_min_dec);
-    PRINTF("buffer mean: %lf, vrms_mean: %d, vrms_mean_dec: %d\n", buffer_sum / size, vrms_mean, vrms_mean_dec);
+    PRINTF("buffer max: %lf, vrms_max: %d, vrms_max_dec: %d\n", buffer_max, vrms_values.vrms_max, vrms_values.vrms_max_dec);
+    PRINTF("buffer min: %lf, vrms_min: %d, vrms_min_dec: %d\n", buffer_min, vrms_values.vrms_min, vrms_values.vrms_min_dec);
+    PRINTF("buffer mean: %lf, vrms_mean: %d, vrms_mean_dec: %d\n", buffer_sum / size, vrms_values.vrms_mean, vrms_values.vrms_mean_dec);
+
+    return vrms_values;
 }
 
 float convertVRMSValueToFloat(uint8_t value, uint8_t value_dec)
@@ -196,7 +199,7 @@ float convertVRMSValueToFloat(uint8_t value, uint8_t value_dec)
 }
 
 // This function sets the current time values which are 16 bytes total and calculated VRMS values to flash
-void setFlashData()
+void setFlashData(VRMS_VALUES_RECORD *vrms_values)
 {
     // initialize the variables
     struct FlashData data;
@@ -209,25 +212,22 @@ void setFlashData()
     setDateToCharArray(current_time.day, data.day);
     setDateToCharArray(current_time.hour, data.hour);
     setDateToCharArray(current_time.min, data.min);
-    data.max_volt = vrms_max;
-    data.min_volt = vrms_min;
-    data.mean_volt = vrms_mean;
-    data.max_volt_dec = vrms_max_dec;
-    data.min_volt_dec = vrms_min_dec;
-    data.mean_volt_dec = vrms_mean_dec;
+    data.max_volt = vrms_values->vrms_max;
+    data.min_volt = vrms_values->vrms_min;
+    data.mean_volt = vrms_values->vrms_mean;
+    data.max_volt_dec = vrms_values->vrms_max_dec;
+    data.min_volt_dec = vrms_values->vrms_min_dec;
+    data.mean_volt_dec = vrms_values->vrms_mean_dec;
 
-    // convert last record vrms values to float
-    vrms_max_last = convertVRMSValueToFloat(vrms_max, vrms_max_dec);
-    vrms_min_last = convertVRMSValueToFloat(vrms_min, vrms_min_dec);
-    vrms_mean_last = convertVRMSValueToFloat(vrms_mean, vrms_mean_dec);
+    if (xSemaphoreTake(xVRMSLastValuesMutex, portMAX_DELAY) == pdTRUE)
+    {
+        // convert last record vrms values to float
+        vrms_max_last = convertVRMSValueToFloat(vrms_values->vrms_max, vrms_values->vrms_max_dec);
+        vrms_min_last = convertVRMSValueToFloat(vrms_values->vrms_min, vrms_values->vrms_min_dec);
+        vrms_mean_last = convertVRMSValueToFloat(vrms_values->vrms_mean, vrms_values->vrms_mean_dec);
 
-    // reset VRMS values
-    vrms_max = 0;
-    vrms_min = 0;
-    vrms_mean = 0;
-    vrms_max_dec = 0;
-    vrms_min_dec = 0;
-    vrms_mean_dec = 0;
+        xSemaphoreGive(xVRMSLastValuesMutex);
+    }
 
     // find the last offset of flash records and write current values to last offset of flash_data buffer
     for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
@@ -281,11 +281,11 @@ void setFlashData()
 }
 
 // This function writes flash_data content to flash area
-void __not_in_flash_func(SPIWriteToFlash)()
+void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values)
 {
     PRINTF("SPIWRITETOFLASH: Setting flash data...\n");
 
-    setFlashData();
+    setFlashData(vrms_values);
     // setSectorData();
 
     uint16_t sector_val = getRecordSectorValue();
@@ -388,7 +388,7 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
     }
 }
 
-void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end)
+void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
 
@@ -439,7 +439,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 }
 
 // This function searches the requested data in flash by starting from flash record beginning offset, collects data from flash and sends it to UART to show load profile content
-void searchDataInFlash()
+void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
 {
     // initialize the variables
     datetime_t start = {0};
@@ -464,7 +464,7 @@ void searchDataInFlash()
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
 
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
@@ -759,7 +759,12 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
     setDateToCharArray(current_time.sec, ac_flash_data.sec);
 
     // set samples
-    memcpy(ac_flash_data.sample_buffer, sample_buffer, ac_params->adc_fifo_size * sizeof(uint16_t));
+
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        memcpy(ac_flash_data.sample_buffer, sample_buffer, ac_params->adc_fifo_size * sizeof(uint16_t));
+        xSemaphoreGive(xFlashMutex);
+    }
 
     // set vrms values
     memcpy(ac_flash_data.vrms_values_buffer, ac_params->vrms_values_buffer, ac_params->vrms_values_buffer_size_bytes);
@@ -770,7 +775,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
     // set padding
     memset(ac_flash_data.padding, 0, sizeof(ac_flash_data.padding));
 
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
     {
         if (ac_sector == (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR - 1))
         {

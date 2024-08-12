@@ -238,7 +238,7 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
 }
 
 // This function gets the load profile data and finds the date characters and add them to time arrays
-void parseLoadProfileDates(uint8_t *buffer, uint8_t len)
+void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
 {
     for (uint8_t i = 0; i < len; i++)
     {
@@ -433,6 +433,7 @@ void greetingStateHandler(uint8_t *buffer)
     uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50}; // /?ALP
     uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};                 // !\r\n
     uint8_t *buffer_tail = (uint8_t *)strchr((char *)buffer, 0x21);
+    uint16_t max_baud_rate = 19200;
 
     bool greeting_head_check = strncmp((char *)greeting_head, (char *)buffer, sizeof(greeting_head)) == 0 ? true : false;
     bool greeting_head_new_check = strncmp((char *)greeting_head_new, (char *)buffer, sizeof(greeting_head_new)) == 0 ? true : false;
@@ -511,6 +512,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
     uint8_t readout[3] = {0x30, 0x0D, 0x0A};          // 0\r\n
     uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};       // 4\r\n
     uint8_t default_control[2] = {0x06, 0x30};        // [ACK]0
+    uint16_t max_baud_rate = 19200;
 
     // if default control is true and size of message is 6, it means the message format is true.
     if ((strncmp((char *)buffer, (char *)default_control, sizeof(default_control)) == 0) && (size == 6))
@@ -625,23 +627,28 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
 
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
+            if (xSemaphoreTake(xVRMSLastValuesMutex, portMAX_DELAY) == pdTRUE)
+            {
+                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
+                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+                uart_puts(UART0_ID, mread_data_buff);
+                printBufferHex((uint8_t *)mread_data_buff, 21);
+                PRINTF("\n");
 
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "52.7.0(%.2f)\r\n", vrms_min_last);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
+                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "52.7.0(%.2f)\r\n", vrms_min_last);
+                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+                uart_puts(UART0_ID, mread_data_buff);
+                printBufferHex((uint8_t *)mread_data_buff, 21);
+                PRINTF("\n");
 
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "72.7.0(%.2f)\r\n", vrms_mean_last);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
+                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "72.7.0(%.2f)\r\n", vrms_mean_last);
+                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+                uart_puts(UART0_ID, mread_data_buff);
+                printBufferHex((uint8_t *)mread_data_buff, 21);
+                PRINTF("\n");
+
+                xSemaphoreGive(xVRMSLastValuesMutex);
+            }
 
             result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", ETX);
             bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);

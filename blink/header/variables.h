@@ -15,30 +15,28 @@ typedef struct
 } ADC_FIFO;
 // adc fifo
 ADC_FIFO adc_fifo;
-// clock division value for adc sampling
-float clkdiv = (1e-3 * 48000000) / 96;
 // load profile record period value
 uint8_t load_profile_record_period = 15;
 // these 3 variables keeps max,m,n and mean values of vrms_buffer content
-uint8_t vrms_max = 0;
-uint8_t vrms_min = 0;
-uint8_t vrms_mean = 0;
-uint8_t vrms_max_dec = 0;
-uint8_t vrms_min_dec = 0;
-uint8_t vrms_mean_dec = 0;
+typedef struct
+{
+    uint8_t vrms_max;
+    uint8_t vrms_min;
+    uint8_t vrms_mean;
+    uint8_t vrms_max_dec;
+    uint8_t vrms_min_dec;
+    uint8_t vrms_mean_dec;
+} VRMS_VALUES_RECORD;
+
 // last record float values
 float vrms_max_last = 0.0;
 float vrms_min_last = 0.0;
 float vrms_mean_last = 0.0;
-// this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
-uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
-// this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
-uint16_t bias_buffer[BIAS_SAMPLE];
 // vrms threshold value
 uint16_t vrms_threshold = 5;
 // threshold flag value, used for set threshold pin and hold it until command comes and resets it
 uint8_t threshold_set_before = 0;
-
+// vrms buffer values
 uint16_t vrms_buffer_count = 0;
 float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
@@ -83,14 +81,9 @@ enum ListeningStates
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
 // state varible that keeps current state
 enum States state = Greeting;
-// this variable is represent max baud rate that this device can reach.
-uint16_t max_baud_rate = 19200;
+// rx buffer
 uint8_t rx_buffer[256] = {0};
 uint8_t rx_buffer_len = 0;
-// this buffer stores start time for load profile data
-uint8_t reading_state_start_time[14] = {0};
-// this buffer stores end time for load profile data
-uint8_t reading_state_end_time[14] = {0};
 // this is a flag that controls if password is correct
 bool password_correct_flag = false;
 
@@ -198,7 +191,10 @@ TaskHandle_t xWriteDebugHandle;
 
 // mutex variable to protect flash
 SemaphoreHandle_t xFlashMutex;
+SemaphoreHandle_t xFIFOMutex;
+SemaphoreHandle_t xVRMSLastValuesMutex;
 
+// WILL BE CONTROLLED TO CREATE MUTEXES
 uint16_t getRecordSectorValue()
 {
     return sector_data;
