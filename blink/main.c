@@ -383,8 +383,7 @@ int main()
 {
 #if DEBUG
     stdio_init_all();
-    while (!stdio_usb_connected())
-        ;
+    sleep_ms(2000);
 #endif
     // UART INIT
     if (!initUART())

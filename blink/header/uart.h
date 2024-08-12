@@ -541,8 +541,12 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         }
 
         PRINTF("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
+#if DEBUG
         uint selectedrate = setProgramBaudRate(modem_baud_rate);
         PRINTF("SETTINGSTATEHANDLER: selected baud rate is: %d.\n", selectedrate);
+#else
+        setProgramBaudRate(modem_baud_rate);
+#endif
 
         // Load Profile ([ACK]0Z1[CR][LF])
         if (strncmp((char *)programming_mode, (char *)(buffer + 3), 3) == 0)
