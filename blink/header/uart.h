@@ -53,8 +53,11 @@ void sendResetDates()
 
     for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16)
     {
+        xSemaphoreTake(xFlashMutex, portMAX_DELAY);
+        PRINTF("SEND RESET DATES: set data mutex received\n");
         if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00)
         {
+            xSemaphoreGive(xFlashMutex);
             break;
         }
 
@@ -64,6 +67,7 @@ void sendResetDates()
         char hour[3] = {reset_dates_flash[date_offset + 6], reset_dates_flash[date_offset + 7], 0x00};
         char min[3] = {reset_dates_flash[date_offset + 8], reset_dates_flash[date_offset + 9], 0x00};
         char sec[3] = {reset_dates_flash[date_offset + 10], reset_dates_flash[date_offset + 11], 0x00};
+        xSemaphoreGive(xFlashMutex);
 
         result = snprintf(date_buffer, sizeof(date_buffer), "%s-%s-%s,%s:%s:%s\r\n", year, month, day, hour, min, sec);
 
@@ -80,12 +84,11 @@ void sendResetDates()
 void sendDeviceInfo()
 {
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
-    int offset;
+    int offset = 0;
     uint16_t record_count = 0;
 
     char debug_uart_buffer[45] = {0};
-    sprintf(debug_uart_buffer, "sector count is: %d\r\n", flash_sector_content[0]);
+    sprintf(debug_uart_buffer, "sector count is: %d\r\n", sector_data);
     uart_puts(UART0_ID, debug_uart_buffer);
 
     uart_puts(UART0_ID, "System Time is: ");
@@ -95,28 +98,35 @@ void sendDeviceInfo()
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    for (offset = 0; offset < 1556480; offset += 16)
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00)
+        PRINTF("SEND DEVICE INFO: set data mutex received\n");
+        for (offset = 0; offset < 1556480; offset += 16)
         {
-            continue;
+            if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00)
+            {
+                xSemaphoreGive(xFlashMutex);
+                break;
+            }
+
+            char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
+            char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
+            char day[3] = {flash_records[offset + 4], flash_records[offset + 5], 0x00};
+            char hour[3] = {flash_records[offset + 6], flash_records[offset + 7], 0x00};
+            char minute[3] = {flash_records[offset + 8], flash_records[offset + 9], 0x00};
+            uint8_t max = flash_records[offset + 10];
+            uint8_t max_dec = flash_records[offset + 11];
+            uint8_t min = flash_records[offset + 12];
+            uint8_t min_dec = flash_records[offset + 13];
+            uint8_t mean = flash_records[offset + 14];
+            uint8_t mean_dec = flash_records[offset + 15];
+
+            sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s;%d.%d,%d.%d,%d.%d\r\n", year, month, day, hour, minute, max, max_dec, min, min_dec, mean, mean_dec);
+            uart_puts(UART0_ID, debug_uart_buffer);
+            record_count++;
         }
 
-        char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
-        char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
-        char day[3] = {flash_records[offset + 4], flash_records[offset + 5], 0x00};
-        char hour[3] = {flash_records[offset + 6], flash_records[offset + 7], 0x00};
-        char minute[3] = {flash_records[offset + 8], flash_records[offset + 9], 0x00};
-        uint8_t max = flash_records[offset + 10];
-        uint8_t max_dec = flash_records[offset + 11];
-        uint8_t min = flash_records[offset + 12];
-        uint8_t min_dec = flash_records[offset + 13];
-        uint8_t mean = flash_records[offset + 14];
-        uint8_t mean_dec = flash_records[offset + 15];
-
-        sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s;%d.%d,%d.%d,%d.%d\r\n", year, month, day, hour, minute, max, max_dec, min, min_dec, mean, mean_dec);
-        uart_puts(UART0_ID, debug_uart_buffer);
-        record_count++;
+        xSemaphoreGive(xFlashMutex);
     }
 
     sprintf(debug_uart_buffer, "usage of flash is: %d/%d bytes\n", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET));
@@ -389,6 +399,7 @@ void __not_in_flash_func(rebootProgram)()
         PRINTF("REBOOTPROGRAM: md5 check is false or new program's epoch is smaller or equal.\n");
         if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
         {
+            PRINTF("REBOOTPROGRAM: write flash mutex received\n");
             flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
             xSemaphoreGive(xFlashMutex);
         }
@@ -975,6 +986,7 @@ void __not_in_flash_func(ReProgramHandler)()
     // delete the reprogram area to write new program
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
+        PRINTF("REPROGRAMHANDLER: write flash mutex received!\n");
         flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
@@ -1034,11 +1046,17 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
 
     // set array variables to updated values (just threshold changed)
     th_arr[0] = getVRMSThresholdValue();
-    th_arr[1] = th_ptr[1];
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        PRINTF("SETTHRESHOLDVALUE: write data mutex received\n");
+        th_arr[1] = th_ptr[1];
+        xSemaphoreGive(xFlashMutex);
+    }
 
     // write updated values to flash
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
+        PRINTF("SETTHRESHOLDVALUE: write flash mutex received\n");
         flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
@@ -1064,6 +1082,15 @@ void getThresholdRecord()
     uint8_t xor_result = 0x00;
     // buffer to format
     uint8_t buffer[35] = {0};
+    // copy the flash content in struct
+    char year[3] = {0};
+    char month[3] = {0};
+    char day[3] = {0};
+    char hour[3] = {0};
+    char min[3] = {0};
+    char sec[3] = {0};
+    uint16_t vrms = 0;
+    uint16_t variance = 0;
 
     // send STX character
     uart_putc(UART0_ID, STX);
@@ -1071,25 +1098,36 @@ void getThresholdRecord()
     // find the records and format it in a string buffer
     for (unsigned int i = 0; i < 4 * FLASH_SECTOR_SIZE; i += FLASH_RECORD_SIZE)
     {
-        // if beginning offset of a record starts with FF or 00, it means it is an empty record, so finish the formatting process
-        if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
+        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
         {
-            continue;
-        }
+            PRINTF("GETTHRESHOLDRECORD: set data mutex received\n");
+            // if beginning offset of a record starts with FF or 00, it means it is an empty record, so finish the formatting process
+            if (record_ptr[i] == 0xFF || record_ptr[i] == 0x00)
+            {
+                xSemaphoreGive(xFlashMutex);
+                break;
+            }
 
-        // copy the flash content in struct
-        uint8_t year[3] = {record_ptr[i], record_ptr[i + 1], 0x00};
-        uint8_t month[3] = {record_ptr[i + 2], record_ptr[i + 3], 0x00};
-        uint8_t day[3] = {record_ptr[i + 4], record_ptr[i + 5], 0x00};
-        uint8_t hour[3] = {record_ptr[i + 6], record_ptr[i + 7], 0x00};
-        uint8_t min[3] = {record_ptr[i + 8], record_ptr[i + 9], 0x00};
-        uint8_t sec[3] = {record_ptr[i + 10], record_ptr[i + 11], 0x00};
-        uint16_t vrms = record_ptr[i + 13];
-        vrms = (vrms << 8);
-        vrms += record_ptr[i + 12];
-        uint16_t variance = record_ptr[i + 15];
-        variance = (variance << 8);
-        variance += record_ptr[i + 14];
+            // copy the flash content in struct
+            snprintf(year, sizeof(year), "%c%c", record_ptr[i], record_ptr[i + 1]);
+            snprintf(month, sizeof(month), "%c%c", record_ptr[i + 2], record_ptr[i + 3]);
+            snprintf(day, sizeof(day), "%c%c", record_ptr[i + 4], record_ptr[i + 5]);
+            snprintf(hour, sizeof(hour), "%c%c", record_ptr[i + 6], record_ptr[i + 7]);
+            snprintf(min, sizeof(min), "%c%c", record_ptr[i + 8], record_ptr[i + 9]);
+            snprintf(sec, sizeof(sec), "%c%c", record_ptr[i + 10], record_ptr[i + 11]);
+            vrms = record_ptr[i + 13];
+            vrms = (vrms << 8);
+            vrms += record_ptr[i + 12];
+            variance = record_ptr[i + 15];
+            variance = (variance << 8);
+            variance += record_ptr[i + 14];
+
+            xSemaphoreGive(xFlashMutex);
+        }
+        else
+        {
+            PRINTF("GETTHRESHOLDRECORD: set data mutex error\n");
+        }
 
         PRINTF("data.year is: %s\n", year);
         PRINTF("data.month is: %s\n", month);

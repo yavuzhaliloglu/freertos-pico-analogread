@@ -480,7 +480,7 @@ int main()
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCReadTask, "ADCReadTask", 2048, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);

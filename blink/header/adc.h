@@ -107,9 +107,18 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE));
     // uint8_t *flash_threshold_recs_start = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
     // uint8_t *flash_threshold_recs_end = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (3 * FLASH_SECTOR_SIZE) + 14 * FLASH_PAGE_SIZE);
-    uint16_t offset;
+    uint16_t offset = 0;
 
-    memcpy(th_flash_buf, flash_threshold_recs, FLASH_SECTOR_SIZE);
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        PRINTF("WRITETHRESHOLDRECORD: memcpy mutex received\n");
+        memcpy(th_flash_buf, flash_threshold_recs, FLASH_SECTOR_SIZE);
+        xSemaphoreGive(xFlashMutex);
+    }
+    else
+    {
+        PRINTF("WRITETHRESHOLDRECORD: memcpy mutex error\n");
+    }
 
     // set struct data parameters
     setDateToCharArray(current_time.year, data.year);
@@ -121,26 +130,36 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     data.vrms = vrms;
     data.variance = variance;
 
-    // find the last offset of flash records and write current values to last offset of flash_data buffer
-    for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        if (flash_threshold_recs[offset] == 0x00 || flash_threshold_recs[offset] == 0xFF)
+        PRINTF("WRITETHRESHOLDRECORD: offset loop mutex received\n");
+        // find the last offset of flash records and write current values to last offset of flash_data buffer
+        for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
         {
-            if (offset == 0)
+            if (flash_threshold_recs[offset] == 0x00 || flash_threshold_recs[offset] == 0xFF)
             {
-                PRINTF("SETFLASHDATA: last record is not found.\n");
+                if (offset == 0)
+                {
+                    PRINTF("SETFLASHDATA: last record is not found.\n");
+                }
+                else
+                {
+                    PRINTF("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
+                }
+
+                th_flash_buf[offset / FLASH_RECORD_SIZE] = data;
+
+                PRINTF("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
+
+                break;
             }
-            else
-            {
-                PRINTF("SETFLASHDATA: last record is start in %d offset\n", offset - 16);
-            }
-
-            th_flash_buf[offset / FLASH_RECORD_SIZE] = data;
-
-            PRINTF("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\n", offset, offset + 16, FLASH_SECTOR_SIZE);
-
-            break;
         }
+
+        xSemaphoreGive(xFlashMutex);
+    }
+    else
+    {
+        PRINTF("WRITETHRESHOLDRECORD: offset loop mutex error\n");
     }
 
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
@@ -174,10 +193,11 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     // write buffer in flash
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
+        PRINTF("WRITETHRESHOLDRECORD: write flash mutex received\n");
         flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
-        xSemaphoreGive(xFlashMutex);
         PRINTF("WRITETHRESHOLDDATA: threshold record written to flash.\n");
+        xSemaphoreGive(xFlashMutex);
     }
     else
     {
