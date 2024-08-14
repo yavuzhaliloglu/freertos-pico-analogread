@@ -49,7 +49,7 @@ void printBufferUint16T(uint16_t *buf, size_t len)
 #if DEBUG
     for (size_t i = 0; i < len; ++i)
     {
-        PRINTF("%d", buf[i]);
+        PRINTF("%d,", buf[i]);
 
         if (i % 10 == 9)
         {
@@ -60,10 +60,10 @@ void printBufferUint16T(uint16_t *buf, size_t len)
             PRINTF(" ");
         }
 
-        if (i % 100 == 99)
-        {
-            PRINTF("\n");
-        }
+        // if (i % 100 == 99)
+        // {
+        //     PRINTF("\n");
+        // }
     }
 #else
     (void)buf;

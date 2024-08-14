@@ -123,7 +123,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // BIAS Sample count
-#define BIAS_SAMPLE 100
+#define BIAS_SAMPLE 1000
 // amplitude threshold
 #define AMPLITUDE_THRESHOLD 5
 
