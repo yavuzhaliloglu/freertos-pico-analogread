@@ -252,25 +252,29 @@ void vADCReadTask()
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
     uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
+    uint16_t bias_samples_buffer[BIAS_SAMPLE];
 
     startTime = xTaskGetTickCount();
     while (1)
     {
         // delay until next cycle
         vTaskDelayUntil(&startTime, xFrequency);
+        PRINTF("BIAS BUFFER COUNT IS: %d\n", bias_buffer_count);
         bias_buffer_count = 0;
+
+        memcpy(bias_samples_buffer, bias_buffer, BIAS_SAMPLE * sizeof(uint16_t));
 
         getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
         displayFIFOStats(&adc_fifo);
         // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
 
-        float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_samples_buffer);
         PRINTF("vrms is: %lf\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
         // PRINTF("variance is: %d\n", variance);
 
-        calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC);
+        calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_samples_buffer);
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
@@ -348,6 +352,10 @@ void vADCSampleTask()
 
     while (1)
     {
+        vTaskDelayUntil(&startTime, xFrequency);
+
+        while (adc_get_selected_input() != 0)
+            ;
         adc_sample = adc_read();
         // PRINTF("ADC SAMPLE TASK: adc sample is: %d\n", adc_sample);
 
@@ -357,10 +365,11 @@ void vADCSampleTask()
         {
             removeFirstElementAddNewElement(&adc_fifo, adc_sample);
         }
+
+        while (adc_get_selected_input() != 1)
+            ;
         bias_sample = adc_read();
         bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE] = bias_sample;
-
-        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -403,7 +412,7 @@ int main()
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
-    adc_set_clkdiv((1e-3 * 48000000) / 96);
+    // adc_set_clkdiv((1e-3 * 48000000) / 96);
     adc_set_round_robin(0x03);
 
     // I2C Init

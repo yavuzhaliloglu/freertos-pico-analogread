@@ -166,7 +166,7 @@ bool is_program_end = false;
 static const char s_number[256] = "REPLACESN\0";
 #endif
 
-uint16_t bias_buffer[BIAS_SAMPLE];
+uint16_t bias_buffer[BIAS_SAMPLE] = {0};
 uint16_t bias_buffer_count = 0;
 // RTC VARIABLES
 

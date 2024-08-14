@@ -43,7 +43,7 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
     return (uint16_t)(variance_total / (size - 1));
 }
 
-float calculateVRMS(uint16_t *buffer, size_t size)
+float calculateVRMS(uint16_t *buffer, size_t size, uint16_t *bias_samples_buffer)
 {
     // Initialize the variables for VRMS calculation
     float vrms = 0.0;
@@ -62,7 +62,7 @@ float calculateVRMS(uint16_t *buffer, size_t size)
 
     for (uint16_t i = 0; i < size; i++)
     {
-        float production = (float)((buffer[i] - bias_buffer[i]) * conversion_factor) / 1000;
+        float production = (float)((buffer[i] - bias_samples_buffer[i]) * conversion_factor) / 1000;
         vrms_accumulator += (float)pow((production), 2);
     }
 
@@ -224,11 +224,11 @@ uint8_t detectSuddenAmplitudeChangeWithDerivative(float *sample_buf, size_t buff
     return 0;
 }
 
-void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size_t buffer_size, size_t sample_size_per_vrms_calc)
+void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size_t buffer_size, size_t sample_size_per_vrms_calc, uint16_t *bias_samples_buffer)
 {
     for (uint16_t i = 0; i < buffer_size; i += sample_size_per_vrms_calc)
     {
-        float vrms = calculateVRMS(sample_buf + i, sample_size_per_vrms_calc);
+        float vrms = calculateVRMS(sample_buf + i, sample_size_per_vrms_calc, bias_samples_buffer + i);
         vrms_buffer[i / sample_size_per_vrms_calc] = vrms;
     }
 
