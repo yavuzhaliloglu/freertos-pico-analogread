@@ -190,7 +190,6 @@ TaskHandle_t xADCSampleHandle;
 TaskHandle_t xUARTHandle;
 TaskHandle_t xResetHandle;
 TaskHandle_t xWriteDebugHandle;
-TaskHandle_t xWriteDebugHandlePT7C;
 
 // mutex variable to protect flash
 SemaphoreHandle_t xFlashMutex;
