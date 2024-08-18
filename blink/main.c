@@ -98,7 +98,7 @@ void vUARTTask(void *pvParameters)
                     continue;
                 }
 
-                PRINTF("%02X\n", rx_char);
+                PRINTF("%02X\r\n", rx_char);
 
                 rx_buffer[rx_buffer_len++] = rx_char;
 
@@ -111,11 +111,11 @@ void vUARTTask(void *pvParameters)
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
 
-                    PRINTF("UART TASK: message end and entered the processing area\n");
+                    PRINTF("UART TASK: message end and entered the processing area\r\n");
                     PRINTF("UART TASK: rx buffer content: ");
                     printBufferHex(rx_buffer, rx_buffer_len);
-                    PRINTF("\n");
-                    PRINTF("UART TASK: rx buffer len value: %d\n", rx_buffer_len);
+                    PRINTF("\r\n");
+                    PRINTF("UART TASK: rx buffer len value: %d\r\n", rx_buffer_len);
 
                     // check if the message is for end connection
                     if (is_end_connection_message(rx_buffer))
@@ -240,36 +240,41 @@ void vUARTTask(void *pvParameters)
     }
 }
 
+float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask()
 {
     // Set the parameters for this task.
-    float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
-    TickType_t startTime;
-    TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    // TickType_t startTime;
+    // TickType_t xFrequency = pdMS_TO_TICKS(1000);
     struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
     uint8_t amplitude_change_detect_flag = 0;
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
     uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 0 to calculate BIAS Voltage
-    uint16_t bias_samples_buffer[BIAS_SAMPLE];
+    uint16_t bias_samples_buffer[BIAS_SAMPLE_SIZE];
 
-    startTime = xTaskGetTickCount();
+    // startTime = xTaskGetTickCount();
     while (1)
     {
         // delay until next cycle
-        vTaskDelayUntil(&startTime, xFrequency);
-        PRINTF("BIAS BUFFER COUNT IS: %d\n", bias_buffer_count);
-        bias_buffer_count = 0;
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        // PRINTF("BIAS BUFFER COUNT IS: %d\r\n", bias_buffer_count);
+        // bias_buffer_count = 0;
 
-        memcpy(bias_samples_buffer, bias_buffer, BIAS_SAMPLE * sizeof(uint16_t));
+        memcpy(bias_samples_buffer, bias_buffer, BIAS_SAMPLE_SIZE * sizeof(uint16_t));
 
-        getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
+        {
+            getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
+            xSemaphoreGive(xFIFOMutex);
+        }
         displayFIFOStats(&adc_fifo);
         // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
 
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_samples_buffer);
-        PRINTF("vrms is: %lf\n", vrms);
+        PRINTF("vrms is: %lf\r\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
         // PRINTF("variance is: %d\n", variance);
@@ -286,7 +291,7 @@ void vADCReadTask()
 
         if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC) || amplitude_change_detect_flag)
         {
-            PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\n");
+            PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\r\n");
             if (amplitude_change_detect_flag)
             {
                 writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, &ac_data);
@@ -303,7 +308,7 @@ void vADCReadTask()
         {
             if (current_time.min % load_profile_record_period == 0)
             {
-                PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\n", load_profile_record_period);
+                PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\r\n", load_profile_record_period);
 
                 if (vrms_buffer_count > VRMS_BUFFER_SIZE)
                 {
@@ -311,14 +316,14 @@ void vADCReadTask()
                 }
 
                 VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-                PRINTF("ADC READ TASK: calculated VRMS values.\n");
+                PRINTF("ADC READ TASK: calculated VRMS values.\r\n");
 
                 SPIWriteToFlash(&vrms_values);
-                PRINTF("ADC READ TASK: writing flash memory process is completed.\n");
+                PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
 
                 memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
                 vrms_buffer_count = 0;
-                PRINTF("ADC READ TASK: buffer content is deleted\n");
+                PRINTF("ADC READ TASK: buffer content is deleted\r\n");
             }
         }
     }
@@ -345,19 +350,17 @@ void vWriteDebugTask()
 void vADCSampleTask()
 {
     TickType_t startTime;
-    const TickType_t xFrequency = pdMS_TO_TICKS(1000 / VRMS_SAMPLE_SIZE);
+    const TickType_t xFrequency = 1;
     startTime = xTaskGetTickCount();
     uint16_t adc_sample;
     uint16_t bias_sample;
 
+    vTaskDelay(pdMS_TO_TICKS(1000));
+
     while (1)
     {
-        vTaskDelayUntil(&startTime, xFrequency);
-
-        while (adc_get_selected_input() != 0)
-            ;
+        // PRINTF("first sample input is: %d\r\n", adc_get_selected_input());
         adc_sample = adc_read();
-        // PRINTF("ADC SAMPLE TASK: adc sample is: %d\n", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 
@@ -366,10 +369,18 @@ void vADCSampleTask()
             removeFirstElementAddNewElement(&adc_fifo, adc_sample);
         }
 
-        while (adc_get_selected_input() != 1)
-            ;
+        // PRINTF("second sample input is: %d\r\n", adc_get_selected_input());
         bias_sample = adc_read();
-        bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE] = bias_sample;
+        bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE_SIZE] = bias_sample;
+
+        if (bias_buffer_count == BIAS_SAMPLE_SIZE)
+        {
+            bias_buffer_count = 0;
+            displayFIFOStats(&adc_fifo);
+            xTaskNotifyGive(xADCHandle);
+        }
+
+        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -486,11 +497,11 @@ int main()
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCReadTask, "ADCReadTask", 2048, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCReadTask, "ADCReadTask", 4 * 1024, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 512, NULL, 2, &xADCSampleHandle);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 4 * 1024, NULL, 5, &xADCSampleHandle);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);

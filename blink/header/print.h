@@ -80,12 +80,12 @@ void printBufferFloat(float *buf, size_t len)
 
         if (i % 5 == 0)
         {
-            PRINTF("\n");
+            PRINTF("\r\n");
         }
         PRINTF("%f ", buf[i]);
     }
 
-    PRINTF("\n");
+    PRINTF("\r\n");
 #else
     (void)buf;
     (void)len;

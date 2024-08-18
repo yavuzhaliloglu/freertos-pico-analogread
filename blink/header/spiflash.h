@@ -757,7 +757,7 @@ void __not_in_flash_func(setProgramStartDate)(datetime_t *ct)
 
 void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *sample_buffer, struct AmplitudeChangeTimerCallbackParameters *ac_params)
 {
-    PRINTF("write sudden amplitude change record to flash\n");
+    PRINTF("write sudden amplitude change record to flash\r\n");
 
     uint16_t ac_sector = 0;
     uint8_t *flash_ac_records = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
@@ -765,7 +765,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        PRINTF("WRITESUDDENAMPCHANGE: loop mutex received\n");
+        PRINTF("WRITESUDDENAMPCHANGE: loop mutex received\r\n");
         for (sector_count = 0; sector_count < FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE; sector_count += FLASH_SECTOR_SIZE)
         {
             if (flash_ac_records[sector_count] == 0xFF)
@@ -786,7 +786,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
         ac_sector = 0;
     }
 
-    PRINTF("ac sector = %d\n", ac_sector);
+    PRINTF("ac sector = %d\r\n", ac_sector);
 
     // set current date
     setDateToCharArray(current_time.year, ac_flash_data.year);
@@ -815,7 +815,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        PRINTF("WRITESUDDENAMPCHANGE: write flash mutex received\n");
+        PRINTF("WRITESUDDENAMPCHANGE: write flash mutex received\r\n");
         if (ac_sector == (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR - 1))
         {
             flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
@@ -829,10 +829,10 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
     }
     else
     {
-        PRINTF("MUTEX CANNOT RECEIVED!\n");
+        PRINTF("MUTEX CANNOT RECEIVED!\r\n");
     }
 
-    PRINTF("Written ac sector: %d\n", ac_sector);
+    PRINTF("Written ac sector: %d\r\n", ac_sector);
 }
 
 #endif

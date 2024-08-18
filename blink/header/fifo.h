@@ -3,6 +3,7 @@ void initADCFIFO(ADC_FIFO *f)
     f->head = 0;
     f->tail = 0;
     f->count = 0;
+    memset(f->data, 0, ADC_FIFO_SIZE * sizeof(uint16_t));
 }
 
 bool isFIFOFull(ADC_FIFO *f)
@@ -78,7 +79,7 @@ void displayFIFO(ADC_FIFO *f)
 void displayFIFOStats(ADC_FIFO *f)
 {
 #if DEBUG
-    PRINTF("ADCFIFO: head = %u, tail = %u, count = %u.\n", f->head, f->tail, f->count);
+    PRINTF("ADCFIFO: head = %u, tail = %u, count = %u.\r\n", f->head, f->tail, f->count);
 #else
     (void)f;
 #endif
