@@ -168,6 +168,7 @@ static const char s_number[256] = "REPLACESN\0";
 
 uint16_t bias_buffer[BIAS_SAMPLE_SIZE] = {0};
 uint16_t bias_buffer_count = 0;
+float bias_voltage = 0;
 // RTC VARIABLES
 
 // this buffer keeps current datetime value

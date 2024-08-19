@@ -119,7 +119,7 @@
 // ADC BIAS Voltage Pin
 #define ADC_BIAS_PIN 27
 // ADC Voltage Input
-#define ADC_SELECT_INPUT 0
+#define ADC_VRMS_SAMPLE_INPUT 0
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // BIAS Sample count
