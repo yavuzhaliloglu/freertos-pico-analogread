@@ -93,6 +93,9 @@
 // Stack size for UART Task
 #define UART_TASK_STACK_SIZE (1024 * 3)
 
+// POWER LED
+#define POWER_LED_PIN 18
+
 // RESET DEFINES
 
 // Reset Pin Select
@@ -112,8 +115,6 @@
 #define SAMPLE_SIZE_PER_VRMS_CALC 80
 // VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 900
-// VRMS values buffer size, is the size of calculated VRMS values in a minute
-#define VRMS_VALUES_BUFFER_SIZE 60
 // ADC Voltage Pin
 #define ADC_READ_PIN 26
 // ADC BIAS Voltage Pin

@@ -35,11 +35,6 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
         variance_total += mult * mult;
     }
 
-    // PRINTF("\ntotal of samples is: %d\n", total);
-    // PRINTF("\nmean of samples is: %d\n", mean);
-    // PRINTF("\nvariance total of samples is: %d\n", variance_total);
-    // PRINTF("variance of samples is: %d\n", (variance_total / (size - 1)));
-
     return (uint16_t)(variance_total / (size - 1));
 }
 
@@ -50,16 +45,6 @@ float calculateVRMS(uint16_t *buffer, size_t size, float bias_voltage)
     float vrms_accumulator = 0.0;
     const float conversion_factor = 1000 * (3.3f / (1 << 12));
 
-    // #if DEBUG
-    //     char deneme[40] = {0};
-    // #endif
-
-    // #if DEBUG
-    //     deneme[32] = '\0';
-    //     snprintf(deneme, 31, "CALCULATEVRMS: mean: %f\n", mean);
-    //     PRINTF("%s", deneme);
-    // #endif
-
     float mean = bias_voltage * conversion_factor / 1000;
 
     for (uint16_t i = 0; i < size; i++)
@@ -67,12 +52,6 @@ float calculateVRMS(uint16_t *buffer, size_t size, float bias_voltage)
         float production = (float)(buffer[i] * conversion_factor) / 1000;
         vrms_accumulator += (float)pow((production - mean), 2);
     }
-
-    // #if DEBUG
-    //     snprintf(deneme, 36, "CALCULATEVRMS: vrmsAc: %f\n", vrms_accumulator);
-    //     deneme[37] = '\0';
-    //     PRINTF("%s", deneme);
-    // #endif
 
     vrms = sqrt(vrms_accumulator / size);
     vrms = vrms * VRMS_MULTIPLICATION_VALUE;

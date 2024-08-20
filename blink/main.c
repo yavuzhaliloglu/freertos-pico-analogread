@@ -254,22 +254,18 @@ void vADCReadTask()
     {
         // delay until next cycle
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
-        // PRINTF("BIAS BUFFER COUNT IS: %d\r\n", bias_buffer_count);
-        // bias_buffer_count = 0;
 
         if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
         {
             getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
             xSemaphoreGive(xFIFOMutex);
         }
-        displayFIFOStats(&adc_fifo);
-        // printBufferUint16T(adc_samples_buffer, VRMS_SAMPLE_SIZE);
 
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
         PRINTF("vrms is: %lf\r\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-        // PRINTF("variance is: %d\n", variance);
+        PRINTF("variance is: %d\n", variance);
 
         calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
 
@@ -336,6 +332,17 @@ void vWriteDebugTask()
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
         PRINTF("---------------------------------------------------------------------------------------------------------\n");
         PRINTF("WRITE DEBUG TASK: The Time is:%s\r\n", datetime_str);
+    }
+}
+
+void vPowerLedBlinkTask()
+{
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        gpio_put(POWER_LED_PIN, 0);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        gpio_put(POWER_LED_PIN, 1);
     }
 }
 
@@ -406,6 +413,11 @@ int main()
     }
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
+
+    // POWER LED INIT
+    gpio_init(POWER_LED_PIN);
+    gpio_set_dir(18, GPIO_OUT);
+    gpio_put(POWER_LED_PIN, 1);
 
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
@@ -499,6 +511,7 @@ int main()
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
         xTaskCreate(vADCSampleTask, "ADCSampleTask", 4 * 1024, NULL, 5, &xADCSampleHandle);
+        xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", 256, NULL, 1, NULL);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
