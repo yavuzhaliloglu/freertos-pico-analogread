@@ -36,9 +36,6 @@ float vrms_mean_last = 0.0;
 uint16_t vrms_threshold = 5;
 // threshold flag value, used for set threshold pin and hold it until command comes and resets it
 uint8_t threshold_set_before = 0;
-// vrms buffer values
-uint16_t vrms_buffer_count = 0;
-float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
 // UART VARIABLES
 
@@ -139,8 +136,6 @@ struct AmplitudeChangeData
     uint16_t variance;
     uint8_t padding[2];
 };
-// amplitude change data buffer
-struct AmplitudeChangeData ac_flash_data;
 // amplitude change timer data struct
 struct AmplitudeChangeTimerCallbackParameters
 {
@@ -165,9 +160,6 @@ bool is_program_end = false;
 #if WITHOUT_BOOTLOADER
 static const char s_number[256] = "REPLACESN\0";
 #endif
-
-uint16_t bias_buffer[BIAS_SAMPLE_SIZE] = {0};
-uint16_t bias_buffer_count = 0;
 float bias_voltage = 0;
 // RTC VARIABLES
 

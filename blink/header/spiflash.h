@@ -762,6 +762,8 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
     uint16_t ac_sector = 0;
     uint8_t *flash_ac_records = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
     size_t sector_count = 0;
+    // amplitude change data buffer
+    struct AmplitudeChangeData ac_flash_data;
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {

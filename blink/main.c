@@ -249,6 +249,9 @@ void vADCReadTask()
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
     uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
     float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t vrms_buffer_count = 0;
+    // vrms buffer values
+    float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
     while (1)
     {
@@ -353,15 +356,13 @@ void vADCSampleTask()
     uint16_t adc_sample;
     uint16_t bias_sample;
 
+    uint16_t bias_buffer[BIAS_SAMPLE_SIZE] = {0};
+    uint16_t bias_buffer_count = 0;
+
     startTime = xTaskGetTickCount();
     while (1)
     {
         adc_sample = adc_read();
-        // if (bias_buffer_count % 20 == 0)
-        // {
-        //     PRINTF("\r\n");
-        // }
-        // PRINTF("%d,", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 
@@ -506,11 +507,11 @@ int main()
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCReadTask, "ADCReadTask", 4 * 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCReadTask, "ADCReadTask", 6 * 1024, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 4 * 1024, NULL, 5, &xADCSampleHandle);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 3 * 1024, NULL, 5, &xADCSampleHandle);
         xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", 256, NULL, 1, NULL);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
