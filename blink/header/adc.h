@@ -40,23 +40,21 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
 
 float calculateVRMS(uint16_t *buffer, size_t size, float bias_voltage)
 {
-    // Initialize the variables for VRMS calculation
+    float total = 0.0;
     float vrms = 0.0;
-    float vrms_accumulator = 0.0;
-    const float conversion_factor = 1000 * (3.3f / (1 << 12));
+    float conversion_factor = (3.28f / (1 << 12));
 
-    float mean = bias_voltage * conversion_factor / 1000;
+    bias_voltage = bias_voltage * conversion_factor;
 
-    for (uint16_t i = 0; i < size; i++)
+
+    for (size_t i = 0; i < size; i++)
     {
-        float production = (float)(buffer[i] * conversion_factor) / 1000;
-        vrms_accumulator += (float)pow((production - mean), 2);
+        float adjusted_sample = (float)((buffer[i] * conversion_factor) - bias_voltage);
+        total += adjusted_sample * adjusted_sample;
     }
 
-    vrms = sqrt(vrms_accumulator / size);
-    vrms = vrms * VRMS_MULTIPLICATION_VALUE;
-
-    return vrms;
+    vrms = sqrt(total / size);
+    return vrms * VRMS_MULTIPLICATION_VALUE;
 }
 
 float getMean(uint16_t *buffer, size_t size)
@@ -213,8 +211,8 @@ void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size
         vrms_buffer[i / sample_size_per_vrms_calc] = vrms;
     }
 
-    PRINTF("VRMS VALUES PER SECOND:");
-    printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
+    // PRINTF("VRMS VALUES PER SECOND:");
+    // printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
 }
 
 void setAmplitudeChangeParameters(struct AmplitudeChangeTimerCallbackParameters *ac_data, float *vrms_values_buffer, uint16_t variance, size_t adc_fifo_size, size_t vrms_values_buffer_size_bytes)
@@ -223,6 +221,39 @@ void setAmplitudeChangeParameters(struct AmplitudeChangeTimerCallbackParameters 
     ac_data->vrms_values_buffer_size_bytes = vrms_values_buffer_size_bytes;
     ac_data->variance = variance;
     ac_data->adc_fifo_size = adc_fifo_size;
+}
+
+uint16_t getMeanOfSamples(uint16_t *buffer, uint16_t size)
+{
+    uint32_t sum = 0;
+
+    for (uint16_t i = 0; i < size; i++)
+    {
+        sum += buffer[i];
+    }
+
+    return (uint16_t)(sum / size);
+}
+
+float detectFrequency(uint16_t *adc_samples_buffer, float bias_voltage, size_t adc_samples_size)
+{
+    uint16_t bias_threshold = (uint16_t)bias_voltage;
+
+    int crossings = 0;
+    for (size_t i = 0; i < adc_samples_size; i += MEAN_CALCULATION_SHIFT_SIZE)
+    {
+        if (i + MEAN_CALCULATION_WINDOW_SIZE >= adc_samples_size)
+            break;
+
+        if ((getMeanOfSamples(adc_samples_buffer + i, MEAN_CALCULATION_WINDOW_SIZE) < bias_threshold && getMeanOfSamples(adc_samples_buffer + i + MEAN_CALCULATION_SHIFT_SIZE, MEAN_CALCULATION_WINDOW_SIZE) >= bias_threshold) ||
+            (getMeanOfSamples(adc_samples_buffer + i, MEAN_CALCULATION_WINDOW_SIZE) > bias_threshold && getMeanOfSamples(adc_samples_buffer + i + MEAN_CALCULATION_SHIFT_SIZE, MEAN_CALCULATION_WINDOW_SIZE) <= bias_threshold))
+        {
+            crossings++;
+        }
+    }
+
+    float frequency = (crossings / 2.0);
+    return frequency;
 }
 
 #endif

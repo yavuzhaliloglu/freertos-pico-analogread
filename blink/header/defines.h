@@ -127,6 +127,10 @@
 #define BIAS_SAMPLE_SIZE 4000
 // amplitude threshold
 #define AMPLITUDE_THRESHOLD 5
+// mean calculation window size
+#define MEAN_CALCULATION_WINDOW_SIZE 20
+// mean calculation shifting size
+#define MEAN_CALCULATION_SHIFT_SIZE 5
 
 // RTC DEFINES
 

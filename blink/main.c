@@ -268,7 +268,7 @@ void vADCReadTask()
         PRINTF("vrms is: %lf\r\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-        PRINTF("variance is: %d\n", variance);
+        // PRINTF("variance is: %d\n", variance);
 
         calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
 
@@ -363,6 +363,11 @@ void vADCSampleTask()
     while (1)
     {
         adc_sample = adc_read();
+        // if (bias_buffer_count % 20 == 0)
+        // {
+        //     PRINTF("\r\n");
+        // }
+        // PRINTF("%d,", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 
