@@ -1,7 +1,7 @@
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
-#define SOFTWARE_VERSION "V0.13.2"
+#define SOFTWARE_VERSION "V0.13.3"
 // production date of device (yy-mm-dd)
 #define PRODUCTION_DATE "24-03-13"
 // Debugs
@@ -9,7 +9,7 @@
 // bootloader select
 #define WITHOUT_BOOTLOADER 0
 // vrms multiplier value
-#define VRMS_MULTIPLICATION_VALUE 150
+#define VRMS_MULTIPLICATION_VALUE 300//150 //for<eatv3
 
 // DEBUG MACRO
 #if DEBUG

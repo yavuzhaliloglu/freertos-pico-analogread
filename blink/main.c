@@ -352,7 +352,7 @@ void vPowerLedBlinkTask()
 void vADCSampleTask()
 {
     TickType_t startTime;
-    const TickType_t xFrequency = 1;
+    const TickType_t xFrequency = pdMS_TO_TICKS(1);
     uint16_t adc_sample;
     uint16_t bias_sample;
 
