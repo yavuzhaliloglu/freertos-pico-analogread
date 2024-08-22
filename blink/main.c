@@ -408,6 +408,11 @@ void vResetTask()
 
 int main()
 {
+    // POWER LED INIT
+    gpio_init(POWER_LED_PIN);
+    gpio_set_dir(18, GPIO_OUT);
+    gpio_put(POWER_LED_PIN, 1);
+
 #if DEBUG
     stdio_init_all();
     sleep_ms(2000);
@@ -419,11 +424,6 @@ int main()
     }
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
-
-    // POWER LED INIT
-    gpio_init(POWER_LED_PIN);
-    gpio_set_dir(18, GPIO_OUT);
-    gpio_put(POWER_LED_PIN, 1);
 
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
