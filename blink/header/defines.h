@@ -108,9 +108,9 @@
 
 // ADC DEFINES
 
-#define ADC_FIFO_SIZE 4000
+#define ADC_FIFO_SIZE 2000
 // samples to collect from ADC Pin
-#define VRMS_SAMPLE_SIZE 4000
+#define VRMS_SAMPLE_SIZE 2000
 // sample size per vrms calculation
 #define SAMPLE_SIZE_PER_VRMS_CALC 160
 // VRMS buffer size to calculate min, max and mean values and write to flash
@@ -124,7 +124,7 @@
 // ADC BIAS Input
 #define ADC_BIAS_INPUT 1
 // BIAS Sample count
-#define BIAS_SAMPLE_SIZE 4000
+#define BIAS_SAMPLE_SIZE 2000
 // amplitude threshold
 #define AMPLITUDE_THRESHOLD 5
 // mean calculation window size
