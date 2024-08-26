@@ -516,14 +516,12 @@ int main()
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
         xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
         xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 3 * 1024, NULL, 4, &xADCSampleHandle);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 3 * 1024, NULL, 3, &xADCSampleHandle);
         xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", 256, NULL, 1, NULL);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
         vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
-        vTaskCoreAffinitySet(xWriteDebugHandle, 1 << 0);
-        vTaskCoreAffinitySet(xResetHandle, 1 << 0);
 
         vTaskStartScheduler();
     }
