@@ -72,7 +72,8 @@ enum ListeningStates
     Password = 5,
     SetThreshold = 6,
     GetThreshold = 7,
-    ThresholdPin = 8
+    ThresholdPin = 8,
+    GetSuddenAmplitudeChange = 9
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
@@ -134,7 +135,7 @@ struct AmplitudeChangeData
     uint16_t sample_buffer[ADC_FIFO_SIZE];
     float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t variance;
-    uint8_t padding[2];
+    uint8_t padding[42];
 };
 // amplitude change timer data struct
 struct AmplitudeChangeTimerCallbackParameters

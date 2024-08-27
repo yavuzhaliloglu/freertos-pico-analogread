@@ -3,6 +3,8 @@ import time
 import argparse
 from datetime import datetime, timedelta
 from serial.serialutil import SerialException
+import matplotlib.pyplot as plt
+import struct
 
 # --------------------------------------------------------------- BAUD RATE CHECK FUNCTION
 def baud_rate_type(value):
@@ -20,6 +22,7 @@ parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Thresho
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
 parser.add_argument("-tg", "--threshold-get", action="store_true", help="Threshold Get Records Request Option.")
 parser.add_argument("-tp", "--threshold-pin", action="store_true", help="Reset Threshold Pin Option. If threshold pin is set, it will be reset.")
+parser.add_argument("-ac", "--amplitude-change", action="store_true", help="Get Sudden Amplitude Change Records")
 parser.add_argument("-p", "--production", action="store_true", help="Production Info Request Option. Prints production information.")
 
 args = parser.parse_args()
@@ -31,6 +34,7 @@ print("threshold set args: ", args.threshold_set)
 print("datetime set args: ", args.datetime_set)
 print("threshold get args: ", args.threshold_get)
 print("threshold pin args: ", args.threshold_pin)
+print("threshold pin args: ", args.amplitude_change)
 print("production args: ", args.production)
 
 # ----------------------------------------------------------------------------------------
@@ -294,6 +298,70 @@ def sendThresholdPINResetRequest():
 
     time.sleep(0.25)
 
+# ----------------------------------------------------------------------------------------
+
+def sendAmplitudeChangeRequest():
+    amplitude_change_msg = bytearray(b'\x01\x52\x32\x029.9.0()\x03')
+
+    sendMessage(amplitude_change_msg)
+
+    print("amplitude change request sent!")
+    inc_bytes = bytearray()
+
+    while True:
+        char  = seri.read(1)
+        
+        if(not char):
+            print("records are end")
+            break
+        
+        inc_bytes.extend(char)
+
+        if(char == b'\n'):
+            del inc_bytes[-2]
+
+    # Define the byte sequence to search for
+    split_sequence = b'240827192921'
+    
+    # Find the position of the split sequence
+    split_position = inc_bytes.find(split_sequence)
+    
+    # Split the bytearray into two parts
+    part1 = inc_bytes[:split_position]
+    part2 = inc_bytes[split_position:]
+    
+    # # Output the results
+    # print("Part 1 length:", len(part1))
+    # print("Part 1:", part1)
+    # print("Part 2 length:", len(part2))
+    # print("Part 2:", part2)
+
+    part1_data = part1[13:len(part1)- 87]
+    print(len(part1_data))
+    p1_two_byte_integers = struct.unpack(f'>{len(part1_data) // 2}H', part1_data)
+
+    part2_data = part2[12:len(part2)- 88]
+    print(len(part2_data))
+    p2_two_byte_integers = struct.unpack(f'<{len(part2_data) // 2}H', part2_data)
+
+    plt.figure(figsize=(14, 7))
+    plt.plot(p1_two_byte_integers, label='part1_data Signal')
+    plt.xlabel('Data Point Index')
+    plt.ylabel('Signal Value')
+    plt.title('Concatenated Signal Over Time')
+    plt.legend()
+    plt.grid(True)
+
+    plt.figure(figsize=(14, 7))
+    plt.plot(p2_two_byte_integers, label='part2_data Signal')
+    plt.xlabel('Data Point Index')
+    plt.ylabel('Signal Value')
+    plt.title('Concatenated Signal Over Time')
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
+
 
 # ----------------------------------------------------------------------------------------
 
@@ -326,7 +394,7 @@ if(args.baud_rate):
     max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 try:
-    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=2)
+    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=4)
 except FileNotFoundError:
     print("File not found, please check connection and try again!")
     exit(1)
@@ -371,7 +439,7 @@ seri = serial.Serial(
     bytesize=7,
     parity="E",
     stopbits=1,
-    timeout=2,
+    timeout=4,
 )
 
 # read information response message
@@ -402,29 +470,28 @@ if args.load_profile is not None:
         lp_request_message = prepareLoadProfileRequestWithDate(args.load_profile)
 
     sendLoadProfileRequest(lp_request_message)
-    sendEndConnectionMessage()
 
 
 if args.datetime_set:
     sendDatetimeSetRequest()
-    sendEndConnectionMessage()
 
 if args.threshold_set:
     sendThresholdSetRequest()
-    sendEndConnectionMessage()
 
 if args.threshold_get:
     threshold_get_msg = bytearray(b'\x01\x52\x32\x02T.R.1()\x03')
     sendLoadProfileRequest(threshold_get_msg)
-    sendEndConnectionMessage()
 
 if args.threshold_pin:
     sendThresholdPINResetRequest()
-    sendEndConnectionMessage()
+
+if(args.amplitude_change):
+    sendAmplitudeChangeRequest()
 
 if args.production:
     sendProductionMessageRequest()
-    sendEndConnectionMessage()
+
+sendEndConnectionMessage()
 
 seri.close()
     

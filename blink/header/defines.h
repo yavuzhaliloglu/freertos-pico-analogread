@@ -32,6 +32,7 @@
 // Set Threshold Value:                             [SOH]W2[STX]T.V.1(000)[ETX][BCC]                            -> Length: 16
 // Get Threshold Value:                             [SOH]R2[STX]T.R.1()[ETX][BCC]                               -> Length: 13
 // Set Threshold PIN:                               [SOH]W2[STX]T.P.1()[ETX][BCC]                               -> Length: 13
+// Get Sudden Amplitude Change Records              [SOH]R2[STX]9.9.0()[ETX][BCC]                               -> Length: 13
 // End Connection:                                  [SOH]B0[ETX]q                                               -> Length: 5
 
 // FLASH DEFINES
@@ -112,7 +113,7 @@
 // samples to collect from ADC Pin
 #define VRMS_SAMPLE_SIZE 2000
 // sample size per vrms calculation
-#define SAMPLE_SIZE_PER_VRMS_CALC 160
+#define SAMPLE_SIZE_PER_VRMS_CALC 200
 // VRMS buffer size to calculate min, max and mean values and write to flash
 #define VRMS_BUFFER_SIZE 900
 // ADC Voltage Pin

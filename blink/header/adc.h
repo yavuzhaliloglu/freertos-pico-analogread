@@ -46,7 +46,6 @@ float calculateVRMS(uint16_t *buffer, size_t size, float bias_voltage)
 
     bias_voltage = bias_voltage * conversion_factor;
 
-
     for (size_t i = 0; i < size; i++)
     {
         float adjusted_sample = (float)((buffer[i] * conversion_factor) - bias_voltage);
@@ -211,8 +210,8 @@ void calculateVRMSValuesPerSecond(float *vrms_buffer, uint16_t *sample_buf, size
         vrms_buffer[i / sample_size_per_vrms_calc] = vrms;
     }
 
-    // PRINTF("VRMS VALUES PER SECOND:");
-    // printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
+    PRINTF("VRMS VALUES PER SECOND:");
+    printBufferFloat(vrms_buffer, buffer_size / sample_size_per_vrms_calc);
 }
 
 void setAmplitudeChangeParameters(struct AmplitudeChangeTimerCallbackParameters *ac_data, float *vrms_values_buffer, uint16_t variance, size_t adc_fifo_size, size_t vrms_values_buffer_size_bytes)

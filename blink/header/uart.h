@@ -105,7 +105,6 @@ void sendDeviceInfo()
         {
             if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00)
             {
-                xSemaphoreGive(xFlashMutex);
                 break;
             }
 
@@ -152,6 +151,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char threshold_str[] = "T.V.1";
     char get_threshold_str[] = "T.R.1";
     char threshold_pin[] = "T.P.1";
+    char get_sudden_amplitude_change[] = "9.9.0";
 
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
@@ -226,6 +226,13 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         {
             PRINTF("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
             return ThresholdPin;
+        }
+
+        // Get Sudden Amplitude Change (9.9.0)
+        else if (strstr((char *)data_buffer, get_sudden_amplitude_change) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Get sudden amplitude change is accepted in checklisteningdata.\n");
+            return GetSuddenAmplitudeChange;
         }
     }
 
@@ -846,18 +853,19 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                               // [SOH]P1[STX]
-    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                // [SOH]W2[STX]!!!![ETX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                        // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                    // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                     // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                     // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};        // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29}; // [SOH]R2[STX]P.01(;)
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};        // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};        // [SOH]R2[STX]T.R.1
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};        // [SOH]W2[STX]T.P.1
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                               // [SOH]B0[ETX]q
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                  // [SOH]P1[STX]
+    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                   // [SOH]W2[STX]!!!![ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                           // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                       // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                        // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                        // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};           // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};    // [SOH]R2[STX]P.01(;)
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};           // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};           // [SOH]R2[STX]T.R.1
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};           // [SOH]W2[STX]T.P.1
+    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30}; // [SOH]R2[STX]9.9.0
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                  // [SOH]B0[ETX]q
 
     // length of message that should be
     uint8_t time_len = 21;
@@ -870,6 +878,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t set_threshold_len = 16;
     uint8_t get_threshold_len = 13;
     uint8_t set_threshold_pin_len = 13;
+    uint8_t get_sudden_amplitude_change_len = 13;
     uint8_t end_connection_str_len = 5;
 
     // controls for the message
@@ -916,6 +925,11 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
+        return true;
+    }
+    else if ((len == get_sudden_amplitude_change_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change, sizeof(get_sudden_amplitude_change)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
         return true;
     }
     else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
@@ -1207,6 +1221,52 @@ void setThresholdPIN()
 
         PRINTF("SETTHRESHOLDPIN: Threshold PIN set\n");
     }
+}
+
+void getSuddenAmplitudeChangeRecords()
+{
+    uint8_t *flash_sudden_amp_content = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
+    uint8_t ac_record_buf[FLASH_SECTOR_SIZE];
+    uint8_t xor_result = 0x00;
+
+    uart_putc(UART0_ID, STX);
+
+    for (uint32_t i = 0; i < FLASH_SECTOR_SIZE * FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR; i += FLASH_SECTOR_SIZE)
+    {
+        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+        {
+            if (flash_sudden_amp_content[i] == 0xFF)
+            {
+                xSemaphoreGive(xFlashMutex);
+                continue;
+            }
+
+            memcpy(ac_record_buf, flash_sudden_amp_content + i, FLASH_SECTOR_SIZE);
+
+            xSemaphoreGive(xFlashMutex);
+        }
+
+        for (uint16_t j = 0; j < FLASH_SECTOR_SIZE; j++)
+        {
+            // send record as bytes
+            xor_result ^= ac_record_buf[j];
+            uart_putc(UART0_ID, ac_record_buf[j]);
+        }
+
+        // send cr and lf
+        uart_putc(UART0_ID, '\r');
+        xor_result ^= '\r';
+
+        uart_putc(UART0_ID, '\n');
+        xor_result ^= '\n';
+    }
+
+    // send etx
+    uart_putc(UART0_ID, ETX);
+    xor_result ^= ETX;
+
+    // send bcc
+    uart_putc(UART0_ID, xor_result);
 }
 
 #endif

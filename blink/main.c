@@ -220,6 +220,11 @@ void vUARTTask(void *pvParameters)
                             resetThresholdPIN();
                             break;
 
+                        case GetSuddenAmplitudeChange:
+                            PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
+                            getSuddenAmplitudeChangeRecords();
+                            break;;
+
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
                             sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
@@ -505,7 +510,9 @@ int main()
     }
 
     // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
-    // printBufferHex(flash_ac_buf, 2 * FLASH_SECTOR_SIZE);
+    // uint8_t *flash_ac_buf2 = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET + FLASH_SECTOR_SIZE);
+    // printBufferHex(flash_ac_buf, 20);
+    // printBufferHex(flash_ac_buf2, 20);
 
     // if time is set correctly, start the processes.
     if (is_time_set)
