@@ -684,6 +684,12 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
 
+            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "T.V.1(%03d)\r\n", getVRMSThresholdValue());
+            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
+            uart_puts(UART0_ID, mread_data_buff);
+            printBufferHex((uint8_t *)mread_data_buff, 21);
+            PRINTF("\n");
+
             if (xSemaphoreTake(xVRMSLastValuesMutex, portMAX_DELAY) == pdTRUE)
             {
                 result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
@@ -1325,7 +1331,6 @@ void getSuddenAmplitudeChangeRecords()
     uart_putc(UART0_ID, xor_result);
 }
 
-
 void readTime()
 {
     char buffer[20] = {0};
@@ -1392,6 +1397,5 @@ void readSerialNumber()
     uart_puts(UART0_ID, buffer);
     uart_putc(UART0_ID, xor_result);
 }
-
 
 #endif
