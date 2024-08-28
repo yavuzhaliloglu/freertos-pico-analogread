@@ -337,6 +337,8 @@ void vADCReadTask()
                 PRINTF("ADC READ TASK: buffer content is deleted\r\n");
             }
         }
+
+        watchdog_update();
     }
 }
 
@@ -523,6 +525,8 @@ int main()
         PRINTF("Failed to set mutexes!\n");
         return 0;
     }
+
+    watchdog_enable(2000, 0);
 
     // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
     // uint8_t *flash_ac_buf2 = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET + FLASH_SECTOR_SIZE);
