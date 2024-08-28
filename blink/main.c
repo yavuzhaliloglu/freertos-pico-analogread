@@ -225,6 +225,21 @@ void vUARTTask(void *pvParameters)
                             getSuddenAmplitudeChangeRecords();
                             break;
 
+                        case ReadTime:
+                            PRINTF("UART TASK: entered listening-readtime\n");
+                            readTime();
+                            break;
+
+                        case ReadDate:
+                            PRINTF("UART TASK: entered listening-readdate\n");
+                            readDate();
+                            break;
+
+                        case ReadSerialNumber:
+                            PRINTF("UART TASK: entered listening-readserialnumber\n");
+                            readSerialNumber();
+                            break;
+
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
                             sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");

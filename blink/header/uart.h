@@ -144,14 +144,19 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};     // [SOH]W2[STX]
 
     char reading_str[] = "P.01";
-    char timeset_str[] = "0.9.1";
-    char dateset_str[] = "0.9.2";
-    char production_str[] = "96.1.3";
+    char time_obis[] = "0.9.1";
+    char date_obis[] = "0.9.2";
+    char production_date_obis[] = "96.1.3";
     char reprogram_str[] = "!!!!";
-    char threshold_str[] = "T.V.1";
-    char get_threshold_str[] = "T.R.1";
-    char threshold_pin[] = "T.P.1";
-    char get_sudden_amplitude_change[] = "9.9.0";
+    char threshold_set_obis[] = "T.V.1";
+    char threshold_record_obis[] = "T.R.1";
+    char threshold_pin_obis[] = "T.P.1";
+    char sudden_amplitude_change_records_obis[] = "9.9.0";
+    char read_serial_number_obis[] = "0.0.0";
+
+    bool is_reading_msg = strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 ? true : false;
+    bool is_reading_alt_msg = strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0 ? true : false;
+    bool is_writing_msg = strncmp((char *)data_buffer, (char *)writing_control, sizeof(writing_control)) == 0 ? true : false;
 
     // if BCC control for this message is false, it means message transfer is not correct so it returns Error
     if (!(bccControl(data_buffer, size)))
@@ -168,7 +173,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     }
 
     // Reading Control ([SOH]R2[STX])([SOH]R5[STX]), or Writing Control ([SOH]W2[STX])
-    if (strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 || strncmp((char *)data_buffer, (char *)writing_control, sizeof(writing_control)) == 0 || strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0)
+    if (is_reading_msg || is_reading_alt_msg || is_writing_msg)
     {
         PRINTF("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
 
@@ -180,21 +185,41 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         }
 
         // Time Set Control (0.9.1)
-        else if (strstr((char *)data_buffer, timeset_str) != NULL)
+        else if (is_writing_msg && strstr((char *)data_buffer, time_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
             return TimeSet;
         }
 
         // Date Set Control (0.9.2)
-        else if (strstr((char *)data_buffer, dateset_str) != NULL)
+        else if (is_writing_msg && strstr((char *)data_buffer, date_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
             return DateSet;
         }
 
+        // Read Time Control (0.9.1)
+        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, time_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: ReadTime state is accepted in checklisteningdata\n");
+            return ReadTime;
+        }
+
+        // Read Date Control (0.9.2)
+        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, date_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: ReadDate state is accepted in checklisteningdata\n");
+            return ReadDate;
+        }
+
+        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, read_serial_number_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: ReadSerialNumber state is accepted in checklisteningdata\n");
+            return ReadSerialNumber;
+        }
+
         // Production Date Control (96.1.3)
-        else if (strstr((char *)data_buffer, production_str) != NULL)
+        else if (strstr((char *)data_buffer, production_date_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
             return ProductionInfo;
@@ -208,28 +233,28 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         }
 
         // Set Threshold control (T.V.1)
-        else if (strstr((char *)data_buffer, threshold_str) != NULL)
+        else if (strstr((char *)data_buffer, threshold_set_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
             return SetThreshold;
         }
 
         // Get Threshold control (T.R.1)
-        else if (strstr((char *)data_buffer, get_threshold_str) != NULL)
+        else if (strstr((char *)data_buffer, threshold_record_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
             return GetThreshold;
         }
 
         // Set Threshold PIN (T.P.1)
-        else if (strstr((char *)data_buffer, threshold_pin) != NULL)
+        else if (strstr((char *)data_buffer, threshold_pin_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
             return ThresholdPin;
         }
 
         // Get Sudden Amplitude Change (9.9.0)
-        else if (strstr((char *)data_buffer, get_sudden_amplitude_change) != NULL)
+        else if (strstr((char *)data_buffer, sudden_amplitude_change_records_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Get sudden amplitude change is accepted in checklisteningdata.\n");
             return GetSuddenAmplitudeChange;
@@ -875,6 +900,9 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                     // [SOH]R2[STX]T.R.1
     uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                     // [SOH]W2[STX]T.P.1
     uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};           // [SOH]R2[STX]9.9.0
+    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};          // [SOH]R2[STX]0.9.1()
+    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};          // [SOH]R2[STX]0.9.2()
+    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03}; // [SOH]R2[STX]0.0.0()
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                            // [SOH]B0[ETX]q
 
     // length of message that should be
@@ -889,6 +917,9 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t get_threshold_len = 13;
     uint8_t set_threshold_pin_len = 13;
     uint8_t get_sudden_amplitude_change_len = 13;
+    uint8_t read_time_len = 13;
+    uint8_t read_date_len = 13;
+    uint8_t read_serial_number_len = 13;
     uint8_t end_connection_str_len = 5;
 
     // controls for the message
@@ -940,6 +971,21 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     else if ((len == get_sudden_amplitude_change_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change, sizeof(get_sudden_amplitude_change)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
+        return true;
+    }
+    else if ((len == read_time_len) && (strncmp((char *)buffer, (char *)read_time, sizeof(read_time)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read time.\n");
+        return true;
+    }
+    else if ((len == read_date_len) && (strncmp((char *)buffer, (char *)read_date, sizeof(read_date)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read date.\n");
+        return true;
+    }
+    else if ((len == read_serial_number_len) && (strncmp((char *)buffer, (char *)read_serial_number, sizeof(read_serial_number)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read serial number.\n");
         return true;
     }
     else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
@@ -1278,5 +1324,74 @@ void getSuddenAmplitudeChangeRecords()
     // send bcc
     uart_putc(UART0_ID, xor_result);
 }
+
+
+void readTime()
+{
+    char buffer[20] = {0};
+    uint8_t xor_result = 0x02;
+
+    int result = snprintf((char *)buffer, sizeof(buffer), "%c0.9.1(%02d:%02d:%02d)%c", 0x02, current_time.hour, current_time.min, current_time.sec, 0x03);
+
+    if (result >= (int)sizeof(buffer))
+    {
+        PRINTF("READTIME: Buffer Overflow! Sending NACK.\n");
+        sendErrorMessage((char *)"TIMEBUFFEROVERFLOW");
+    }
+
+    bccGenerate((uint8_t *)buffer, result, &xor_result);
+
+    PRINTF("READTIME: buffer to send is:\n");
+    printBufferHex((uint8_t *)buffer, result);
+    PRINTF("\n");
+
+    uart_puts(UART0_ID, buffer);
+    uart_putc(UART0_ID, xor_result);
+}
+
+void readDate()
+{
+    char buffer[20] = {0};
+    uint8_t xor_result = 0x02;
+
+    int result = snprintf((char *)buffer, sizeof(buffer), "%c0.9.2(%02d:%02d:%02d)%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
+    if (result >= (int)sizeof(buffer))
+    {
+        PRINTF("READDATE: Buffer Overflow! Sending NACK.\n");
+        sendErrorMessage((char *)"DATEBUFFEROVERFLOW");
+    }
+
+    bccGenerate((uint8_t *)buffer, result, &xor_result);
+
+    PRINTF("READDATE: buffer to send is:\n");
+    printBufferHex((uint8_t *)buffer, result);
+    PRINTF("\n");
+
+    uart_puts(UART0_ID, buffer);
+    uart_putc(UART0_ID, xor_result);
+}
+
+void readSerialNumber()
+{
+    char buffer[22] = {0};
+    uint8_t xor_result = 0x02;
+
+    int result = snprintf((char *)buffer, sizeof(buffer), "%c0.0.0(%s)%c", 0x02, serial_number, 0x03);
+    if (result >= (int)sizeof(buffer))
+    {
+        PRINTF("READSERIALNUMBER: Buffer Overflow! Sending NACK.\n");
+        sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");
+    }
+
+    bccGenerate((uint8_t *)buffer, result, &xor_result);
+
+    PRINTF("READSERIALNUMBER: buffer to send is:\n");
+    printBufferHex((uint8_t *)buffer, result);
+    PRINTF("\n");
+
+    uart_puts(UART0_ID, buffer);
+    uart_putc(UART0_ID, xor_result);
+}
+
 
 #endif

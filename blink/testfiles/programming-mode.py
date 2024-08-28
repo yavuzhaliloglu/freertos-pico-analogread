@@ -23,6 +23,9 @@ parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime
 parser.add_argument("-tg", "--threshold-get", action="store_true", help="Threshold Get Records Request Option.")
 parser.add_argument("-tp", "--threshold-pin", action="store_true", help="Reset Threshold Pin Option. If threshold pin is set, it will be reset.")
 parser.add_argument("-ac", "--amplitude-change", action="store_true", help="Get Sudden Amplitude Change Records")
+parser.add_argument("-rt", "--read-time", action="store_true", help="read current time of device")
+parser.add_argument("-rd", "--read-date", action="store_true", help="read current date of device")
+parser.add_argument("-rs", "--read-serialnumber", action="store_true", help="read serial number of device")
 parser.add_argument("-p", "--production", action="store_true", help="Production Info Request Option. Prints production information.")
 
 args = parser.parse_args()
@@ -362,6 +365,68 @@ def sendAmplitudeChangeRequest():
 
     plt.show()
 
+# ----------------------------------------------------------------------------------------
+
+def readTime():
+    read_time_msg = bytearray(b'\x01\x52\x32\x020.9.1()\x03')
+    sendMessage(read_time_msg)
+
+    time.sleep(0.25)
+
+    result = bytearray(seri.readline())
+    print(result)
+
+    result_bcc_inc = result.pop()
+    result_bcc_calculated = calculateBCC(result, result[0])
+
+    print("incoming bcc:",result_bcc_inc,"calculated bcc:",result_bcc_calculated)
+
+    if(result_bcc_inc == result_bcc_calculated):
+        print("message is correct!")
+    else:
+        print("message is NOT correct!")
+
+# ----------------------------------------------------------------------------------------
+
+def readDate():
+    read_date_msg = bytearray(b'\x01\x52\x32\x020.9.2()\x03')
+    sendMessage(read_date_msg)
+
+    time.sleep(0.25)
+
+    result = bytearray(seri.readline())
+    print(result)
+
+    result_bcc_inc = result.pop()
+    result_bcc_calculated = calculateBCC(result, result[0])
+
+    print("incoming bcc:",result_bcc_inc,"calculated bcc:",result_bcc_calculated)
+
+    if(result_bcc_inc == result_bcc_calculated):
+        print("message is correct!")
+    else:
+        print("message is NOT correct!")
+
+# ----------------------------------------------------------------------------------------
+
+def readSerialNumber():
+    read_serial_number = bytearray(b'\x01\x52\x32\x020.0.0()\x03')
+    sendMessage(read_serial_number)
+
+    time.sleep(0.25)
+
+    result = bytearray(seri.readline())
+    print(result)
+
+    result_bcc_inc = result.pop()
+    result_bcc_calculated = calculateBCC(result, result[0])
+
+    print("incoming bcc:",result_bcc_inc,"calculated bcc:",result_bcc_calculated)
+
+    if(result_bcc_inc == result_bcc_calculated):
+        print("message is correct!")
+    else:
+        print("message is NOT correct!")
 
 # ----------------------------------------------------------------------------------------
 
@@ -487,6 +552,15 @@ if args.threshold_pin:
 
 if(args.amplitude_change):
     sendAmplitudeChangeRequest()
+
+if(args.read_time):
+    readTime()
+
+if(args.read_date):
+    readDate()
+
+if(args.read_serialnumber):
+    readSerialNumber()
 
 if args.production:
     sendProductionMessageRequest()

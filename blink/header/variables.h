@@ -73,7 +73,10 @@ enum ListeningStates
     SetThreshold = 6,
     GetThreshold = 7,
     ThresholdPin = 8,
-    GetSuddenAmplitudeChange = 9
+    GetSuddenAmplitudeChange = 9,
+    ReadTime = 10,
+    ReadDate = 11,
+    ReadSerialNumber = 12
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
