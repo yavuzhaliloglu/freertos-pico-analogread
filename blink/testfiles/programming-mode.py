@@ -312,58 +312,30 @@ def sendAmplitudeChangeRequest():
     inc_bytes = bytearray()
 
     while True:
-        char  = seri.read(1)
-        
-        if(not char):
-            print("records are end")
+        record = bytearray(seri.read(4100))
+
+        if(len(record) == 0):
+            print("Incoming data is empty")
             break
-        
-        inc_bytes.extend(char)
 
-        if(char == b'\n'):
-            del inc_bytes[-2]
+        if(record[0] == 0x02):
+            del record[0]
 
-    # Define the byte sequence to search for
-    split_sequence = b'240827192921'
-    
-    # Find the position of the split sequence
-    split_position = inc_bytes.find(split_sequence)
-    
-    # Split the bytearray into two parts
-    part1 = inc_bytes[:split_position]
-    part2 = inc_bytes[split_position:]
-    
-    # # Output the results
-    # print("Part 1 length:", len(part1))
-    # print("Part 1:", part1)
-    # print("Part 2 length:", len(part2))
-    # print("Part 2:", part2)
+        date = record[0:12]
+        data = record[13:4013]
 
-    part1_data = part1[13:len(part1)- 87]
-    print(len(part1_data))
-    p1_two_byte_integers = struct.unpack(f'>{len(part1_data) // 2}H', part1_data)
+        print(date)
 
-    part2_data = part2[12:len(part2)- 88]
-    print(len(part2_data))
-    p2_two_byte_integers = struct.unpack(f'<{len(part2_data) // 2}H', part2_data)
+        plt.figure(figsize=(14, 7))
+        plt.plot(data, label='data Signal')
+        plt.xlabel('Data Point Index')
+        plt.ylabel('Signal Value')
+        plt.title('Concatenated Signal Over Time')
+        plt.legend()
+        plt.grid(True)
 
-    plt.figure(figsize=(14, 7))
-    plt.plot(p1_two_byte_integers, label='part1_data Signal')
-    plt.xlabel('Data Point Index')
-    plt.ylabel('Signal Value')
-    plt.title('Concatenated Signal Over Time')
-    plt.legend()
-    plt.grid(True)
+        plt.show()
 
-    plt.figure(figsize=(14, 7))
-    plt.plot(p2_two_byte_integers, label='part2_data Signal')
-    plt.xlabel('Data Point Index')
-    plt.ylabel('Signal Value')
-    plt.title('Concatenated Signal Over Time')
-    plt.legend()
-    plt.grid(True)
-
-    plt.show()
 
 # ----------------------------------------------------------------------------------------
 

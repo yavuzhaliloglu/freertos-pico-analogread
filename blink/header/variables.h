@@ -135,7 +135,7 @@ struct AmplitudeChangeData
     char hour[2];
     char min[2];
     char sec[2];
-    uint16_t sample_buffer[ADC_FIFO_SIZE];
+    uint8_t sample_buffer[ADC_FIFO_SIZE];
     float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t variance;
     uint8_t padding[42];

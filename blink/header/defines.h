@@ -109,7 +109,7 @@
 
 // ADC DEFINES
 
-#define ADC_FIFO_SIZE 2000
+#define ADC_FIFO_SIZE 4000
 // samples to collect from ADC Pin
 #define VRMS_SAMPLE_SIZE 2000
 // sample size per vrms calculation

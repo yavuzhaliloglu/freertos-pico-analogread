@@ -305,7 +305,7 @@ void vADCReadTask()
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\r\n");
             if (amplitude_change_detect_flag)
             {
-                writeSuddenAmplitudeChangeRecordToFlash(adc_fifo.data, &ac_data);
+                writeSuddenAmplitudeChangeRecordToFlash(&ac_data);
                 amplitude_change_detect_flag = 0;
             }
             else

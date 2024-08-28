@@ -756,7 +756,7 @@ void __not_in_flash_func(setProgramStartDate)(datetime_t *ct)
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
 }
 
-void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *sample_buffer, struct AmplitudeChangeTimerCallbackParameters *ac_params)
+void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(struct AmplitudeChangeTimerCallbackParameters *ac_params)
 {
     PRINTF("write sudden amplitude change record to flash\r\n");
 
@@ -800,10 +800,15 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(uint16_t *samp
     setDateToCharArray(current_time.sec, ac_flash_data.sec);
 
     // set samples
-
     if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
     {
-        memcpy(ac_flash_data.sample_buffer, sample_buffer, ac_params->adc_fifo_size * sizeof(uint16_t));
+        uint16_t copy_buffer[ADC_FIFO_SIZE] = {0};
+        getLastNElementsToBuffer(&adc_fifo, copy_buffer, ADC_FIFO_SIZE);
+        // memcpy(ac_flash_data.sample_buffer, sample_buffer, ac_params->adc_fifo_size * sizeof(uint16_t));
+        for (uint16_t i = 0; i < ADC_FIFO_SIZE; i++)
+        {
+            ac_flash_data.sample_buffer[i] = (copy_buffer[i] >> 4) & 0xFF;
+        }
         xSemaphoreGive(xFIFOMutex);
     }
 
