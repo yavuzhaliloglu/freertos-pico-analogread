@@ -418,10 +418,11 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 
         if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
         {
-            PRINTF("GETSELECTEDRECORDS: offset loop mutex received\n");
+            // PRINTF("GETSELECTEDRECORDS: offset loop mutex received\n");
             // if current index is empty, continue
             if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
             {
+                xSemaphoreGive(xFlashMutex);
                 continue;
             }
 

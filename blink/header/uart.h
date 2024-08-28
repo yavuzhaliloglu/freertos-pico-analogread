@@ -257,6 +257,9 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
 // This function gets the load profile data and finds the date characters and add them to time arrays
 void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
 {
+    uint8_t date_start[14] = {0};
+    uint8_t date_end[14] = {0};
+
     for (uint8_t i = 0; i < len; i++)
     {
         if (buffer[i] == 0x28)
@@ -270,15 +273,15 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
                     break;
                 }
 
-                reading_state_start_time[k - (i + 1)] = buffer[k];
+                date_start[k - (i + 1)] = buffer[k];
             }
 
             // Delete the characters from start date array
             if (len == 41)
             {
-                deleteChar(reading_state_start_time, strlen((char *)reading_state_start_time), '-');
-                deleteChar(reading_state_start_time, strlen((char *)reading_state_start_time), ',');
-                deleteChar(reading_state_start_time, strlen((char *)reading_state_start_time), ':');
+                deleteChar(date_start, strlen((char *)date_start), '-');
+                deleteChar(date_start, strlen((char *)date_start), ',');
+                deleteChar(date_start, strlen((char *)date_start), ':');
             }
 
             // add end time to array
@@ -289,23 +292,30 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
                     break;
                 }
 
-                reading_state_end_time[l - (k + 1)] = buffer[l];
+                date_end[l - (k + 1)] = buffer[l];
             }
 
             if (len == 41)
             {
                 // Delete the characters from end date array
-                deleteChar(reading_state_end_time, strlen((char *)reading_state_end_time), '-');
-                deleteChar(reading_state_end_time, strlen((char *)reading_state_end_time), ',');
-                deleteChar(reading_state_end_time, strlen((char *)reading_state_end_time), ':');
+                deleteChar(date_end, strlen((char *)date_end), '-');
+                deleteChar(date_end, strlen((char *)date_end), ',');
+                deleteChar(date_end, strlen((char *)date_end), ':');
             }
 
             break;
         }
     }
 
-    PRINTF("PARSELOADPROFILEDATES: parsed start time: %s\n", reading_state_start_time);
-    PRINTF("PARSELOADPROFILEDATES: parsed end time: %s\n", reading_state_end_time);
+    memcpy(reading_state_start_time, date_start, 10);
+    memcpy(reading_state_end_time, date_end, 10);
+
+    PRINTF("DATE START:\n");
+    printBufferHex(reading_state_start_time, 10);
+    PRINTF("\n");
+    PRINTF("DATE END:\n");
+    printBufferHex(reading_state_end_time, 10);
+    PRINTF("\n");
 }
 
 uint8_t is_end_connection_message(uint8_t *msg_buf)
@@ -471,7 +481,7 @@ void greetingStateHandler(uint8_t *buffer)
             serial_num = (uint8_t *)strchr((char *)buffer, 0x3F) + 1;
         }
         // if greeting head includes [ALP] characters, then serial number beginning offset is just after 0x50 character
-        else if (greeting_head_new_check)
+        if (greeting_head_new_check)
         {
             serial_num = (uint8_t *)strchr((char *)buffer, 0x50) + 1;
         }
@@ -853,19 +863,19 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                  // [SOH]P1[STX]
-    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                   // [SOH]W2[STX]!!!![ETX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                           // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                       // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                        // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                        // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};           // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};    // [SOH]R2[STX]P.01(;)
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};           // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};           // [SOH]R2[STX]T.R.1
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};           // [SOH]W2[STX]T.P.1
-    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30}; // [SOH]R2[STX]9.9.0
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                  // [SOH]B0[ETX]q
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                            // [SOH]P1[STX]
+    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                             // [SOH]W2[STX]!!!![ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                     // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                 // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                  // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                  // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                     // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};              // [SOH]R2[STX]P.01(;)
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                     // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                     // [SOH]R2[STX]T.R.1
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                     // [SOH]W2[STX]T.P.1
+    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};           // [SOH]R2[STX]9.9.0
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                            // [SOH]B0[ETX]q
 
     // length of message that should be
     uint8_t time_len = 21;

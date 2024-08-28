@@ -223,7 +223,7 @@ void vUARTTask(void *pvParameters)
                         case GetSuddenAmplitudeChange:
                             PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
                             getSuddenAmplitudeChangeRecords();
-                            break;;
+                            break;
 
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
