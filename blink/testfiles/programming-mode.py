@@ -20,7 +20,7 @@ parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud 
 parser.add_argument("-lp", "--load-profile", nargs='*', help="Load Profile Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
 parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Threshold Set Request Option. If selected, you can specify the threshold value in the format XXX (must be 3 characters)")
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
-parser.add_argument("-tg", "--threshold-get", action="store_true", help="Threshold Get Records Request Option.")
+parser.add_argument("-tg", "--threshold-get", nargs='*', help="Threshold Get Records Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
 parser.add_argument("-tp", "--threshold-pin", action="store_true", help="Reset Threshold Pin Option. If threshold pin is set, it will be reset.")
 parser.add_argument("-ac", "--amplitude-change", action="store_true", help="Get Sudden Amplitude Change Records")
 parser.add_argument("-rt", "--read-time", action="store_true", help="read current time of device")
@@ -169,8 +169,7 @@ def sendMessage(msg):
     seri.write(msg)
 # ---------------------------------------------------------------------------------------------------------------------
 
-def prepareLoadProfileRequestWithDate(args):
-    lp_request_message_head = bytearray(b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28")
+def prepareLoadProfileRequestWithDate(args,header):
     lp_request_message_tail = bytearray(b"\x29\x03")
 
     if(len(args) > 2):
@@ -189,7 +188,7 @@ def prepareLoadProfileRequestWithDate(args):
         end_date = args[1]
 
     date_range = start_date + ";" + end_date
-    lp_request_message = lp_request_message_head + date_range.encode() + lp_request_message_tail
+    lp_request_message = header + date_range.encode() + lp_request_message_tail
 
     print("lp_request_message: ", lp_request_message)
 
@@ -548,7 +547,8 @@ if args.load_profile is not None:
         lp_request_message = bytearray(b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28;\x29\x03")
     else:
         print("Load Profile Request message will send date!")
-        lp_request_message = prepareLoadProfileRequestWithDate(args.load_profile)
+        lp_request_message_head = bytearray(b"\x01\x52\x32\x02\x50\x2E\x30\x31\x28")
+        lp_request_message = prepareLoadProfileRequestWithDate(args.load_profile,lp_request_message_head)
 
     sendLoadProfileRequest(lp_request_message)
 
@@ -559,8 +559,15 @@ if args.datetime_set:
 if args.threshold_set:
     sendThresholdSetRequest()
 
-if args.threshold_get:
-    threshold_get_msg = bytearray(b'\x01\x52\x32\x02T.R.1()\x03')
+if args.threshold_get is not None:
+    if len(args.threshold_get) == 0:
+        print("Threshold Get Request message will send without date!")
+        threshold_get_msg = bytearray(b'\x01\x52\x32\x02T.R.1(;)\x03')
+    else:
+        print("Threshold Get Request message will send date!")
+        threshold_request_message_head = bytearray(b'\x01\x52\x32\x02T.R.1(')
+        threshold_get_msg = prepareLoadProfileRequestWithDate(args.threshold_get,threshold_request_message_head)
+
     sendLoadProfileRequest(threshold_get_msg)
 
 if args.threshold_pin:

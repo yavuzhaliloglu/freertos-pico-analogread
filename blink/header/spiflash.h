@@ -362,14 +362,14 @@ void datetimeCopy(datetime_t *src, datetime_t *dst)
     dst->sec = src->sec;
 }
 
-void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end)
+void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size)
 {
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("GETALLRECORDS: offset loop mutex received\n");
-        for (unsigned int i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
+        for (unsigned int i = 0; i < size; i += 16)
         {
             // this is the end index control. if start index occurs and current index starts with FF or current index is NULL which means this is the last index of records
             if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
@@ -397,9 +397,9 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
     }
 }
 
-void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
+void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size)
 {
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
 
     // convert date and time values to datetime value
     arrayToDatetime(start, reading_state_start_time);
@@ -411,45 +411,45 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
         return;
     }
 
-    for (uint32_t i = 0; i < FLASH_TOTAL_RECORDS; i += 16)
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        // initialize the current datetime
-        datetime_t recurrent_time = {0};
-
-        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+        for (uint32_t i = 0; i < size; i += FLASH_RECORD_SIZE)
         {
+            // initialize the current datetime
+            datetime_t recurrent_time = {0};
+
             // PRINTF("GETSELECTEDRECORDS: offset loop mutex received\n");
             // if current index is empty, continue
             if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
             {
-                xSemaphoreGive(xFlashMutex);
                 continue;
             }
 
             // if current index is not empty, set datetime to current index record
             arrayToDatetime(&recurrent_time, &flash_start_content[i]);
-            xSemaphoreGive(xFlashMutex);
-        }
 
-        // if current record datetime  is bigger than start datetime and start index is not set, this is the start index
-        if (datetimeComp(&recurrent_time, start) >= 0)
-        {
-            if (*st_idx == -1 || (datetimeComp(&recurrent_time, dt_start) < 0))
+            // if current record datetime  is bigger than start datetime and start index is not set, this is the start index
+            if (datetimeComp(&recurrent_time, start) >= 0)
             {
-                *st_idx = i;
-                datetimeCopy(&recurrent_time, dt_start);
+                if (*st_idx == -1 || (datetimeComp(&recurrent_time, dt_start) < 0))
+                {
+                    *st_idx = i;
+                    datetimeCopy(&recurrent_time, dt_start);
+                }
+            }
+
+            // if current record datetime is smaller than end datetime and end index is not set, this is the end index
+            if (datetimeComp(&recurrent_time, end) <= 0)
+            {
+                if (*end_idx == -1 || datetimeComp(&recurrent_time, dt_end) > 0)
+                {
+                    *end_idx = i;
+                    datetimeCopy(&recurrent_time, dt_end);
+                }
             }
         }
 
-        // if current record datetime is smaller than end datetime and end index is not set, this is the end index
-        if (datetimeComp(&recurrent_time, end) <= 0)
-        {
-            if (*end_idx == -1 || datetimeComp(&recurrent_time, dt_end) > 0)
-            {
-                *end_idx = i;
-                datetimeCopy(&recurrent_time, dt_end);
-            }
-        }
+        xSemaphoreGive(xFlashMutex);
     }
 }
 
@@ -483,14 +483,14 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     if (date_end - date_start == 2)
     {
         PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end);
+        getAllRecords(&start_index, &end_index, &start, &end, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS);
     }
     // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
 
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
@@ -580,7 +580,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
             }
             // jump to next record
             else
-                start_addr += 16;
+                start_addr += FLASH_RECORD_SIZE;
         }
     }
     // if start record or end record does not exist, send NACK message
