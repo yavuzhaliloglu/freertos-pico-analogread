@@ -153,6 +153,9 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char threshold_pin_obis[] = "T.P.1";
     char sudden_amplitude_change_records_obis[] = "9.9.0";
     char read_serial_number_obis[] = "0.0.0";
+    char read_last_vrms_max_obis[] = "32.7.0";
+    char read_last_vrms_min_obis[] = "52.7.0";
+    char read_last_vrms_mean_obis[] = "72.7.0";
 
     bool is_reading_msg = strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 ? true : false;
     bool is_reading_alt_msg = strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0 ? true : false;
@@ -258,6 +261,27 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         {
             PRINTF("CHECKLISTENINGDATA: Get sudden amplitude change is accepted in checklisteningdata.\n");
             return GetSuddenAmplitudeChange;
+        }
+
+        // Read Last VRMS max control (32.7.0)
+        else if (strstr((char *)data_buffer, read_last_vrms_max_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Read last VRMS max is accepted in checklisteningdata.\n");
+            return ReadLastVRMSMax;
+        }
+
+        // Read Last VRMS min control (52.7.0)
+        else if (strstr((char *)data_buffer, read_last_vrms_min_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Read last VRMS min is accepted in checklisteningdata.\n");
+            return ReadLastVRMSMin;
+        }
+
+        // Read Last VRMS mean control (72.7.0)
+        else if (strstr((char *)data_buffer, read_last_vrms_mean_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Read last VRMS mean is accepted in checklisteningdata.\n");
+            return ReadLastVRMSMean;
         }
     }
 
@@ -894,22 +918,25 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                            // [SOH]P1[STX]
-    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                             // [SOH]W2[STX]!!!![ETX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                     // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                 // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                  // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                  // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                     // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};              // [SOH]R2[STX]P.01(;)
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                     // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                     // [SOH]R2[STX]T.R.1
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                     // [SOH]W2[STX]T.P.1
-    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};           // [SOH]R2[STX]9.9.0
-    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};          // [SOH]R2[STX]0.9.1()
-    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};          // [SOH]R2[STX]0.9.2()
-    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03}; // [SOH]R2[STX]0.0.0()
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                            // [SOH]B0[ETX]q
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                              // [SOH]P1[STX]
+    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                               // [SOH]W2[STX]!!!![ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                       // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                   // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                    // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                    // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                       // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[11] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29};                // [SOH]R2[STX]P.01(;)
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                       // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                       // [SOH]R2[STX]T.R.1
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                       // [SOH]W2[STX]T.P.1
+    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};             // [SOH]R2[STX]9.9.0
+    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.1()
+    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.2()
+    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};   // [SOH]R2[STX]0.0.0()
+    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]32.7.0()
+    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]52.7.0()
+    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03}; // [SOH]R2[STX]72.7.0()
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                              // [SOH]B0[ETX]q
 
     // length of message that should be
     uint8_t time_len = 21;
@@ -926,6 +953,9 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t read_time_len = 13;
     uint8_t read_date_len = 13;
     uint8_t read_serial_number_len = 13;
+    uint8_t last_vrms_max_len = 14;
+    uint8_t last_vrms_min_len = 14;
+    uint8_t last_vrms_mean_len = 14;
     uint8_t end_connection_str_len = 5;
 
     // controls for the message
@@ -992,6 +1022,21 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     else if ((len == read_serial_number_len) && (strncmp((char *)buffer, (char *)read_serial_number, sizeof(read_serial_number)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is read serial number.\n");
+        return true;
+    }
+    else if ((len == last_vrms_max_len) && (strncmp((char *)buffer, (char *)last_vrms_max, sizeof(last_vrms_max)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms max.\n");
+        return true;
+    }
+    else if ((len == last_vrms_min_len) && (strncmp((char *)buffer, (char *)last_vrms_min, sizeof(last_vrms_min)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms min.\n");
+        return true;
+    }
+    else if ((len == last_vrms_mean_len) && (strncmp((char *)buffer, (char *)last_vrms_mean, sizeof(last_vrms_mean)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms mean.\n");
         return true;
     }
     else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
@@ -1342,6 +1387,7 @@ void readTime()
     {
         PRINTF("READTIME: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"TIMEBUFFEROVERFLOW");
+        return;
     }
 
     bccGenerate((uint8_t *)buffer, result, &xor_result);
@@ -1364,6 +1410,7 @@ void readDate()
     {
         PRINTF("READDATE: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"DATEBUFFEROVERFLOW");
+        return;
     }
 
     bccGenerate((uint8_t *)buffer, result, &xor_result);
@@ -1386,11 +1433,54 @@ void readSerialNumber()
     {
         PRINTF("READSERIALNUMBER: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");
+        return;
     }
 
     bccGenerate((uint8_t *)buffer, result, &xor_result);
 
     PRINTF("READSERIALNUMBER: buffer to send is:\n");
+    printBufferHex((uint8_t *)buffer, result);
+    PRINTF("\n");
+
+    uart_puts(UART0_ID, buffer);
+    uart_putc(UART0_ID, xor_result);
+}
+
+void sendLastVRMSXValue(enum ListeningStates vrmsState)
+{
+    char buffer[20] = {0};
+    int result = -1;
+    uint8_t xor_result = 0x02;
+
+    switch (vrmsState)
+    {
+    case ReadLastVRMSMax:
+        result = snprintf((char *)buffer, sizeof(buffer), "%c32.7.0(%.2f)%c", 0x02, vrms_max_last, 0x03);
+        break;
+
+    case ReadLastVRMSMin:
+        result = snprintf((char *)buffer, sizeof(buffer), "%c52.7.0(%.2f)%c", 0x02, vrms_min_last, 0x03);
+        break;
+
+    case ReadLastVRMSMean:
+        result = snprintf((char *)buffer, sizeof(buffer), "%c72.7.0(%.2f)%c", 0x02, vrms_mean_last, 0x03);
+        break;
+
+    default:
+        PRINTF("SENDLASTVRMSXVALUE: Unknown state!\n");
+        break;
+    }
+
+    if (result == -1 || result >= (int)sizeof(buffer))
+    {
+        PRINTF("SENDLASTVRMSXVALUE: Buffer Overflow or Unknown state! Sending NACK.\n");
+        sendErrorMessage((char *)"VRMSBUFFEROVERFLOW");
+        return;
+    }
+
+    bccGenerate((uint8_t *)buffer, result, &xor_result);
+
+    PRINTF("SENDLASTVRMSXVALUE: buffer to send is:\n");
     printBufferHex((uint8_t *)buffer, result);
     PRINTF("\n");
 

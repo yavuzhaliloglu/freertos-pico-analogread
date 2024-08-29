@@ -60,6 +60,16 @@ enum States
 // WriteProgram: In this state, device accepts all the characters as program variables and writes them in selected flash area, after writing device reboots itself
 // ProductionInfo: In this state, device sends production info about this device
 // Password: In this state, device controls password of this device. If password is correct, modem can change time and date in this device.
+// SetThreshold: In this state, threshold value is set via modem
+// GetThreshold: In this state, device sends threshold records to modem
+// ThresholdPin: In this state, PIN18 is reset via modem
+// GetSuddenAmplitudeChange: In this state, device sends sudden amplitude change records to modem
+// ReadTime: In this state, device sends current time to modem
+// ReadDate: In this state, device sends current date to modem
+// ReadSerialNumber: In this state, device sends serial number to modem
+// ReadLastVRMSMax: In this state, device sends last max vrms value to modem
+// ReadLastVRMSMin: In this state, device sends last min vrms value to modem
+// ReadLastVRMSMean: In this state, device sends last mean vrms value to modem
 enum ListeningStates
 {
     BCCError = -2,
@@ -76,7 +86,10 @@ enum ListeningStates
     GetSuddenAmplitudeChange = 9,
     ReadTime = 10,
     ReadDate = 11,
-    ReadSerialNumber = 12
+    ReadSerialNumber = 12,
+    ReadLastVRMSMax = 13,
+    ReadLastVRMSMin = 14,
+    ReadLastVRMSMean = 15,
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;

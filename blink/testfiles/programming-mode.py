@@ -26,6 +26,9 @@ parser.add_argument("-ac", "--amplitude-change", action="store_true", help="Get 
 parser.add_argument("-rt", "--read-time", action="store_true", help="read current time of device")
 parser.add_argument("-rd", "--read-date", action="store_true", help="read current date of device")
 parser.add_argument("-rs", "--read-serialnumber", action="store_true", help="read serial number of device")
+parser.add_argument("-rvmax", "--read-vrms-max", action="store_true", help="read last max vrms value of device")
+parser.add_argument("-rvmin", "--read-vrms-min", action="store_true", help="read last min vrms value of device")
+parser.add_argument("-rvmean", "--read-vrms-mean", action="store_true", help="read last mean vrms value of device")
 parser.add_argument("-p", "--production", action="store_true", help="Production Info Request Option. Prints production information.")
 
 args = parser.parse_args()
@@ -309,24 +312,45 @@ def sendAmplitudeChangeRequest():
     sendMessage(amplitude_change_msg)
 
     print("amplitude change request sent!")
-    inc_bytes = bytearray()
+
+    time.sleep(0.25)
+
+    record = bytearray(seri.read(4099))
+    if(len(record) == 0):
+        return
+
+    if(record[0] == 0x02):
+        del record[0]
+
+    range = record[10:15]
+    print(range)
+
+    date = record[0:12]
+    data = record[12:4012]
+
+    plt.figure(figsize=(20, 10))
+    plt.plot(data, label='data Signal')
+    plt.xlabel('Data Point Index')
+    plt.ylabel('Signal Value')
+    plt.title('Concatenated Signal Over Time')
+    plt.legend()
+    plt.grid(True)
+
+    plt.show()
 
     while True:
-        record = bytearray(seri.read(4100))
+        record = bytearray(seri.read(4097))
 
         if(len(record) == 0):
             print("Incoming data is empty")
             break
 
-        if(record[0] == 0x02):
-            del record[0]
-
         date = record[0:12]
-        data = record[13:4013]
+        data = record[12:4012]
 
         print(date)
 
-        plt.figure(figsize=(14, 7))
+        plt.figure(figsize=(20, 10))
         plt.plot(data, label='data Signal')
         plt.xlabel('Data Point Index')
         plt.ylabel('Signal Value')
@@ -336,6 +360,25 @@ def sendAmplitudeChangeRequest():
 
         plt.show()
 
+# ----------------------------------------------------------------------------------------
+
+def sendVRMSReadRequest(msg):
+    sendMessage(msg)
+
+    time.sleep(0.25)
+
+    result = bytearray(seri.readline())
+    print(result)
+
+    inc_bcc = result.pop()
+    calculated_bcc = calculateBCC(result, result[0])
+
+    print("incoming bcc: ",inc_bcc,"calculated bcc: ", calculated_bcc)
+
+    if(inc_bcc == calculated_bcc):
+        print("message is correct!")
+    else:
+        print("message is NOT correct!")
 
 # ----------------------------------------------------------------------------------------
 
@@ -431,7 +474,7 @@ if(args.baud_rate):
     max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 try:
-    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=4)
+    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=3)
 except FileNotFoundError:
     print("File not found, please check connection and try again!")
     exit(1)
@@ -476,7 +519,7 @@ seri = serial.Serial(
     bytesize=7,
     parity="E",
     stopbits=1,
-    timeout=4,
+    timeout=3,
 )
 
 # read information response message
@@ -536,6 +579,18 @@ if(args.read_serialnumber):
 
 if args.production:
     sendProductionMessageRequest()
+
+if args.read_vrms_max:
+    max_read_msg = bytearray(b'\x01\x52\x32\x02\x33\x32\x2E\x37\x2E\x30\x28\x29\x03')
+    sendVRMSReadRequest(max_read_msg)
+
+if args.read_vrms_min:
+    min_read_msg = bytearray(b'\x01\x52\x32\x02\x35\x32\x2E\x37\x2E\x30\x28\x29\x03')
+    sendVRMSReadRequest(min_read_msg)
+
+if args.read_vrms_mean:
+    mean_read_msg = bytearray(b'\x01\x52\x32\x02\x37\x32\x2E\x37\x2E\x30\x28\x29\x03')
+    sendVRMSReadRequest(mean_read_msg)
 
 sendEndConnectionMessage()
 

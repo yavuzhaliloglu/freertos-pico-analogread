@@ -240,6 +240,19 @@ void vUARTTask(void *pvParameters)
                             readSerialNumber();
                             break;
 
+                        case ReadLastVRMSMax:
+                            PRINTF("UART TASK: entered listening-readlastvrmsmax\n");
+                            sendLastVRMSXValue(ReadLastVRMSMax);
+                            break;
+
+                        case ReadLastVRMSMin:
+                            sendLastVRMSXValue(ReadLastVRMSMin);
+                            break;
+
+                        case ReadLastVRMSMean:
+                            sendLastVRMSXValue(ReadLastVRMSMean);
+                            break;
+
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
                             sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
@@ -526,7 +539,7 @@ int main()
         return 0;
     }
 
-    watchdog_enable(2000, 0);
+    watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
 
     // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
     // uint8_t *flash_ac_buf2 = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET + FLASH_SECTOR_SIZE);
