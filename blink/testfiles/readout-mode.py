@@ -194,6 +194,6 @@ if(readout_buffer_bcc != readout_buffer_bcc_calculated):
 else:
     print("BCC check passed!")
 
-end_connection_bytes = bytearray(b'\x01\x42\x30\x03\x71')
-seri.write(end_connection_bytes)
+# end_connection_bytes = bytearray(b'\x01\x42\x30\x03\x71')
+# seri.write(end_connection_bytes)
 

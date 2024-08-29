@@ -765,6 +765,10 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
             PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
             uart_putc(UART0_ID, readout_xor);
+
+            // delay and init state
+            vTaskDelay(pdMS_TO_TICKS(20));
+            resetState();
         }
 
         // Debug Mode ([ACK]0Z4[CR][LF])
@@ -772,6 +776,10 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
         {
             PRINTF("SETTINGSTATEHANDLER: debug mode accepted.\n");
             sendDeviceInfo();
+
+            // delay and init state
+            vTaskDelay(pdMS_TO_TICKS(20));
+            resetState();
         }
     }
 }
@@ -1362,7 +1370,7 @@ void resetThresholdPIN()
         vTaskDelay(pdMS_TO_TICKS(10));
         setThresholdSetBeforeFlag(0);
 
-        PRINTF("RESETTHRESHOLDPIN: Threshold PIN reset\n");
+        PRINTF("RESETTHRESHOLDPIN: ACK send from set threshold pin.\n");
         uart_putc(UART0_ID, ACK);
     }
     else
@@ -1370,8 +1378,6 @@ void resetThresholdPIN()
         PRINTF("RESETTHRESHOLDPIN: Threshold PIN not set before, sending NACK.\n");
         sendErrorMessage((char *)"NOPINSET");
     }
-
-    PRINTF("RESETTHRESHOLDPIN: ACK send from set threshold pin.\n");
 }
 
 void setThresholdPIN()
