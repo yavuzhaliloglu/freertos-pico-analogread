@@ -47,9 +47,12 @@ uint8_t initUART()
 void sendResetDates()
 {
     uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
-    char date_buffer[20] = {0};
+    char date_buffer[23] = {0};
     uint16_t date_offset;
     int result;
+    uint8_t xor_result = 0x00;
+
+    uart_putc(UART0_ID, STX);
 
     for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16)
     {
@@ -69,7 +72,7 @@ void sendResetDates()
         char sec[3] = {reset_dates_flash[date_offset + 10], reset_dates_flash[date_offset + 11], 0x00};
         xSemaphoreGive(xFlashMutex);
 
-        result = snprintf(date_buffer, sizeof(date_buffer), "%s-%s-%s,%s:%s:%s\r\n", year, month, day, hour, min, sec);
+        result = snprintf(date_buffer, sizeof(date_buffer), "(%s-%s-%s,%s:%s:%s)\r\n", year, month, day, hour, min, sec);
 
         if (result >= (int)sizeof(date_buffer))
         {
@@ -77,8 +80,17 @@ void sendResetDates()
             continue;
         }
 
+        bccGenerate((uint8_t *)date_buffer, result, &xor_result);
         uart_puts(UART0_ID, date_buffer);
     }
+
+    uart_putc(UART0_ID,'\r');
+    xor_result ^= '\r';
+
+    uart_putc(UART0_ID, ETX);
+    xor_result ^= ETX;
+
+    uart_putc(UART0_ID, xor_result);
 }
 
 void sendDeviceInfo()
@@ -156,6 +168,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char read_last_vrms_max_obis[] = "32.7.0";
     char read_last_vrms_min_obis[] = "52.7.0";
     char read_last_vrms_mean_obis[] = "72.7.0";
+    char read_reset_dates_obis[] = "R.D.0";
 
     bool is_reading_msg = strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 ? true : false;
     bool is_reading_alt_msg = strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0 ? true : false;
@@ -282,6 +295,13 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         {
             PRINTF("CHECKLISTENINGDATA: Read last VRMS mean is accepted in checklisteningdata.\n");
             return ReadLastVRMSMean;
+        }
+
+        // Read Reset Dates Control (R.D.0)
+        else if (strstr((char *)data_buffer, read_reset_dates_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Read reset dates is accepted in checklisteningdata.\n");
+            return ReadResetDates;
         }
     }
 
@@ -930,12 +950,13 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t get_threshold_val[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                       // [SOH]R2[STX]T.R.1
     uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                       // [SOH]W2[STX]T.P.1
     uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};             // [SOH]R2[STX]9.9.0
-    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.1()
-    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.2()
-    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};   // [SOH]R2[STX]0.0.0()
-    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]32.7.0()
-    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]52.7.0()
-    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03}; // [SOH]R2[STX]72.7.0()
+    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.1()[ETX]
+    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};            // [SOH]R2[STX]0.9.2()[ETX]
+    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};   // [SOH]R2[STX]0.0.0()[ETX]
+    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]32.7.0()[ETX]
+    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};  // [SOH]R2[STX]52.7.0()[ETX]
+    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03}; // [SOH]R2[STX]72.7.0()[ETX]
+    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};          // [SOH]R2[STX]R.D.0()[ETX]
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                              // [SOH]B0[ETX]q
 
     // length of message that should be
@@ -956,6 +977,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t last_vrms_max_len = 14;
     uint8_t last_vrms_min_len = 14;
     uint8_t last_vrms_mean_len = 14;
+    uint8_t reset_dates_len = 13;
     uint8_t end_connection_str_len = 5;
 
     // controls for the message
@@ -1037,6 +1059,11 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     else if ((len == last_vrms_mean_len) && (strncmp((char *)buffer, (char *)last_vrms_mean, sizeof(last_vrms_mean)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is last vrms mean.\n");
+        return true;
+    }
+    else if ((len == reset_dates_len) && (strncmp((char *)buffer, (char *)reset_dates, sizeof(reset_dates)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is reset dates.\n");
         return true;
     }
     else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))

@@ -253,6 +253,10 @@ void vUARTTask(void *pvParameters)
                             sendLastVRMSXValue(ReadLastVRMSMean);
                             break;
 
+                        case ReadResetDates:
+                            sendResetDates();
+                            break;
+
                         default:
                             PRINTF("UART TASK: entered listening-default\n");
                             sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");

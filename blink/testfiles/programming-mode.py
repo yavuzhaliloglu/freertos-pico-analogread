@@ -29,6 +29,7 @@ parser.add_argument("-rs", "--read-serialnumber", action="store_true", help="rea
 parser.add_argument("-rvmax", "--read-vrms-max", action="store_true", help="read last max vrms value of device")
 parser.add_argument("-rvmin", "--read-vrms-min", action="store_true", help="read last min vrms value of device")
 parser.add_argument("-rvmean", "--read-vrms-mean", action="store_true", help="read last mean vrms value of device")
+parser.add_argument("-rrd", "--read-reset-date", action="store_true", help="read reset dates of this device")
 parser.add_argument("-p", "--production", action="store_true", help="Production Info Request Option. Prints production information.")
 
 args = parser.parse_args()
@@ -591,6 +592,10 @@ if args.read_vrms_min:
 if args.read_vrms_mean:
     mean_read_msg = bytearray(b'\x01\x52\x32\x02\x37\x32\x2E\x37\x2E\x30\x28\x29\x03')
     sendVRMSReadRequest(mean_read_msg)
+
+if args.read_reset_date:
+    reset_date_request_msg = bytearray(b'\x01\x52\x32\x02\x52\x2E\x44\x2E\x30\x28\x29\x03')
+    sendLoadProfileRequest(reset_date_request_msg)
 
 sendEndConnectionMessage()
 
