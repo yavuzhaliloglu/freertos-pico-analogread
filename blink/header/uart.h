@@ -84,7 +84,7 @@ void sendResetDates()
         uart_puts(UART0_ID, date_buffer);
     }
 
-    uart_putc(UART0_ID,'\r');
+    uart_putc(UART0_ID, '\r');
     xor_result ^= '\r';
 
     uart_putc(UART0_ID, ETX);
@@ -801,6 +801,7 @@ void setTimeFromUART(uint8_t *buffer)
 {
     if (!password_correct_flag)
     {
+        sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
 
@@ -834,9 +835,19 @@ void setTimeFromUART(uint8_t *buffer)
     if (verifyHourMinSec(hour, min, sec))
     {
         // Get the current time and set chip's Time value according to variables and current date values
-        setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year);
+        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year))
+        {
+            sendErrorMessage((char *)"PT7CTIMENOTSET");
+            return;
+        }
+
+        if (!getTimePt7c4338(&current_time))
+        {
+            sendErrorMessage((char *)"PT7CTIMENOTGET");
+            return;
+        }
+
         // Get new current time from RTC Chip and set to RP2040's RTC module
-        getTimePt7c4338(&current_time);
 
         // ??
         if (current_time.dotw < 0 || current_time.dotw > 6)
@@ -871,6 +882,7 @@ void setDateFromUART(uint8_t *buffer)
 {
     if (!password_correct_flag)
     {
+        sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
 
@@ -904,9 +916,17 @@ void setDateFromUART(uint8_t *buffer)
     if (verifyYearMonthDay(year, month, day))
     {
         // Get the current time and set chip's date value according to variables and current time values
-        setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year);
+        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year))
+        {
+            sendErrorMessage((char *)"PT7CDATENOTSET");
+            return;
+        }
         // Get new current time from RTC Chip and set to RP2040's RTC module
-        getTimePt7c4338(&current_time);
+        if (!getTimePt7c4338(&current_time))
+        {
+            sendErrorMessage((char *)"PT7CDATENOTGET");
+            return;
+        }
 
         if (current_time.dotw < 0 || current_time.dotw > 6)
         {
@@ -1087,7 +1107,7 @@ void sendProductionInfo()
     if (result >= (int)sizeof(production_obis_buffer))
     {
         PRINTF("SENDPRODUCTIONINFO: production buffer is too small.\n");
-        uart_putc(UART0_ID, NACK);
+        sendErrorMessage((char *)"SMALLBUFFERSIZE");
         return;
     }
 
@@ -1164,6 +1184,11 @@ void RebootHandler()
 
 void __not_in_flash_func(setThresholdValue)(uint8_t *data)
 {
+    if (!password_correct_flag)
+    {
+        sendErrorMessage((char *)"NOPWENTERED");
+        return;
+    }
     PRINTF("threshold value before change is: %d\n", getVRMSThresholdValue());
 
     // get value start and end pointers
@@ -1325,6 +1350,7 @@ void resetThresholdPIN()
 {
     if (!password_correct_flag)
     {
+        sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
 
@@ -1337,9 +1363,14 @@ void resetThresholdPIN()
         setThresholdSetBeforeFlag(0);
 
         PRINTF("RESETTHRESHOLDPIN: Threshold PIN reset\n");
+        uart_putc(UART0_ID, ACK);
+    }
+    else
+    {
+        PRINTF("RESETTHRESHOLDPIN: Threshold PIN not set before, sending NACK.\n");
+        sendErrorMessage((char *)"NOPINSET");
     }
 
-    uart_putc(UART0_ID, ACK);
     PRINTF("RESETTHRESHOLDPIN: ACK send from set threshold pin.\n");
 }
 

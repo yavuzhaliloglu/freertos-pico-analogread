@@ -33,6 +33,13 @@
 // Get Threshold Value:                             [SOH]R2[STX]T.R.1()[ETX][BCC]                               -> Length: 13
 // Set Threshold PIN:                               [SOH]W2[STX]T.P.1()[ETX][BCC]                               -> Length: 13
 // Get Sudden Amplitude Change Records              [SOH]R2[STX]9.9.0()[ETX][BCC]                               -> Length: 13
+// Read Current Time                                [SOH]R2[STX]0.9.1()[ETX][BCC]                               -> Length: 13
+// Read Current Date                                [SOH]R2[STX]0.9.2()[ETX][BCC]                               -> Length: 13
+// Read Serial Number                               [SOH]R2[STX]0.0.0()[ETX][BCC]                               -> Length: 13
+// Read Last VRMS Max                               [SOH]R2[STX]32.7.0()[ETX][BCC]                              -> Length: 14
+// Read Last VRMS Min                               [SOH]R2[STX]52.7.0()[ETX][BCC]                              -> Length: 14
+// Read Last VRMS Mean                              [SOH]R2[STX]72.7.0()[ETX][BCC]                              -> Length: 14
+// Read Reset Dates                                 [SOH]R2[STX]R.D.0()[ETX][BCC]                               -> Length: 13
 // End Connection:                                  [SOH]B0[ETX]q                                               -> Length: 5
 
 // FLASH DEFINES
