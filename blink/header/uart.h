@@ -387,6 +387,69 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
     PRINTF("\n");
 }
 
+void parseThresholdRequestDates(uint8_t *buffer, uint8_t len, uint8_t *start_date_inc, uint8_t *end_date_inc)
+{
+    uint8_t date_start[14] = {0};
+    uint8_t date_end[14] = {0};
+
+    for (uint8_t i = 0; i < len; i++)
+    {
+        if (buffer[i] == 0x28)
+        {
+            uint8_t k;
+
+            for (k = i + 1; buffer[k] != 0x3B; k++)
+            {
+                if (k == len)
+                {
+                    break;
+                }
+
+                date_start[k - (i + 1)] = buffer[k];
+            }
+
+            // Delete the characters from start date array
+            if (len == 42)
+            {
+                deleteChar(date_start, strlen((char *)date_start), '-');
+                deleteChar(date_start, strlen((char *)date_start), ',');
+                deleteChar(date_start, strlen((char *)date_start), ':');
+            }
+
+            // add end time to array
+            for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
+            {
+                if (l == len)
+                {
+                    break;
+                }
+
+                date_end[l - (k + 1)] = buffer[l];
+            }
+
+            if (len == 42)
+            {
+                // Delete the characters from end date array
+                deleteChar(date_end, strlen((char *)date_end), '-');
+                deleteChar(date_end, strlen((char *)date_end), ',');
+                deleteChar(date_end, strlen((char *)date_end), ':');
+            }
+
+            break;
+        }
+    }
+
+    memcpy(start_date_inc, date_start, 10);
+    memcpy(end_date_inc, date_end, 10);
+
+    PRINTF("DATE START:\n");
+    printBufferHex(start_date_inc, 10);
+    PRINTF("\n");
+    PRINTF("DATE END:\n");
+    printBufferHex(end_date_inc, 10);
+    PRINTF("\n");
+}
+
 uint8_t is_end_connection_message(uint8_t *msg_buf)
 {
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q

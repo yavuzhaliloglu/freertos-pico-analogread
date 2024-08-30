@@ -212,8 +212,8 @@ void vUARTTask(void *pvParameters)
 
                         case GetThreshold:
                             PRINTF("UART TASK: entered listening-getthreshold\n");
-                            parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
-                            getThresholdRecord(reading_state_start_time,reading_state_end_time);
+                            parseThresholdRequestDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
+                            getThresholdRecord(reading_state_start_time, reading_state_end_time);
                             break;
 
                         case ThresholdPin:
