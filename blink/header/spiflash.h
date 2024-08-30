@@ -375,7 +375,7 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
             if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
             {
                 arrayToDatetime(end, &flash_start_content[i - record_size]);
-                *end_idx = i - 16;
+                *end_idx = i - record_size;
                 break;
             }
 

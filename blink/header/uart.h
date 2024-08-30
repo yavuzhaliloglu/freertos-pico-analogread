@@ -346,7 +346,7 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
             }
 
             // Delete the characters from start date array
-            if (len == 41 || len == 42)
+            if (len == 41)
             {
                 deleteChar(date_start, strlen((char *)date_start), '-');
                 deleteChar(date_start, strlen((char *)date_start), ',');
@@ -364,7 +364,7 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
                 date_end[l - (k + 1)] = buffer[l];
             }
 
-            if (len == 41 || len == 42)
+            if (len == 41)
             {
                 // Delete the characters from end date array
                 deleteChar(date_end, strlen((char *)date_end), '-');
@@ -456,18 +456,18 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     char *date_end_ptr = strchr((char *)buffer, ')');
     char *date_division_ptr = strchr((char *)buffer, ';');
 
-    uint8_t sd_temp[14] = {0};
-    uint8_t ed_temp[14] = {0};
+    uint8_t sd_temp[16] = {0};
+    uint8_t ed_temp[16] = {0};
 
     memcpy(sd_temp, date_start_ptr + 1, date_division_ptr - date_start_ptr - 1);
     memcpy(ed_temp, date_division_ptr + 1, date_end_ptr - date_division_ptr - 1);
 
     PRINTF("SD_TEMP:\n");
-    printBufferHex(sd_temp, 14);
+    printBufferHex(sd_temp, 16);
     PRINTF("\n");
 
     PRINTF("ED_TEMP:\n");
-    printBufferHex(ed_temp, 14);
+    printBufferHex(ed_temp, 16);
     PRINTF("\n");
 
     deleteChar(sd_temp, strlen((char *)sd_temp), '-');

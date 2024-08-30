@@ -306,6 +306,57 @@ def sendThresholdPINResetRequest():
 
 # ----------------------------------------------------------------------------------------
 
+def split_and_trim_bytearray(data, chunk_size=4099, trim_size=3):
+    # Split the bytearray into chunks
+    chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+    
+    # Trim the last 3 elements from each chunk if the chunk is larger than the trim size
+    trimmed_chunks = [chunk[:-trim_size] if len(chunk) > trim_size else chunk for chunk in chunks]
+    
+    return trimmed_chunks
+
+def displayChunks(chunks):
+
+    # Displaying the chunks
+    for i, chunk in enumerate(chunks):
+        print(len(chunk))
+
+        date_values = chunk[:12]
+        data_values = chunk[12:4012]
+        vrms_values = chunk[4012:4052]
+        variance_value = chunk[4052:4054]
+        padding = chunk[4054:]
+
+        # Convert date values (ASCII) to a human-readable string format
+        date_str = date_values.decode('ascii')
+        formatted_date = f"20{date_str[:2]}-{date_str[2:4]}-{date_str[4:6]} {date_str[6:8]}:{date_str[8:10]}:{date_str[10:12]}"
+
+        # Convert VRMS values (assuming float format in C, so 4 bytes per float)
+        vrms_values = struct.unpack('10f', vrms_values)  # Convert 40 bytes to 10 float values
+
+        # Convert variance value (assuming it's a 2-byte unsigned integer)
+        variance_value = struct.unpack('H', variance_value)[0]  # Convert to unsigned short
+
+        # Convert data values (assuming they represent some measurable quantity)
+        data_values = list(data_values)  # Assuming each byte is a data point
+
+        # Plotting the data
+        plt.figure(figsize=(15, 6))
+        plt.plot(data_values, label='Data Values')
+
+        plt.axvline(x=2000, color='red', linestyle='--', label='Second Dividor')
+
+        # Add labels and title
+        plt.xlabel('Sample Number')
+        plt.ylabel('Data Value')
+        plt.title(f"Date: {formatted_date},\nVRMS Values: {vrms_values},\nVariance Value: {variance_value}")
+        plt.legend()
+        
+        # Show the plot
+        plt.show()
+
+# ----------------------------------------------------------------------------------------
+
 def sendAmplitudeChangeRequest(msg):
     msg_bcc = calculateBCC(msg, msg[0])
     msg.append(msg_bcc)
@@ -314,50 +365,27 @@ def sendAmplitudeChangeRequest(msg):
 
     time.sleep(0.25)
 
-    record = bytearray(seri.read(4099))
-    if(len(record) == 0):
-        return
-
-    if(record[0] == 0x02):
-        del record[0]
-
-    range = record[10:15]
-    print(range)
-
-    date = record[0:12]
-    data = record[12:4012]
-
-    plt.figure(figsize=(20, 10))
-    plt.plot(data, label='data Signal')
-    plt.xlabel('Data Point Index')
-    plt.ylabel('Signal Value')
-    plt.title('Concatenated Signal Over Time')
-    plt.legend()
-    plt.grid(True)
-
-    plt.show()
+    alldata = bytearray()
 
     while True:
-        record = bytearray(seri.read(4097))
+        char = seri.read()
 
-        if(len(record) == 0):
+        if(char == b''):
             print("Incoming data is empty")
             break
 
-        date = record[0:12]
-        data = record[12:4012]
+        alldata.extend(char)
 
-        print(date)
+    bcc = alldata.pop()
+    etx = alldata.pop()
+    crlast = alldata.pop()
+    alldata = alldata[1:]
 
-        plt.figure(figsize=(20, 10))
-        plt.plot(data, label='data Signal')
-        plt.xlabel('Data Point Index')
-        plt.ylabel('Signal Value')
-        plt.title('Concatenated Signal Over Time')
-        plt.legend()
-        plt.grid(True)
+    print(alldata)
 
-        plt.show()
+    chunks = split_and_trim_bytearray(alldata)
+    return chunks
+
 
 # ----------------------------------------------------------------------------------------
 
@@ -473,7 +501,7 @@ if(args.baud_rate):
     max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 try:
-    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=3)
+    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=2)
 except FileNotFoundError:
     print("File not found, please check connection and try again!")
     exit(1)
@@ -518,7 +546,7 @@ seri = serial.Serial(
     bytesize=7,
     parity="E",
     stopbits=1,
-    timeout=3,
+    timeout=2,
 )
 
 # read information response message
@@ -581,7 +609,9 @@ if args.amplitude_change is not None:
         amplitude_change_request_message_head = bytearray(b'\x01\x52\x32\x029.9.0(')
         amplitude_change_msg = prepareLoadProfileRequestWithDate(args.amplitude_change,amplitude_change_request_message_head)
     
-    sendAmplitudeChangeRequest(amplitude_change_msg)
+    chunks = sendAmplitudeChangeRequest(amplitude_change_msg)
+    sendEndConnectionMessage()
+    displayChunks(chunks)
 
 if(args.read_time):
     readTime()
