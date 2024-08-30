@@ -450,6 +450,46 @@ void parseThresholdRequestDates(uint8_t *buffer, uint8_t len, uint8_t *start_dat
     PRINTF("\n");
 }
 
+void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
+{
+    char *date_start_ptr = strchr((char *)buffer, '(');
+    char *date_end_ptr = strchr((char *)buffer, ')');
+    char *date_division_ptr = strchr((char *)buffer, ';');
+
+    uint8_t sd_temp[14] = {0};
+    uint8_t ed_temp[14] = {0};
+
+    memcpy(sd_temp, date_start_ptr + 1, date_division_ptr - date_start_ptr - 1);
+    memcpy(ed_temp, date_division_ptr + 1, date_end_ptr - date_division_ptr - 1);
+
+    PRINTF("SD_TEMP:\n");
+    printBufferHex(sd_temp, 14);
+    PRINTF("\n");
+
+    PRINTF("ED_TEMP:\n");
+    printBufferHex(ed_temp, 14);
+    PRINTF("\n");
+
+    deleteChar(sd_temp, strlen((char *)sd_temp), '-');
+    deleteChar(sd_temp, strlen((char *)sd_temp), ',');
+    deleteChar(sd_temp, strlen((char *)sd_temp), ':');
+
+    deleteChar(ed_temp, strlen((char *)ed_temp), '-');
+    deleteChar(ed_temp, strlen((char *)ed_temp), ',');
+    deleteChar(ed_temp, strlen((char *)ed_temp), ':');
+
+    memcpy(start_date, sd_temp, 10);
+    memcpy(end_date, ed_temp, 10);
+
+    PRINTF("START DATE :\n");
+    printBufferHex(start_date, 10);
+    PRINTF("\n");
+
+    PRINTF("END DATE :\n");
+    printBufferHex(end_date, 10);
+    PRINTF("\n");
+}
+
 uint8_t is_end_connection_message(uint8_t *msg_buf)
 {
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q
@@ -1033,27 +1073,28 @@ void setDateFromUART(uint8_t *buffer)
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                 // [SOH]P1[STX]
-    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                                  // [SOH]W2[STX]!!!![ETX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                          // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                      // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                       // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                       // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                          // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[12] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29, 0x03};             // [SOH]R2[STX]P.01(;)[ETX]
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                          // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_with_dates[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                   // [SOH]R2[STX]T.R.1
-    uint8_t get_threshold_all[13] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31, 0x28, 0x3B, 0x29, 0x03}; // [SOH]R2[STX]T.R.1(;)[ETX]
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                          // [SOH]W2[STX]T.P.1
-    uint8_t get_sudden_amplitude_change[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};                // [SOH]R2[STX]9.9.0
-    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};               // [SOH]R2[STX]0.9.1()[ETX]
-    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};               // [SOH]R2[STX]0.9.2()[ETX]
-    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};      // [SOH]R2[STX]0.0.0()[ETX]
-    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};     // [SOH]R2[STX]32.7.0()[ETX]
-    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};     // [SOH]R2[STX]52.7.0()[ETX]
-    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};    // [SOH]R2[STX]72.7.0()[ETX]
-    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};             // [SOH]R2[STX]R.D.0()[ETX]
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                                 // [SOH]B0[ETX]q
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
+    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                                                // [SOH]W2[STX]!!!![ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                                     // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                                        // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[12] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29, 0x03};                           // [SOH]R2[STX]P.01(;)[ETX]
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                                        // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_with_dates[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                                 // [SOH]R2[STX]T.R.1
+    uint8_t get_threshold_all[13] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31, 0x28, 0x3B, 0x29, 0x03};               // [SOH]R2[STX]T.R.1(;)[ETX]
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                                        // [SOH]W2[STX]T.P.1
+    uint8_t get_sudden_amplitude_change_all[13] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30, 0x28, 0x3B, 0x29, 0x03}; // [SOH]R2[STX]9.9.0(;)[ETX]
+    uint8_t get_sudden_amplitude_change_with_date[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};                    // [SOH]R2[STX]9.9.0
+    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.1()[ETX]
+    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.2()[ETX]
+    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};                    // [SOH]R2[STX]0.0.0()[ETX]
+    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]32.7.0()[ETX]
+    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]52.7.0()[ETX]
+    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                  // [SOH]R2[STX]72.7.0()[ETX]
+    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};                           // [SOH]R2[STX]R.D.0()[ETX]
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                                               // [SOH]B0[ETX]q
 
     // length of message that should be
     uint8_t time_len = 21;
@@ -1067,7 +1108,8 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t get_threshold_with_dates_len = 42;
     uint8_t get_threshold_all_len = 14;
     uint8_t set_threshold_pin_len = 13;
-    uint8_t get_sudden_amplitude_change_len = 13;
+    uint8_t get_sudden_amplitude_change_all_len = 14;
+    uint8_t get_sudden_amplitude_change_with_date_len = 42;
     uint8_t read_time_len = 13;
     uint8_t read_date_len = 13;
     uint8_t read_serial_number_len = 13;
@@ -1113,11 +1155,6 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
         PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
         return true;
     }
-    // else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, sizeof(get_threshold_val)) == 0))
-    // {
-    //     PRINTF("CONTROLRXBUFFER: incoming message is get threshold value.\n");
-    //     return true;
-    // }
     else if ((len == get_threshold_with_dates_len) && (strncmp((char *)buffer, (char *)get_threshold_with_dates, sizeof(get_threshold_with_dates)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is get threshold with dates.\n");
@@ -1133,7 +1170,12 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
         PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
         return true;
     }
-    else if ((len == get_sudden_amplitude_change_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change, sizeof(get_sudden_amplitude_change)) == 0))
+    else if ((len == get_sudden_amplitude_change_all_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_all, sizeof(get_sudden_amplitude_change_all)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change all records.\n");
+        return true;
+    }
+    else if ((len == get_sudden_amplitude_change_with_date_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_with_date, sizeof(get_sudden_amplitude_change_with_date)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
         return true;
@@ -1364,13 +1406,13 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
     if (date_end - date_start == 2)
     {
         PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE);
+        getAllRecords(&start_index, &end_index, &start, &end, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
     }
     // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
@@ -1511,50 +1553,105 @@ void setThresholdPIN()
     }
 }
 
-void getSuddenAmplitudeChangeRecords()
+void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
 {
+    datetime_t start = {0};
+    datetime_t end = {0};
+    datetime_t dt_start = {0};
+    datetime_t dt_end = {0};
+    int32_t start_index = -1;
+    int32_t end_index = -1;
+    uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
+    uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
     uint8_t *flash_sudden_amp_content = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
-    uint8_t ac_record_buf[FLASH_SECTOR_SIZE];
-    uint8_t xor_result = 0x00;
 
-    uart_putc(UART0_ID, STX);
-
-    for (uint32_t i = 0; i < FLASH_SECTOR_SIZE * FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR; i += FLASH_SECTOR_SIZE)
+    if (date_end - date_start == 2)
     {
-        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
-        {
-            if (flash_sudden_amp_content[i] == 0xFF)
-            {
-                xSemaphoreGive(xFlashMutex);
-                continue;
-            }
-
-            memcpy(ac_record_buf, flash_sudden_amp_content + i, FLASH_SECTOR_SIZE);
-
-            xSemaphoreGive(xFlashMutex);
-        }
-
-        for (uint16_t j = 0; j < FLASH_SECTOR_SIZE; j++)
-        {
-            // send record as bytes
-            xor_result ^= ac_record_buf[j];
-            uart_putc(UART0_ID, ac_record_buf[j]);
-        }
-
-        // send cr and lf
-        uart_putc(UART0_ID, '\r');
-        xor_result ^= '\r';
-
-        uart_putc(UART0_ID, '\n');
-        xor_result ^= '\n';
+        PRINTF("GETSUDDEAMPLITUDECHANGERECORDS: All Records are going to send.\n");
+        getAllRecords(&start_index, &end_index, &start, &end, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
+    }
+    else
+    {
+        PRINTF("GETSUDDENAMPLITUDECHANGERECORDS: Selected Records are going to send. \n");
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
     }
 
-    // send etx
-    uart_putc(UART0_ID, ETX);
-    xor_result ^= ETX;
+    PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
+    PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
 
-    // send bcc
-    uart_putc(UART0_ID, xor_result);
+    // if start index is bigger than end index, swap the values
+    if (start_index > end_index)
+    {
+        uint32_t temp = start_index;
+        start_index = end_index;
+        end_index = temp;
+    }
+
+    if (start_index >= 0 && end_index >= 0)
+    {
+        // initialize the variables
+        uint8_t xor_result = 0x00;
+        uint32_t start_addr = start_index;
+        uint32_t end_addr = start_index <= end_index ? end_index : 409600;
+        uint8_t ac_record_buf[FLASH_SECTOR_SIZE];
+
+        uart_putc(UART0_ID, STX);
+
+        for (; start_addr <= end_addr;)
+        {
+            if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+            {
+                memcpy(ac_record_buf, flash_sudden_amp_content + start_addr, FLASH_SECTOR_SIZE);
+                xSemaphoreGive(xFlashMutex);
+            }
+
+            for (uint16_t j = 0; j < FLASH_SECTOR_SIZE; j++)
+            {
+                // send record as bytes
+                xor_result ^= ac_record_buf[j];
+                uart_putc(UART0_ID, ac_record_buf[j]);
+            }
+
+            // send cr and lf
+            uart_putc(UART0_ID, '\r');
+            xor_result ^= '\r';
+
+            uart_putc(UART0_ID, '\n');
+            xor_result ^= '\n';
+
+            if (start_addr == end_addr)
+            {
+                uart_putc(UART0_ID, '\r');
+                xor_result ^= '\r';
+
+                uart_putc(UART0_ID, ETX);
+                xor_result ^= ETX;
+
+                PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
+                uart_putc(UART0_ID, xor_result);
+            }
+
+            vTaskDelay(pdMS_TO_TICKS(15));
+
+            // last sector and record control
+            if (start_index > end_index && start_addr == 409600)
+            {
+                start_addr = 0;
+                end_addr = end_index;
+            }
+            // jump to next record
+            else
+                start_addr += FLASH_SECTOR_SIZE;
+        }
+    }
+    else
+    {
+        PRINTF("SEARCHDATAINFLASH: data not found.\n");
+        sendErrorMessage((char *)"NODATAFOUND");
+    }
+
+    memset(reading_state_start_time, 0, 10);
+    memset(reading_state_end_time, 0, 10);
 }
 
 void readTime()

@@ -22,7 +22,7 @@ parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Thresho
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
 parser.add_argument("-tg", "--threshold-get", nargs='*', help="Threshold Get Records Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
 parser.add_argument("-tp", "--threshold-pin", action="store_true", help="Reset Threshold Pin Option. If threshold pin is set, it will be reset.")
-parser.add_argument("-ac", "--amplitude-change", action="store_true", help="Get Sudden Amplitude Change Records")
+parser.add_argument("-ac", "--amplitude-change", nargs='*', help="Get Sudden Amplitude Change Records")
 parser.add_argument("-rt", "--read-time", action="store_true", help="read current time of device")
 parser.add_argument("-rd", "--read-date", action="store_true", help="read current date of device")
 parser.add_argument("-rs", "--read-serialnumber", action="store_true", help="read serial number of device")
@@ -41,8 +41,8 @@ print("threshold set args: ", args.threshold_set)
 print("datetime set args: ", args.datetime_set)
 print("threshold get args: ", args.threshold_get)
 print("threshold pin args: ", args.threshold_pin)
-print("threshold pin args: ", args.amplitude_change)
 print("production args: ", args.production)
+print("amplitude change args: ", args.amplitude_change)
 
 # ----------------------------------------------------------------------------------------
 def replaceSerialNumber(byte_data, new_serial_number):
@@ -306,11 +306,10 @@ def sendThresholdPINResetRequest():
 
 # ----------------------------------------------------------------------------------------
 
-def sendAmplitudeChangeRequest():
-    amplitude_change_msg = bytearray(b'\x01\x52\x32\x029.9.0()\x03')
-
-    sendMessage(amplitude_change_msg)
-
+def sendAmplitudeChangeRequest(msg):
+    msg_bcc = calculateBCC(msg, msg[0])
+    msg.append(msg_bcc)
+    seri.write(msg)
     print("amplitude change request sent!")
 
     time.sleep(0.25)
@@ -573,8 +572,16 @@ if args.threshold_get is not None:
 if args.threshold_pin:
     sendThresholdPINResetRequest()
 
-if(args.amplitude_change):
-    sendAmplitudeChangeRequest()
+if args.amplitude_change is not None:
+    if len(args.amplitude_change) == 0:
+        print("Amplitude Change Request message will send without date!")
+        amplitude_change_msg = bytearray(b'\x01\x52\x32\x029.9.0(;)\x03')
+    else:
+        print("Amplitude Change Request message will send date!")
+        amplitude_change_request_message_head = bytearray(b'\x01\x52\x32\x029.9.0(')
+        amplitude_change_msg = prepareLoadProfileRequestWithDate(args.amplitude_change,amplitude_change_request_message_head)
+    
+    sendAmplitudeChangeRequest(amplitude_change_msg)
 
 if(args.read_time):
     readTime()

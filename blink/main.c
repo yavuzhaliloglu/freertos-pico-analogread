@@ -223,7 +223,8 @@ void vUARTTask(void *pvParameters)
 
                         case GetSuddenAmplitudeChange:
                             PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
-                            getSuddenAmplitudeChangeRecords();
+                            parseACRequestDate(rx_buffer, reading_state_start_time, reading_state_end_time);
+                            getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time);
                             break;
 
                         case ReadTime:

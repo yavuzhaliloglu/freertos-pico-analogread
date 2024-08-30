@@ -362,19 +362,19 @@ void datetimeCopy(datetime_t *src, datetime_t *dst)
     dst->sec = src->sec;
 }
 
-void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size)
+void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size, uint16_t record_size)
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("GETALLRECORDS: offset loop mutex received\n");
-        for (unsigned int i = 0; i < size; i += 16)
+        for (unsigned int i = 0; i < size; i += record_size)
         {
             // this is the end index control. if start index occurs and current index starts with FF or current index is NULL which means this is the last index of records
             if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
             {
-                arrayToDatetime(end, &flash_start_content[i - 16]);
+                arrayToDatetime(end, &flash_start_content[i - record_size]);
                 *end_idx = i - 16;
                 break;
             }
@@ -397,7 +397,7 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
     }
 }
 
-void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size)
+void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size, uint16_t record_size)
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
 
@@ -413,7 +413,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
-        for (uint32_t i = 0; i < size; i += FLASH_RECORD_SIZE)
+        for (uint32_t i = 0; i < size; i += record_size)
         {
             // initialize the current datetime
             datetime_t recurrent_time = {0};
@@ -483,14 +483,14 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     if (date_end - date_start == 2)
     {
         PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS);
+        getAllRecords(&start_index, &end_index, &start, &end, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE);
     }
     // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
 
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
