@@ -946,6 +946,8 @@ void setTimeFromUART(uint8_t *buffer)
         PRINTF("SETTIMEFROMUART: invalid tim values!\n");
         sendErrorMessage((char *)"INVALIDTIMEVAL");
     }
+
+    password_correct_flag = false;
 }
 
 // This function sets date via UART
@@ -1023,6 +1025,8 @@ void setDateFromUART(uint8_t *buffer)
         PRINTF("SETDATEFROMUART: invalid date values!\n");
         sendErrorMessage((char *)"INVALIDDATEVAL");
     }
+
+    password_correct_flag = false;
 }
 
 //  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
@@ -1328,6 +1332,8 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
 
     uart_putc(UART0_ID, ACK);
     PRINTF("SETTHRESHOLDVALUE: ACK send from set threshold value.\n");
+
+    password_correct_flag = false;
 }
 
 void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
@@ -1487,6 +1493,8 @@ void resetThresholdPIN()
         PRINTF("RESETTHRESHOLDPIN: Threshold PIN not set before, sending NACK.\n");
         sendErrorMessage((char *)"NOPINSET");
     }
+
+    password_correct_flag = false;
 }
 
 void setThresholdPIN()
