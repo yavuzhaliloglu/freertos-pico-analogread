@@ -440,6 +440,8 @@ void vResetTask()
 {
     while (1)
     {
+        getTimePt7c4338(&current_time);
+        rtc_set_datetime(&current_time);
         gpio_put(RESET_PULSE_PIN, 1);
         vTaskDelay(pdMS_TO_TICKS(10));
         gpio_put(RESET_PULSE_PIN, 0);

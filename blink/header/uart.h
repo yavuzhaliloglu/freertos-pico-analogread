@@ -1573,7 +1573,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
     else
     {
         PRINTF("GETSUDDENAMPLITUDECHANGERECORDS: Selected Records are going to send. \n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
