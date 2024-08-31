@@ -20,7 +20,7 @@ parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud 
 parser.add_argument("-lp", "--load-profile", nargs='*', help="Load Profile Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
 parser.add_argument("-ts", "--threshold-set", nargs='?', const='', help="Threshold Set Request Option. If selected, you can specify the threshold value in the format XXX (must be 3 characters)")
 parser.add_argument("-ds", "--datetime-set", action="store_true", help="Datetime Set Request Option. Sets date and time to the current date and time.")
-parser.add_argument("-tg", "--threshold-get", nargs='*', help="Threshold Get Records Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM, for start and end date respectively.")
+parser.add_argument("-tg", "--threshold-get", nargs='*', help="Threshold Get Records Request Option. If selected, you can specify the date in the format YY-MM-DD,HH:MM:SS, for start and end date respectively.")
 parser.add_argument("-tp", "--threshold-pin", action="store_true", help="Reset Threshold Pin Option. If threshold pin is set, it will be reset.")
 parser.add_argument("-ac", "--amplitude-change", nargs='*', help="Get Sudden Amplitude Change Records")
 parser.add_argument("-rt", "--read-time", action="store_true", help="read current time of device")

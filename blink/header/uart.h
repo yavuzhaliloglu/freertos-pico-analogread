@@ -387,87 +387,23 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
     PRINTF("\n");
 }
 
-void parseThresholdRequestDates(uint8_t *buffer, uint8_t len, uint8_t *start_date_inc, uint8_t *end_date_inc)
-{
-    uint8_t date_start[14] = {0};
-    uint8_t date_end[14] = {0};
-
-    for (uint8_t i = 0; i < len; i++)
-    {
-        if (buffer[i] == 0x28)
-        {
-            uint8_t k;
-
-            for (k = i + 1; buffer[k] != 0x3B; k++)
-            {
-                if (k == len)
-                {
-                    break;
-                }
-
-                date_start[k - (i + 1)] = buffer[k];
-            }
-
-            // Delete the characters from start date array
-            if (len == 42)
-            {
-                deleteChar(date_start, strlen((char *)date_start), '-');
-                deleteChar(date_start, strlen((char *)date_start), ',');
-                deleteChar(date_start, strlen((char *)date_start), ':');
-            }
-
-            // add end time to array
-            for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
-            {
-                if (l == len)
-                {
-                    break;
-                }
-
-                date_end[l - (k + 1)] = buffer[l];
-            }
-
-            if (len == 42)
-            {
-                // Delete the characters from end date array
-                deleteChar(date_end, strlen((char *)date_end), '-');
-                deleteChar(date_end, strlen((char *)date_end), ',');
-                deleteChar(date_end, strlen((char *)date_end), ':');
-            }
-
-            break;
-        }
-    }
-
-    memcpy(start_date_inc, date_start, 10);
-    memcpy(end_date_inc, date_end, 10);
-
-    PRINTF("DATE START:\n");
-    printBufferHex(start_date_inc, 10);
-    PRINTF("\n");
-    PRINTF("DATE END:\n");
-    printBufferHex(end_date_inc, 10);
-    PRINTF("\n");
-}
-
-void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
+void parseThresholdRequestDates(uint8_t *buffer, uint8_t *start_date_inc, uint8_t *end_date_inc)
 {
     char *date_start_ptr = strchr((char *)buffer, '(');
     char *date_end_ptr = strchr((char *)buffer, ')');
     char *date_division_ptr = strchr((char *)buffer, ';');
 
-    uint8_t sd_temp[16] = {0};
-    uint8_t ed_temp[16] = {0};
+    uint8_t sd_temp[20] = {0};
+    uint8_t ed_temp[20] = {0};
 
     memcpy(sd_temp, date_start_ptr + 1, date_division_ptr - date_start_ptr - 1);
     memcpy(ed_temp, date_division_ptr + 1, date_end_ptr - date_division_ptr - 1);
 
     PRINTF("SD_TEMP:\n");
-    printBufferHex(sd_temp, 16);
+    printBufferHex(sd_temp, 20);
     PRINTF("\n");
-
     PRINTF("ED_TEMP:\n");
-    printBufferHex(ed_temp, 16);
+    printBufferHex(ed_temp, 20);
     PRINTF("\n");
 
     deleteChar(sd_temp, strlen((char *)sd_temp), '-');
@@ -478,15 +414,55 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     deleteChar(ed_temp, strlen((char *)ed_temp), ',');
     deleteChar(ed_temp, strlen((char *)ed_temp), ':');
 
-    memcpy(start_date, sd_temp, 10);
-    memcpy(end_date, ed_temp, 10);
+    memcpy(start_date_inc, sd_temp, 12);
+    memcpy(end_date_inc, ed_temp, 12);
 
     PRINTF("START DATE :\n");
-    printBufferHex(start_date, 10);
+    printBufferHex(start_date_inc, 12);
     PRINTF("\n");
 
     PRINTF("END DATE :\n");
-    printBufferHex(end_date, 10);
+    printBufferHex(end_date_inc, 12);
+    PRINTF("\n");
+}
+
+void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
+{
+    char *date_start_ptr = strchr((char *)buffer, '(');
+    char *date_end_ptr = strchr((char *)buffer, ')');
+    char *date_division_ptr = strchr((char *)buffer, ';');
+
+    uint8_t sd_temp[20] = {0};
+    uint8_t ed_temp[20] = {0};
+
+    memcpy(sd_temp, date_start_ptr + 1, date_division_ptr - date_start_ptr - 1);
+    memcpy(ed_temp, date_division_ptr + 1, date_end_ptr - date_division_ptr - 1);
+
+    PRINTF("SD_TEMP:\n");
+    printBufferHex(sd_temp, 20);
+    PRINTF("\n");
+
+    PRINTF("ED_TEMP:\n");
+    printBufferHex(ed_temp, 20);
+    PRINTF("\n");
+
+    deleteChar(sd_temp, strlen((char *)sd_temp), '-');
+    deleteChar(sd_temp, strlen((char *)sd_temp), ',');
+    deleteChar(sd_temp, strlen((char *)sd_temp), ':');
+
+    deleteChar(ed_temp, strlen((char *)ed_temp), '-');
+    deleteChar(ed_temp, strlen((char *)ed_temp), ',');
+    deleteChar(ed_temp, strlen((char *)ed_temp), ':');
+
+    memcpy(start_date, sd_temp, 12);
+    memcpy(end_date, ed_temp, 12);
+
+    PRINTF("START DATE :\n");
+    printBufferHex(start_date, 12);
+    PRINTF("\n");
+
+    PRINTF("END DATE :\n");
+    printBufferHex(end_date, 12);
     PRINTF("\n");
 }
 
@@ -1105,11 +1081,11 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t production_len = 14;
     uint8_t reading_all_len = 13;
     uint8_t set_threshold_len = 16;
-    uint8_t get_threshold_with_dates_len = 42;
+    uint8_t get_threshold_with_dates_len = 48;
     uint8_t get_threshold_all_len = 14;
     uint8_t set_threshold_pin_len = 13;
     uint8_t get_sudden_amplitude_change_all_len = 14;
-    uint8_t get_sudden_amplitude_change_with_date_len = 42;
+    uint8_t get_sudden_amplitude_change_with_date_len = 48;
     uint8_t read_time_len = 13;
     uint8_t read_date_len = 13;
     uint8_t read_serial_number_len = 13;
@@ -1378,7 +1354,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     password_correct_flag = false;
 }
 
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
+void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
 {
     datetime_t start = {0};
     datetime_t end = {0};
@@ -1412,7 +1388,7 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE, state);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
@@ -1553,7 +1529,7 @@ void setThresholdPIN()
     }
 }
 
-void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
+void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
 {
     datetime_t start = {0};
     datetime_t end = {0};
@@ -1573,7 +1549,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
     else
     {
         PRINTF("GETSUDDENAMPLITUDECHANGERECORDS: Selected Records are going to send. \n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE, state);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);

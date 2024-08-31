@@ -314,6 +314,17 @@ void arrayToDatetime(datetime_t *dt, uint8_t *arr)
     dt->min = (arr[8] - '0') * 10 + (arr[9] - '0');
 }
 
+// this function converts an array to datetime value
+void arrayToDatetimeWithSecond(datetime_t *dt, uint8_t *arr)
+{
+    dt->year = (arr[0] - '0') * 10 + (arr[1] - '0');
+    dt->month = (arr[2] - '0') * 10 + (arr[3] - '0');
+    dt->day = (arr[4] - '0') * 10 + (arr[5] - '0');
+    dt->hour = (arr[6] - '0') * 10 + (arr[7] - '0');
+    dt->min = (arr[8] - '0') * 10 + (arr[9] - '0');
+    dt->sec = (arr[10] - '0') * 10 + (arr[11] - '0');
+}
+
 // This functon compares two datetime values and return an int value
 int datetimeComp(datetime_t *dt1, datetime_t *dt2)
 {
@@ -397,13 +408,21 @@ void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetim
     }
 }
 
-void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size, uint16_t record_size)
+void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state)
 {
     uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
 
     // convert date and time values to datetime value
-    arrayToDatetime(start, reading_state_start_time);
-    arrayToDatetime(end, reading_state_end_time);
+    if (state == GetThreshold || state == GetSuddenAmplitudeChange)
+    {
+        arrayToDatetimeWithSecond(start, reading_state_start_time);
+        arrayToDatetimeWithSecond(end, reading_state_end_time);
+    }
+    else
+    {
+        arrayToDatetime(start, reading_state_start_time);
+        arrayToDatetime(end, reading_state_end_time);
+    }
 
     // if start date is bigger than end date, it means dates are wrong so function returns
     if (datetimeComp(start, end) > 0)
@@ -426,7 +445,14 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
             }
 
             // if current index is not empty, set datetime to current index record
-            arrayToDatetime(&recurrent_time, &flash_start_content[i]);
+            if (state == GetThreshold || state == GetSuddenAmplitudeChange)
+            {
+                arrayToDatetimeWithSecond(&recurrent_time, &flash_start_content[i]);
+            }
+            else
+            {
+                arrayToDatetime(&recurrent_time, &flash_start_content[i]);
+            }
 
             // if current record datetime  is bigger than start datetime and start index is not set, this is the start index
             if (datetimeComp(&recurrent_time, start) >= 0)
@@ -454,7 +480,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 }
 
 // This function searches the requested data in flash by starting from flash record beginning offset, collects data from flash and sends it to UART to show load profile content
-void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
+void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
 {
     // initialize the variables
     datetime_t start = {0};
@@ -489,8 +515,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE, state);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);

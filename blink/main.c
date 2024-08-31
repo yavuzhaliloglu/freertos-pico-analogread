@@ -168,7 +168,7 @@ void vUARTTask(void *pvParameters)
                         case Reading:
                             PRINTF("UART TASK: entered listening-reading\n");
                             parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
-                            searchDataInFlash(reading_state_start_time, reading_state_end_time);
+                            searchDataInFlash(reading_state_start_time, reading_state_end_time, Reading);
                             break;
 
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
@@ -212,8 +212,8 @@ void vUARTTask(void *pvParameters)
 
                         case GetThreshold:
                             PRINTF("UART TASK: entered listening-getthreshold\n");
-                            parseThresholdRequestDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
-                            getThresholdRecord(reading_state_start_time, reading_state_end_time);
+                            parseThresholdRequestDates(rx_buffer, reading_state_start_time, reading_state_end_time);
+                            getThresholdRecord(reading_state_start_time, reading_state_end_time, GetThreshold);
                             break;
 
                         case ThresholdPin:
@@ -224,7 +224,7 @@ void vUARTTask(void *pvParameters)
                         case GetSuddenAmplitudeChange:
                             PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
                             parseACRequestDate(rx_buffer, reading_state_start_time, reading_state_end_time);
-                            getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time);
+                            getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time, GetSuddenAmplitudeChange);
                             break;
 
                         case ReadTime:
