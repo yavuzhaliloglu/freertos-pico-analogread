@@ -480,7 +480,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, da
 }
 
 // This function searches the requested data in flash by starting from flash record beginning offset, collects data from flash and sends it to UART to show load profile content
-void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
+void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer)
 {
     // initialize the variables
     datetime_t start = {0};
@@ -596,6 +596,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
+            xTimerReset(timer, 0);
 
             // last sector and record control
             if (start_index > end_index && start_addr == 1572848)

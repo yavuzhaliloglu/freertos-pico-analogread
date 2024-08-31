@@ -1354,7 +1354,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     password_correct_flag = false;
 }
 
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
+void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer)
 {
     datetime_t start = {0};
     datetime_t end = {0};
@@ -1466,6 +1466,7 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
+            xTimerReset(timer, 0);
 
             // last sector and record control
             if (start_index > end_index && start_addr == 16384)
@@ -1529,7 +1530,7 @@ void setThresholdPIN()
     }
 }
 
-void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
+void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer)
 {
     datetime_t start = {0};
     datetime_t end = {0};
@@ -1586,6 +1587,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
                 // send record as bytes
                 xor_result ^= ac_record_buf[j];
                 uart_putc(UART0_ID, ac_record_buf[j]);
+                xTimerReset(timer, 0);
             }
 
             // send cr and lf
