@@ -41,9 +41,14 @@ void writeBlock(uint8_t *buffer, uint8_t size)
     {
         PRINTF("WRITEBLOCK: rpb len is equal to block size. Programming...\n");
 
-        // write the buffer to flash
-        flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
-        // jump to next block offset to write data automatically
+        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+        {
+            // write the buffer to flash
+            flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+            // jump to next block offset to write data automatically
+
+            xSemaphoreGive(xFlashMutex);
+        }
         ota_block_count++;
         // reset buffer and length value of rpb.
         memset(rpb, 0, FLASH_RPB_BLOCK_SIZE);
