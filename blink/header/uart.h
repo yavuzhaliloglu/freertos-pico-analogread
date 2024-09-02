@@ -844,6 +844,9 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
 
             PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
             uart_putc(UART0_ID, readout_xor);
+
+            uart_tx_wait_blocking(UART0_ID);
+            resetState();
         }
 
         // Debug Mode ([ACK]0Z4[CR][LF])
