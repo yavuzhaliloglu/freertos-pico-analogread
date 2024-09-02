@@ -91,7 +91,8 @@ enum ListeningStates
     ReadLastVRMSMax = 13,
     ReadLastVRMSMin = 14,
     ReadLastVRMSMean = 15,
-    ReadResetDates = 16
+    ReadResetDates = 16,
+    GetThresholdObis = 17
 };
 //
 volatile TaskHandle_t xTaskToNotify_UART = NULL;

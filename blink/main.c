@@ -75,6 +75,13 @@ void vUARTTask(void *pvParameters)
         NULL,
         RebootHandler);
 
+    TimerHandle_t ErrorTimer = xTimerCreate(
+        "ErrorTimer",
+        pdMS_TO_TICKS(1000),
+        pdFALSE,
+        NULL,
+        sendInvalidMsg);
+
     while (true)
     {
         xTimerStart(ResetBufferTimer, 0);
@@ -88,6 +95,7 @@ void vUARTTask(void *pvParameters)
             {
                 // Get character from UART
                 uint8_t rx_char = uart_getc(UART0_ID);
+                xTimerStart(ErrorTimer, 0);
 
                 // If state is ReProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
                 if (state == ReProgram)
@@ -110,6 +118,7 @@ void vUARTTask(void *pvParameters)
 
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
+                    xTimerStop(ErrorTimer, 0);
 
                     PRINTF("UART TASK: message end and entered the processing area\r\n");
                     PRINTF("UART TASK: rx buffer content: ");
@@ -264,6 +273,10 @@ void vUARTTask(void *pvParameters)
 
                         case ReadResetDates:
                             sendResetDates();
+                            break;
+
+                        case GetThresholdObis:
+                            sendThresholdObis();
                             break;
 
                         default:

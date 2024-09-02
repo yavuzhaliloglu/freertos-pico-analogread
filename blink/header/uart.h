@@ -249,10 +249,17 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         }
 
         // Set Threshold control (T.V.1)
-        else if (strstr((char *)data_buffer, threshold_set_obis) != NULL)
+        else if (is_writing_msg && strstr((char *)data_buffer, threshold_set_obis) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
             return SetThreshold;
+        }
+
+        // Get Threshold msg control (T.V.1)
+        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, threshold_set_obis) != NULL)
+        {
+            PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
+            return GetThresholdObis;
         }
 
         // Get Threshold control (T.R.1)
@@ -541,6 +548,198 @@ uint setProgramBaudRate(uint8_t b_rate)
     return set_baud_rate;
 }
 
+// This function resets rx_buffer content
+void resetRxBuffer()
+{
+    memset(rx_buffer, 0, sizeof(rx_buffer));
+    rx_buffer_len = 0;
+
+    PRINTF("reset Buffer func!\n");
+}
+
+//  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
+bool controlRXBuffer(uint8_t *buffer, uint8_t len)
+{
+    // message formats like password request, reprogram request, reading (load profile) request etc.
+    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
+    uint8_t reprogram[12] = {0x01, 0x57, 0x32, 0x02, 0x4F, 0x2E, 0x54, 0x2E, 0x41, 0x28, 0x29, 0x03};                             // [SOH]W2[STX]O.T.A()[ETX]
+    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
+    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
+    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
+    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                                     // [SOH]W2[STX]0.9.2
+    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                                        // [SOH]R2[STX]96.1.3
+    uint8_t reading_all[12] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29, 0x03};                           // [SOH]R2[STX]P.01(;)[ETX]
+    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                                        // [SOH]W2[STX]T.V.1
+    uint8_t get_threshold_val[12] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31, 0x28, 0x29, 0x03};                     // [SOH]R2[STX]T.V.1()[ETX]
+    uint8_t get_threshold_with_dates[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                                 // [SOH]R2[STX]T.R.1
+    uint8_t get_threshold_all[13] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31, 0x28, 0x3B, 0x29, 0x03};               // [SOH]R2[STX]T.R.1(;)[ETX]
+    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                                        // [SOH]W2[STX]T.P.1
+    uint8_t get_sudden_amplitude_change_all[13] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30, 0x28, 0x3B, 0x29, 0x03}; // [SOH]R2[STX]9.9.0(;)[ETX]
+    uint8_t get_sudden_amplitude_change_with_date[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};                    // [SOH]R2[STX]9.9.0
+    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.1()[ETX]
+    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.2()[ETX]
+    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};                    // [SOH]R2[STX]0.0.0()[ETX]
+    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]32.7.0()[ETX]
+    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]52.7.0()[ETX]
+    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                  // [SOH]R2[STX]72.7.0()[ETX]
+    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};                           // [SOH]R2[STX]R.D.0()[ETX]
+    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                                               // [SOH]B0[ETX]q
+
+    // length of message that should be
+    uint8_t time_len = 21;
+    uint8_t date_len = 21;
+    uint8_t reading_len = 41;
+    uint8_t reprogram_len = 13;
+    uint8_t password_len = 16;
+    uint8_t production_len = 14;
+    uint8_t reading_all_len = 13;
+    uint8_t set_threshold_len = 16;
+    uint8_t get_threshold_len = 13;
+    uint8_t get_threshold_with_dates_len = 48;
+    uint8_t get_threshold_all_len = 14;
+    uint8_t set_threshold_pin_len = 13;
+    uint8_t get_sudden_amplitude_change_all_len = 14;
+    uint8_t get_sudden_amplitude_change_with_date_len = 48;
+    uint8_t read_time_len = 13;
+    uint8_t read_date_len = 13;
+    uint8_t read_serial_number_len = 13;
+    uint8_t last_vrms_max_len = 14;
+    uint8_t last_vrms_min_len = 14;
+    uint8_t last_vrms_mean_len = 14;
+    uint8_t reset_dates_len = 13;
+    uint8_t end_connection_str_len = 5;
+
+    // controls for the message
+    if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is password request.\n");
+        return true;
+    }
+    else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, sizeof(reprogram)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is reprogram request.\n");
+        return true;
+    }
+    else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
+        return true;
+    }
+    else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, sizeof(time)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is time change request.\n");
+        return true;
+    }
+    else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, sizeof(date)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is date change request.\n");
+        return true;
+    }
+    else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, sizeof(production)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is production info request.\n");
+        return true;
+    }
+    else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, sizeof(set_threshold_val)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
+        return true;
+    }
+    else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, sizeof(get_threshold_val)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
+        return true;
+    }
+    else if ((len == get_threshold_with_dates_len) && (strncmp((char *)buffer, (char *)get_threshold_with_dates, sizeof(get_threshold_with_dates)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get threshold with dates.\n");
+        return true;
+    }
+    else if ((len == get_threshold_all_len) && (strncmp((char *)buffer, (char *)get_threshold_all, sizeof(get_threshold_all)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get threshold all.\n");
+        return true;
+    }
+    else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
+        return true;
+    }
+    else if ((len == get_sudden_amplitude_change_all_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_all, sizeof(get_sudden_amplitude_change_all)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change all records.\n");
+        return true;
+    }
+    else if ((len == get_sudden_amplitude_change_with_date_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_with_date, sizeof(get_sudden_amplitude_change_with_date)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
+        return true;
+    }
+    else if ((len == read_time_len) && (strncmp((char *)buffer, (char *)read_time, sizeof(read_time)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read time.\n");
+        return true;
+    }
+    else if ((len == read_date_len) && (strncmp((char *)buffer, (char *)read_date, sizeof(read_date)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read date.\n");
+        return true;
+    }
+    else if ((len == read_serial_number_len) && (strncmp((char *)buffer, (char *)read_serial_number, sizeof(read_serial_number)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is read serial number.\n");
+        return true;
+    }
+    else if ((len == last_vrms_max_len) && (strncmp((char *)buffer, (char *)last_vrms_max, sizeof(last_vrms_max)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms max.\n");
+        return true;
+    }
+    else if ((len == last_vrms_min_len) && (strncmp((char *)buffer, (char *)last_vrms_min, sizeof(last_vrms_min)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms min.\n");
+        return true;
+    }
+    else if ((len == last_vrms_mean_len) && (strncmp((char *)buffer, (char *)last_vrms_mean, sizeof(last_vrms_mean)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is last vrms mean.\n");
+        return true;
+    }
+    else if ((len == reset_dates_len) && (strncmp((char *)buffer, (char *)reset_dates, sizeof(reset_dates)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is reset dates.\n");
+        return true;
+    }
+    else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
+    {
+        PRINTF("CONTROLRXBUFFER: incoming message is end connection request.\n");
+        return true;
+    }
+
+    return false;
+}
+
+void sendInvalidMsg()
+{
+    if (rx_buffer_len != 0 && !controlRXBuffer(rx_buffer, rx_buffer_len) && state == Listening)
+    {
+        PRINTF("SENDING INVALID MSG!!\n");
+        sendErrorMessage((char *)"INVALIDMSGFORMAT!");
+        resetRxBuffer();
+    }
+}
+
+// This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
+void resetState()
+{
+    sendInvalidMsg();
+    state = Greeting;
+    setProgramBaudRate(0);
+    resetRxBuffer();
+
+    PRINTF("reset state func!\n");
+}
+
 // This function reboots this device. This function checks new program area and get the new program area contents and compares if the program written true.
 // If program is written correctly, device will be rebooted but if it's not, new program area will be deleted and device won't be rebooted
 void __not_in_flash_func(rebootProgram)()
@@ -579,25 +778,6 @@ void __not_in_flash_func(rebootProgram)()
     watchdog_hw->scratch[5] = ENTRY_MAGIC;
     watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
     watchdog_reboot(0, 0, 0);
-}
-
-// This function resets rx_buffer content
-void resetRxBuffer()
-{
-    memset(rx_buffer, 0, sizeof(rx_buffer));
-    rx_buffer_len = 0;
-
-    PRINTF("reset Buffer func!\n");
-}
-
-// This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
-void resetState()
-{
-    state = Greeting;
-    setProgramBaudRate(0);
-    resetRxBuffer();
-
-    PRINTF("reset state func!\n");
 }
 
 // This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
@@ -1042,161 +1222,6 @@ void setDateFromUART(uint8_t *buffer)
     }
 
     password_correct_flag = false;
-}
-
-//  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
-bool controlRXBuffer(uint8_t *buffer, uint8_t len)
-{
-    // message formats like password request, reprogram request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
-    uint8_t reprogram[12] = {0x01, 0x57, 0x32, 0x02, 0x4F, 0x2E, 0x54, 0x2E, 0x41, 0x28, 0x29, 0x03};                             // [SOH]W2[STX]O.T.A()[ETX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                                     // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                                        // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[12] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29, 0x03};                           // [SOH]R2[STX]P.01(;)[ETX]
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                                        // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_with_dates[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                                 // [SOH]R2[STX]T.R.1
-    uint8_t get_threshold_all[13] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31, 0x28, 0x3B, 0x29, 0x03};               // [SOH]R2[STX]T.R.1(;)[ETX]
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                                        // [SOH]W2[STX]T.P.1
-    uint8_t get_sudden_amplitude_change_all[13] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30, 0x28, 0x3B, 0x29, 0x03}; // [SOH]R2[STX]9.9.0(;)[ETX]
-    uint8_t get_sudden_amplitude_change_with_date[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};                    // [SOH]R2[STX]9.9.0
-    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.1()[ETX]
-    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.2()[ETX]
-    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};                    // [SOH]R2[STX]0.0.0()[ETX]
-    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]32.7.0()[ETX]
-    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]52.7.0()[ETX]
-    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                  // [SOH]R2[STX]72.7.0()[ETX]
-    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};                           // [SOH]R2[STX]R.D.0()[ETX]
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                                               // [SOH]B0[ETX]q
-
-    // length of message that should be
-    uint8_t time_len = 21;
-    uint8_t date_len = 21;
-    uint8_t reading_len = 41;
-    uint8_t reprogram_len = 13;
-    uint8_t password_len = 16;
-    uint8_t production_len = 14;
-    uint8_t reading_all_len = 13;
-    uint8_t set_threshold_len = 16;
-    uint8_t get_threshold_with_dates_len = 48;
-    uint8_t get_threshold_all_len = 14;
-    uint8_t set_threshold_pin_len = 13;
-    uint8_t get_sudden_amplitude_change_all_len = 14;
-    uint8_t get_sudden_amplitude_change_with_date_len = 48;
-    uint8_t read_time_len = 13;
-    uint8_t read_date_len = 13;
-    uint8_t read_serial_number_len = 13;
-    uint8_t last_vrms_max_len = 14;
-    uint8_t last_vrms_min_len = 14;
-    uint8_t last_vrms_mean_len = 14;
-    uint8_t reset_dates_len = 13;
-    uint8_t end_connection_str_len = 5;
-
-    // controls for the message
-    if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is password request.\n");
-        return true;
-    }
-    else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, sizeof(reprogram)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reprogram request.\n");
-        return true;
-    }
-    else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
-        return true;
-    }
-    else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, sizeof(time)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is time change request.\n");
-        return true;
-    }
-    else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, sizeof(date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is date change request.\n");
-        return true;
-    }
-    else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, sizeof(production)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is production info request.\n");
-        return true;
-    }
-    else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, sizeof(set_threshold_val)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
-        return true;
-    }
-    else if ((len == get_threshold_with_dates_len) && (strncmp((char *)buffer, (char *)get_threshold_with_dates, sizeof(get_threshold_with_dates)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get threshold with dates.\n");
-        return true;
-    }
-    else if ((len == get_threshold_all_len) && (strncmp((char *)buffer, (char *)get_threshold_all, sizeof(get_threshold_all)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get threshold all.\n");
-        return true;
-    }
-    else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
-        return true;
-    }
-    else if ((len == get_sudden_amplitude_change_all_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_all, sizeof(get_sudden_amplitude_change_all)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change all records.\n");
-        return true;
-    }
-    else if ((len == get_sudden_amplitude_change_with_date_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_with_date, sizeof(get_sudden_amplitude_change_with_date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
-        return true;
-    }
-    else if ((len == read_time_len) && (strncmp((char *)buffer, (char *)read_time, sizeof(read_time)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read time.\n");
-        return true;
-    }
-    else if ((len == read_date_len) && (strncmp((char *)buffer, (char *)read_date, sizeof(read_date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read date.\n");
-        return true;
-    }
-    else if ((len == read_serial_number_len) && (strncmp((char *)buffer, (char *)read_serial_number, sizeof(read_serial_number)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read serial number.\n");
-        return true;
-    }
-    else if ((len == last_vrms_max_len) && (strncmp((char *)buffer, (char *)last_vrms_max, sizeof(last_vrms_max)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms max.\n");
-        return true;
-    }
-    else if ((len == last_vrms_min_len) && (strncmp((char *)buffer, (char *)last_vrms_min, sizeof(last_vrms_min)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms min.\n");
-        return true;
-    }
-    else if ((len == last_vrms_mean_len) && (strncmp((char *)buffer, (char *)last_vrms_mean, sizeof(last_vrms_mean)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms mean.\n");
-        return true;
-    }
-    else if ((len == reset_dates_len) && (strncmp((char *)buffer, (char *)reset_dates, sizeof(reset_dates)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reset dates.\n");
-        return true;
-    }
-    else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is end connection request.\n");
-        return true;
-    }
-
-    return false;
 }
 
 // This function generates a product,on info message and sends it to UART
@@ -1732,6 +1757,29 @@ void sendLastVRMSXValue(enum ListeningStates vrmsState)
     bccGenerate((uint8_t *)buffer, result, &xor_result);
 
     PRINTF("SENDLASTVRMSXVALUE: buffer to send is:\n");
+    printBufferHex((uint8_t *)buffer, result);
+    PRINTF("\n");
+
+    uart_puts(UART0_ID, buffer);
+    uart_putc(UART0_ID, xor_result);
+}
+
+void sendThresholdObis()
+{
+    char buffer[22] = {0};
+    uint8_t xor_result = 0x02;
+
+    int result = snprintf((char *)buffer, sizeof(buffer), "%cT.V.1(%03d)%c", 0x02, getVRMSThresholdValue(), 0x03);
+    if (result >= (int)sizeof(buffer))
+    {
+        PRINTF("SENDTHRESHOLDOBIS: Buffer Overflow! Sending NACK.\n");
+        sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");
+        return;
+    }
+
+    bccGenerate((uint8_t *)buffer, result, &xor_result);
+
+    PRINTF("SENDTHRESHOLDOBIS: buffer to send is:\n");
     printBufferHex((uint8_t *)buffer, result);
     PRINTF("\n");
 
