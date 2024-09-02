@@ -70,6 +70,7 @@ enum States
 // ReadLastVRMSMax: In this state, device sends last max vrms value to modem
 // ReadLastVRMSMin: In this state, device sends last min vrms value to modem
 // ReadLastVRMSMean: In this state, device sends last mean vrms value to modem
+// ReadResetDates: In this state, device sends reset times to modem
 enum ListeningStates
 {
     BCCError = -2,

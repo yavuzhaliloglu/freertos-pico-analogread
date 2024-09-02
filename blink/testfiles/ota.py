@@ -80,11 +80,11 @@ meeting_response = bytearray(seri.readline())
 time.sleep(0.25)
 print(meeting_response)
 
-max_baud_rate = b"\x35"
+max_baud_rate = b"\x36"
 mbr_str = max_baud_rate.decode("utf-8")
 mbr_int = int(mbr_str)
 
-baud_rates = [300, 600, 1200, 2400, 4800, 9600]
+baud_rates = [300, 600, 1200, 2400, 4800, 9600, 19200]
 
 if meeting_response[0] == 47 and len(meeting_response) > 5:
     information_message = bytearray(b"\x0601\r\n")
@@ -126,9 +126,25 @@ if meeting_response[0] == 47 and len(meeting_response) > 5:
         print("information response bcc result: ", hex(bcc))
         
         if bcc_received == bcc:
+            bcc_pw = 0x01
+            pw_msg = bytearray(b"\x01\x50\x31\x02(12345678)\x03")
+
+            for byte in pw_msg:
+                bcc_pw ^= byte
+            pw_msg.append(bcc_pw)
+
+            print("pw msg : ", pw_msg)
+            # send to pw message and wait for ack message
+            seri.write(pw_msg)
+            pw_res = bytearray(seri.readline())
+            time.sleep(0.25)
+
+            if pw_res[0] == 0x06:
+                print("ACK message received.")
+
             # initlialize the program info
             bcc_repogram = 0x01
-            reprogram_info = bytearray(b"\x01\x57\x32\x02!!!!\x03")
+            reprogram_info = bytearray(b"\x01\x57\x32\x02O.T.A()\x03")
             for byte in reprogram_info:
                 bcc_repogram ^= byte
             reprogram_info.append(bcc_repogram)

@@ -173,12 +173,19 @@ void vUARTTask(void *pvParameters)
 
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
                         case WriteProgram:
-                            PRINTF("UART TASK: entered listening-reprogram\n");
-                            ReProgramHandler();
+                            if (password_correct_flag)
+                            {
+                                PRINTF("UART TASK: entered listening-reprogram\n");
+                                ReProgramHandler();
 
-                            xTimerStop(ResetBufferTimer, 0);
-                            xTimerStop(ResetStateTimer, 0);
-                            xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
+                                xTimerStop(ResetBufferTimer, 0);
+                                xTimerStop(ResetStateTimer, 0);
+                                xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
+                            }
+                            else
+                            {
+                                sendErrorMessage((char *)"PWNOTENTERED");
+                            }
                             break;
 
                         // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.

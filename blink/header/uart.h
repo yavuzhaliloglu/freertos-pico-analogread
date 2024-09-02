@@ -159,7 +159,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char time_obis[] = "0.9.1";
     char date_obis[] = "0.9.2";
     char production_date_obis[] = "96.1.3";
-    char reprogram_str[] = "!!!!";
+    char reprogram_str[] = "O.T.A";
     char threshold_set_obis[] = "T.V.1";
     char threshold_record_obis[] = "T.R.1";
     char threshold_pin_obis[] = "T.P.1";
@@ -241,7 +241,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
             return ProductionInfo;
         }
 
-        // ReProgram Control (!!!!)
+        // ReProgram Control (O.T.A)
         else if (strstr((char *)data_buffer, reprogram_str) != NULL)
         {
             PRINTF("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
@@ -1050,7 +1050,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
     // message formats like password request, reprogram request, reading (load profile) request etc.
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
-    uint8_t reprogram[9] = {0x01, 0x57, 0x32, 0x02, 0x21, 0x21, 0x21, 0x21, 0x03};                                                // [SOH]W2[STX]!!!![ETX]
+    uint8_t reprogram[12] = {0x01, 0x57, 0x32, 0x02, 0x4F, 0x2E, 0x54, 0x2E, 0x41, 0x28, 0x29, 0x03};                             // [SOH]W2[STX]O.T.A()[ETX]
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
     uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
     uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
@@ -1076,7 +1076,7 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
-    uint8_t reprogram_len = 10;
+    uint8_t reprogram_len = 13;
     uint8_t password_len = 16;
     uint8_t production_len = 14;
     uint8_t reading_all_len = 13;
@@ -1251,10 +1251,6 @@ void __not_in_flash_func(ReProgramHandler)()
     // change the state to reprogram
     state = ReProgram;
     PRINTF("REPROGRAMHANDLER: state changed from reprogram handler.\n");
-
-    // delete ADCRead Task. This task also reaches flash so due to prevent conflict, this task is deleted
-    vTaskDelete(xADCHandle);
-    PRINTF("REPROGRAMHANDLER: adcread task deleted from reprogram handler.\n");
 
     // delete the reprogram area to write new program
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)

@@ -246,10 +246,10 @@ def sendDatetimeSetRequest():
     current_time_obj = getCurrentTime()
     
     passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
-
+    # ------------------------------------------------------------------------ //
     sendMessage(passwordMessage)
     print("password request sent!")
-    print(seri.readline())
+    time.sleep(0.25)
     # ------------------------------------------------------------------------ //
     time_str = current_time_obj["hour"] + ":" + current_time_obj["minute"] + ":" + current_time_obj["second"]
     time_str = time_str.encode()
@@ -262,6 +262,12 @@ def sendDatetimeSetRequest():
     
     sendMessage(timeset)
     print("timeset request sent!")
+    time.sleep(0.25)
+    # ------------------------------------------------------------------------ //
+    passwordMessage2 = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
+    sendMessage(passwordMessage2)
+    print("password request sent!")
+    time.sleep(0.25)
     # ------------------------------------------------------------------------ //
     date_str = current_time_obj["year"] + "-" + current_time_obj["month"] + "-" + current_time_obj["day"]
     date_str = date_str.encode()

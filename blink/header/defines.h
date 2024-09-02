@@ -23,9 +23,11 @@
 
 // Acknowledgement Message:                         [ACK]0ZX\r\n                                                -> Length: 6
 
+// OTA Request:                                     [SOH]W2[STX]O.T.A()[ETX][BCC]                               -> Length: 13
+
 // Password:                                        [SOH]P1[STX](12345678)[ETX][BCC]                            -> Length: 16
-// Load Profile with Dates:                         [SOH]R2[STX]P.01(24-07-13,13:00;24-07-14,14:00)[ETX][BCC]   -> Length: 41
-// Load Profile without Dates:                      [SOH]R2[STX]P.01(;)[ETX][BCC]                               -> Length: 13
+// Load Profile with Date:                          [SOH]R2[STX]P.01(24-07-13,13:00;24-07-14,14:00)[ETX][BCC]   -> Length: 41
+// Load Profile without Date:                       [SOH]R2[STX]P.01(;)[ETX][BCC]                               -> Length: 13
 // Time Set:                                        [SOH]W2[STX]0.9.1(13:00:00)[ETX][BCC]                       -> Length: 21
 // Date Set:                                        [SOH]W2[STX]0.9.2(24-07-15)[ETX][BCC]                       -> Length: 21
 // Production Information:                          [SOH]R2[STX]96.1.3()[ETX][BCC]                              -> Length: 14
