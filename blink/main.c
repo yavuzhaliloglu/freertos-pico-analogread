@@ -1,15 +1,20 @@
 #include <stdio.h>
+#include "header/project-conf.h"
 #include <time.h>
 #include <string.h>
+#include <float.h>
+#include <stdlib.h>
+#include <math.h>
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "math.h"
 #include "timers.h"
+#include "semphr.h"
 #include "pico/util/datetime.h"
 #include "pico/binary_info.h"
 #include "pico/bootrom.h"
 #include "pico/time.h"
+#include "pico/multicore.h"
 #include "hardware/gpio.h"
 #include "hardware/uart.h"
 #include "hardware/rtc.h"
@@ -18,14 +23,15 @@
 #include "hardware/spi.h"
 #include "hardware/dma.h"
 #include "hardware/irq.h"
-#include "hardware/sync.h"
 #include "hardware/flash.h"
+#include "hardware/sync.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
 #include "hardware/timer.h"
 #include "header/defines.h"
 #include "header/variables.h"
 #include "header/print.h"
+#include "header/fifo.h"
 #include "header/md5.h"
 #include "header/bcc.h"
 #include "header/rtc.h"
@@ -40,8 +46,10 @@ void vUARTTask(void *pvParameters)
     (void)pvParameters;
     uint32_t ulNotificationValue;
     xTaskToNotify_UART = NULL;
-    uint8_t rx_char;
-    char *st_chr_msg;
+    // this buffer stores start time for load profile data
+    uint8_t reading_state_start_time[14] = {0};
+    // this buffer stores end time for load profile data
+    uint8_t reading_state_end_time[14] = {0};
 
     // This timer deletes rx_buffer if there is no character coming in 5 seconds.
     TimerHandle_t ResetBufferTimer = xTimerCreate(
@@ -67,6 +75,13 @@ void vUARTTask(void *pvParameters)
         NULL,
         RebootHandler);
 
+    TimerHandle_t ErrorTimer = xTimerCreate(
+        "ErrorTimer",
+        pdMS_TO_TICKS(1000),
+        pdFALSE,
+        NULL,
+        sendInvalidMsg);
+
     while (true)
     {
         xTimerStart(ResetBufferTimer, 0);
@@ -79,149 +94,205 @@ void vUARTTask(void *pvParameters)
             while (uart_is_readable(UART0_ID))
             {
                 // Get character from UART
-                rx_char = uart_getc(UART0_ID);
+                uint8_t rx_char = uart_getc(UART0_ID);
+                xTimerStart(ErrorTimer, 0);
 
-                // If state is WriteProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
-                if (state == WriteProgram)
+                // If state is ReProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
+                if (state == ReProgram)
                 {
                     xTimerReset(ReprogramTimer, 0);
                     writeProgramToFlash(rx_char);
+
                     continue;
                 }
-#if DEBUG
-                printf("%02X\n", rx_char);
-#endif
-                // CR/LF control for the message, also this is the end character control for the message
-                if (rx_char != '\n')
-                {
-                    rx_buffer[rx_buffer_len++] = rx_char;
-                }
+
+                PRINTF("%02X\r\n", rx_char);
+
+                rx_buffer[rx_buffer_len++] = rx_char;
+
                 // The end of the message could be '\n' character or a BCC, so this if block checks if the character is '\n' or the whole message is request message according to its length and order of characters
                 if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
                 {
                     // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
-                    if (state != Listening)
-                        rx_buffer[rx_buffer_len++] = rx_char;
-
                     vTaskDelay(pdMS_TO_TICKS(250));
+
                     xTimerReset(ResetStateTimer, 0);
                     xTimerStop(ResetBufferTimer, 0);
-#if DEBUG
-                    printf("UART TASK: message end and entered the processing area\n");
-                    printf("UART TASK: rx len content: ");
+                    xTimerStop(ErrorTimer, 0);
+
+                    PRINTF("UART TASK: message end and entered the processing area\r\n");
+                    PRINTF("UART TASK: rx buffer content: ");
                     printBufferHex(rx_buffer, rx_buffer_len);
-                    printf("\n");
-                    printf("UART TASK: rx_buffer_len value: %d\n", rx_buffer_len);
-#endif
+                    PRINTF("\r\n");
+                    PRINTF("UART TASK: rx buffer len value: %d\r\n", rx_buffer_len);
+
+                    // check if the message is for end connection
+                    if (is_end_connection_message(rx_buffer))
+                    {
+                        resetRxBuffer();
+                        resetState();
+
+                        break;
+                    }
 
                     switch (state)
                     {
                     // This is the Initial state in device. In this state, modem and device will handshake.
                     case Greeting:
-#if DEBUG
-                        printf("UART TASK: entered greeting state\n");
-#endif
-                        // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
-                        st_chr_msg = strchr(rx_buffer, 0x2F);
-                        greetingStateHandler(st_chr_msg, rx_buffer_len - ((uint8_t *)st_chr_msg - rx_buffer));
-
+                        PRINTF("UART TASK: entered greeting state\n");
                         xTimerStart(ResetStateTimer, 0);
+
+                        // Start character of the request message (st_chr_msg) is a protection for message integrity. If there are characters before the greeting message, these characters will be ignored and message will be clear to send to the greeting handler.
+                        char *st_chr_msg = strchr((char *)rx_buffer, 0x2F);
+                        greetingStateHandler((uint8_t *)st_chr_msg);
                         break;
 
                     // This state sets baud rate or sends readout message.
                     case Setting:
-#if DEBUG
-                        printf("UART TASK: entered setting state\n");
-#endif
+                        PRINTF("UART TASK: entered setting state\n");
                         xTimerStart(ResetStateTimer, 0);
+
                         settingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
                     // This state handles the request messages for load profile, set date and time, send production info and also before entering WriteProgram state.
                     case Listening:
-#if DEBUG
-                        printf("UART TASK: entered listening state\n");
-#endif
+                        PRINTF("UART TASK: entered listening state\n");
                         xTimerStart(ResetStateTimer, 0);
 
-                        // This switch block checks the request message for the which state is going to handled according to message.
+                        // This switch block checks the request message for which state is going to handled according to message.
                         switch (checkListeningData(rx_buffer, rx_buffer_len))
                         {
                         case DataError:
-#if DEBUG
-                            printf("UART TASK: entered listening-dataerror\n");
-#endif
-                            uart_putc(UART0_ID, 0x15);
+                            PRINTF("UART TASK: entered listening-dataerror\n");
+                            sendErrorMessage((char *)"DATAERROR");
+                            break;
+
+                        case BCCError:
+                            PRINTF("UART TASK: entered listening-bccerror\n");
+                            sendErrorMessage((char *)"BCCERROR");
                             break;
 
                         // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
-#if DEBUG
-                            printf("UART TASK: entered listening-reading\n");
-#endif
-                            parseReadingData(rx_buffer);
-                            searchDataInFlash();
+                            PRINTF("UART TASK: entered listening-reading\n");
+                            parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
+                            searchDataInFlash(reading_state_start_time, reading_state_end_time, Reading, ResetStateTimer);
                             break;
 
                         // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
-                        case ReProgram:
-#if DEBUG
-                            printf("UART TASK: entered listening-reprogram\n");
-#endif
-                            ReProgramHandler(rx_buffer, rx_buffer_len);
-                            xTimerStop(ResetBufferTimer, 0);
-                            xTimerStop(ResetStateTimer, 0);
-                            xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
+                        case WriteProgram:
+                            if (password_correct_flag)
+                            {
+                                PRINTF("UART TASK: entered listening-reprogram\n");
+                                ReProgramHandler();
+
+                                xTimerStop(ResetBufferTimer, 0);
+                                xTimerStop(ResetStateTimer, 0);
+                                xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
+                            }
+                            else
+                            {
+                                sendErrorMessage((char *)"PWNOTENTERED");
+                            }
                             break;
 
                         // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.
                         case Password:
-#if DEBUG
-                            printf("UART TASK: entered listening-password\n");
-#endif
-                            passwordHandler(rx_buffer, rx_buffer_len);
+                            PRINTF("UART TASK: entered listening-password\n");
+                            passwordHandler(rx_buffer);
                             break;
 
                         // This state changes time of this device.
                         case TimeSet:
-#if DEBUG
-                            printf("UART TASK: entered listening-timeset\n");
-#endif
+                            PRINTF("UART TASK: entered listening-timeset\n");
                             setTimeFromUART(rx_buffer);
                             break;
 
                         // This state changes date of this device.
                         case DateSet:
-#if DEBUG
-                            printf("UART TASK: entered listening-dateset\n");
-#endif
+                            PRINTF("UART TASK: entered listening-dateset\n");
                             setDateFromUART(rx_buffer);
                             break;
 
                         // This state sends production info for this device.
                         case ProductionInfo:
-#if DEBUG
-                            printf("UART TASK: entered listening-productioninfo\n");
-#endif
+                            PRINTF("UART TASK: entered listening-productioninfo\n");
                             sendProductionInfo();
                             break;
 
-                        // If the message is not correct, device sends a NACK message (0x15) to modem.
+                        case SetThreshold:
+                            PRINTF("UART TASK: entered listening-setthreshold\n");
+                            setThresholdValue(rx_buffer);
+                            break;
+
+                        case GetThreshold:
+                            PRINTF("UART TASK: entered listening-getthreshold\n");
+                            parseThresholdRequestDates(rx_buffer, reading_state_start_time, reading_state_end_time);
+                            getThresholdRecord(reading_state_start_time, reading_state_end_time, GetThreshold, ResetStateTimer);
+                            break;
+
+                        case ThresholdPin:
+                            PRINTF("UART TASK: entered listening-thresholdpin\n");
+                            resetThresholdPIN();
+                            break;
+
+                        case GetSuddenAmplitudeChange:
+                            PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
+                            parseACRequestDate(rx_buffer, reading_state_start_time, reading_state_end_time);
+                            getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time, GetSuddenAmplitudeChange, ResetStateTimer);
+                            break;
+
+                        case ReadTime:
+                            PRINTF("UART TASK: entered listening-readtime\n");
+                            readTime();
+                            break;
+
+                        case ReadDate:
+                            PRINTF("UART TASK: entered listening-readdate\n");
+                            readDate();
+                            break;
+
+                        case ReadSerialNumber:
+                            PRINTF("UART TASK: entered listening-readserialnumber\n");
+                            readSerialNumber();
+                            break;
+
+                        case ReadLastVRMSMax:
+                            PRINTF("UART TASK: entered listening-readlastvrmsmax\n");
+                            sendLastVRMSXValue(ReadLastVRMSMax);
+                            break;
+
+                        case ReadLastVRMSMin:
+                            sendLastVRMSXValue(ReadLastVRMSMin);
+                            break;
+
+                        case ReadLastVRMSMean:
+                            sendLastVRMSXValue(ReadLastVRMSMean);
+                            break;
+
+                        case ReadResetDates:
+                            sendResetDates();
+                            break;
+
+                        case GetThresholdObis:
+                            sendThresholdObis();
+                            break;
+
                         default:
-#if DEBUG
-                            printf("UART TASK: entered listening-default\n");
-#endif
-                            uart_putc(UART0_ID, 0x15);
+                            PRINTF("UART TASK: entered listening-default\n");
+                            sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
                             break;
                         }
+                        break;
+                    case ReProgram:
+                        PRINTF("UART TASK: entered reprogram state (UNSUPPORTED!)\n");
                         break;
                     }
                     // After a request or message, buffers and index variables will be set to zero.
                     memset(rx_buffer, 0, 256);
                     rx_buffer_len = 0;
-#if DEBUG
-                    printf("UART TASK: buffer content deleted\n");
-#endif
+                    PRINTF("UART TASK: buffer content deleted\n");
                 }
             }
         }
@@ -232,84 +303,81 @@ void vUARTTask(void *pvParameters)
 void vADCReadTask()
 {
     // Set the parameters for this task.
-    TickType_t startTime;
-    TickType_t xFrequency = pdMS_TO_TICKS(60000);
-    double vrms = 0.0;
-    TickType_t vaitingTime = 0;
-    double bias_voltage;
+    struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
+    uint8_t amplitude_change_detect_flag = 0;
+    // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
+    uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
+    float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t vrms_buffer_count = 0;
+    // vrms buffer values
+    float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
     while (1)
     {
-        if (adc_remaining_time > 0)
+        // delay until next cycle
+        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+
+        if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
         {
-            vTaskDelay(pdMS_TO_TICKS(60000) - adc_remaining_time);
-            adc_remaining_time = 0;
-        }
-        // If time of this device is changed, this block will be executed. This task executes periodically and when time changes, the period of this task is going to slip.
-        // This block aligns the period to beginning of the minute and if the current minute is aligned to 15.period, writes the record to flash and wait until beginning of the minute and continues.
-        if (time_change_flag)
-        {
-#if DEBUG
-            printf("ADC READ TASK: time change flag - block is running...\n");
-#endif
-            // Calculate waiting time to align the task to beginning of the minute.
-            vaitingTime = pdMS_TO_TICKS(60000 - ((current_time.sec) * 1000) + 100);
-            // Set the parameters for this block to zero and wait until beginning of the minute.
-            time_change_flag = 0;
-            vTaskDelay(vaitingTime);
-            vaitingTime = 0;
+            getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
+            xSemaphoreGive(xFIFOMutex);
         }
 
-        startTime = xTaskGetTickCount();
-#if DEBUG
-        printf("ADC READ TASK: adc task entered at %s.\n", datetime_str);
-#endif
-        // Select the ADC input to BIAS voltage PIN and Calculate BIAS voltage
-        adc_select_input(ADC_BIAS_INPUT);
-        adcCapture(bias_buffer, BIAS_SAMPLE);
-        bias_voltage = getMean(bias_buffer, BIAS_SAMPLE);
+        float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
+        PRINTF("vrms is: %lf\r\n", vrms);
 
-        // Select the ADC input to voltage PIN and calculate VRMS value
-        adc_select_input(ADC_SELECT_INPUT);
-        vrms = calculateVRMS(bias_voltage);
-#if DEBUG
-        printf("ADC READ TASK: bias voltage is: %lf\n", bias_voltage);
-        printf("ADC READ TASK: calcualted vrms is: %lf\n", vrms);
-#endif
-        // Add calculated VRMS value to VRMS buffer and set VRMS value to zero.
-        vrms_buffer[(vrms_buffer_count++) % 15] = vrms;
-        vrms = 0.0;
-#if DEBUG
-        printf("ADC READ TASK: now buffer content is: \n");
-        for (int8_t i = 0; i < vrms_buffer_count; i++)
-            printf("%lf\n", vrms_buffer[i]);
-        printf("\n");
-#endif
-        // Write a record to the flash memory periodically
-        if ((current_time.sec < 5 && current_time.min % 15 == 0))
+        uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        // PRINTF("variance is: %d\n", variance);
+
+        calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
+
+        vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
+
+        if (vrms >= (float)getVRMSThresholdValue())
         {
-#if DEBUG
-            printf("ADC READ TASK: minute is multiple of 15. write flash block is running...\n");
-#endif
-            if (vrms_buffer_count > 15)
-                vrms_buffer_count = 15;
-
-            vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-#if DEBUG
-            printf("ADC READ TASK: calculated VRMS values.\n");
-            printf("ADC READ TASK: vrms max is: %d,vrms min is:%d,vrms mean is: %d,vrms max dec is: %d,vrms min dec is: %d,vrms mean dec is: %d\n", vrms_max, vrms_min, vrms_mean, vrms_max_dec, vrms_min_dec, vrms_mean_dec);
-#endif
-            SPIWriteToFlash();
-#if DEBUG
-            printf("ADC READ TASK: writing flash memory process is completed.\n");
-#endif
-            memset(vrms_buffer, 0, VRMS_BUFFER_SIZE);
-            vrms_buffer_count = 0;
-#if DEBUG
-            printf("ADC READ TASK: buffer content is deleted\n");
-#endif
+            setThresholdPIN();
+            writeThresholdRecord(vrms, variance);
         }
-        vTaskDelayUntil(&startTime, xFrequency);
+
+        if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC) || amplitude_change_detect_flag)
+        {
+            PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\r\n");
+            if (amplitude_change_detect_flag)
+            {
+                writeSuddenAmplitudeChangeRecordToFlash(&ac_data);
+                amplitude_change_detect_flag = 0;
+            }
+            else
+            {
+                setAmplitudeChangeParameters(&ac_data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
+                amplitude_change_detect_flag = 1;
+            }
+        }
+
+        if (current_time.sec == 0)
+        {
+            if (current_time.min % load_profile_record_period == 0)
+            {
+                PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\r\n", load_profile_record_period);
+
+                if (vrms_buffer_count > VRMS_BUFFER_SIZE)
+                {
+                    vrms_buffer_count = VRMS_BUFFER_SIZE;
+                }
+
+                VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+                PRINTF("ADC READ TASK: calculated VRMS values.\r\n");
+
+                SPIWriteToFlash(&vrms_values);
+                PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
+
+                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
+                vrms_buffer_count = 0;
+                PRINTF("ADC READ TASK: buffer content is deleted\r\n");
+            }
+        }
+
+        watchdog_update();
     }
 }
 
@@ -323,11 +391,67 @@ void vWriteDebugTask()
     while (true)
     {
         vTaskDelayUntil(&startTime, xFrequency);
+
         rtc_get_datetime(&current_time);
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
-#if DEBUG
-        printf("WRITE DEBUG TASK: The Time is:%s \r\n", datetime_str);
-#endif
+        PRINTF("---------------------------------------------------------------------------------------------------------\n");
+        PRINTF("WRITE DEBUG TASK: The Time is:%s\r\n", datetime_str);
+    }
+}
+
+void vPowerLedBlinkTask()
+{
+    while (1)
+    {
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        gpio_put(POWER_LED_PIN, 0);
+        vTaskDelay(pdMS_TO_TICKS(1000));
+        gpio_put(POWER_LED_PIN, 1);
+    }
+}
+
+void vADCSampleTask()
+{
+    TickType_t startTime;
+    const TickType_t xFrequency = 1;
+    uint16_t adc_sample;
+    uint16_t bias_sample;
+
+    uint16_t bias_buffer[BIAS_SAMPLE_SIZE] = {0};
+    uint16_t bias_buffer_count = 0;
+
+    startTime = xTaskGetTickCount();
+    while (1)
+    {
+        adc_sample = adc_read();
+        // if (bias_buffer_count % 20 == 0)
+        // {
+        //     PRINTF("\r\n");
+        // }
+        // PRINTF("%d,", adc_sample);
+
+        bool is_added = addToFIFO(&adc_fifo, adc_sample);
+
+        if (!is_added)
+        {
+            removeFirstElementAddNewElement(&adc_fifo, adc_sample);
+        }
+
+        bias_sample = adc_read();
+        bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE_SIZE] = bias_sample;
+
+        if (bias_buffer_count == BIAS_SAMPLE_SIZE)
+        {
+            bias_voltage = getMean(bias_buffer, BIAS_SAMPLE_SIZE);
+            PRINTF("bias voltage is: %lf\r\n", bias_voltage);
+
+            bias_buffer_count = 0;
+            displayFIFOStats(&adc_fifo);
+
+            xTaskNotifyGive(xADCHandle);
+        }
+
+        vTaskDelayUntil(&startTime, xFrequency);
     }
 }
 
@@ -336,50 +460,65 @@ void vResetTask()
 {
     while (1)
     {
+        getTimePt7c4338(&current_time);
+        rtc_set_datetime(&current_time);
         gpio_put(RESET_PULSE_PIN, 1);
-        vTaskDelay(10);
+        vTaskDelay(pdMS_TO_TICKS(10));
         gpio_put(RESET_PULSE_PIN, 0);
         vTaskDelay(INTERVAL_MS);
     }
 }
 
-void main()
+int main()
 {
-    stdio_init_all();
-    sleep_ms(1000);
+    // POWER LED INIT
+    gpio_init(POWER_LED_PIN);
+    gpio_set_dir(18, GPIO_OUT);
+    gpio_put(POWER_LED_PIN, 1);
 
+#if DEBUG
+    stdio_init_all();
+    sleep_ms(2000);
+#endif
     // UART INIT
-    uart_init(UART0_ID, BAUD_RATE);
-    initUART();
+    if (!initUART())
+    {
+        return 0;
+    }
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
 
     // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
-    gpio_init(3);
-    gpio_set_dir(3, GPIO_OUT);
+
+    // THRESHOLD GPIO INIT
+    gpio_init(THRESHOLD_PIN);
+    gpio_set_dir(THRESHOLD_PIN, GPIO_OUT);
+    gpio_put(THRESHOLD_PIN, 0);
 
     // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
-    adc_select_input(ADC_SELECT_INPUT);
-
-    adc_set_clkdiv(CLOCK_DIV);
-    adcCapture(sample_buffer, VRMS_SAMPLE);
-    sleep_ms(1);
-
-    // RTC Init
-    rtc_init();
+    // adc_set_clkdiv((1e-3 * 48000000) / 96);
+    adc_set_round_robin(0x03);
 
     // I2C Init
-    i2c_init(i2c0, 400 * 1000);
+    if (!initI2C())
+    {
+        return 0;
+    }
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
+#if WITHOUT_BOOTLOADER
+    addSerialNumber();
+#endif
+
     // sector content control
     checkSectorContent();
+    checkThresholdContent();
 
     // // Reset Record Settings
     // resetFlashSettings();
@@ -387,28 +526,77 @@ void main()
     // FLASH CONTENTS
     getFlashContents();
 
+    // RTC Init
+    rtc_init();
+
     // Get PT7C4338's Time information and set RP2040's RTC module
-    getTimePt7c4338(&current_time);
-    rtc_set_datetime(&current_time);
-    sleep_us(64);
-    // Align itself to beginning of the minute
-    adc_remaining_time = pdMS_TO_TICKS(((current_time.sec + 1) * 1000) - 100);
+    if (!getTimePt7c4338(&current_time))
+    {
+        return 0;
+    }
 
-#if DEBUG
-    // FLASH RECORD AREA DEBUG
-    uint8_t *flash_record_offset = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    printBufferHex(flash_record_offset, 10 * FLASH_PAGE_SIZE);
+    // If current time which is get from Chip has invalid value, adjust the value.
+    if (current_time.dotw < 0 || current_time.dotw > 6)
+    {
+        current_time.dotw = 2;
+    }
 
-    printf("MAIN: flash sector is: %d\n", sector_data);
-    printf("MAIN: adc_remaining_time is %ld\n", adc_remaining_time);
-#endif
+    // set and get datetimes from RP2040 RTC's
+    bool is_time_set = rtc_set_datetime(&current_time);
+    sleep_ms(100);
+    bool is_time_get = rtc_get_datetime(&current_time);
 
-    xTaskCreate(vADCReadTask, "ADCReadTask", 1024, NULL, 3, &xADCHandle);
-    xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, UART_TASK_PRIORITY, NULL);
-    xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, NULL);
-    xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, NULL);
+    // if time is get correctly, set string datetime.
+    if (is_time_get)
+    {
+        datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
+    }
+    else
+    {
+        PRINTF("Time is not GET. Please check the time setting.\n");
+    }
 
-    vTaskStartScheduler();
+    initADCFIFO(&adc_fifo);
+
+    // set when program started
+    setProgramStartDate(&current_time);
+
+    if (!setMutexes())
+    {
+        PRINTF("Failed to set mutexes!\n");
+        return 0;
+    }
+
+    watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
+
+    // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
+    // uint8_t *flash_ac_buf2 = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET + FLASH_SECTOR_SIZE);
+    // printBufferHex(flash_ac_buf, 20);
+    // printBufferHex(flash_ac_buf2, 20);
+
+    // if time is set correctly, start the processes.
+    if (is_time_set)
+    {
+        PRINTF("Time is set. Starting tasks...\n");
+
+        xTaskCreate(vADCReadTask, "ADCReadTask", 6 * 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
+        xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
+        xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", 3 * 1024, NULL, 3, &xADCSampleHandle);
+        xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", 256, NULL, 1, NULL);
+
+        vTaskCoreAffinitySet(xADCHandle, 1 << 0);
+        vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
+        vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
+
+        vTaskStartScheduler();
+    }
+    else
+    {
+        PRINTF("Time is not SET. Please check the time setting.\n");
+        return 0;
+    }
 
     while (true)
         ;

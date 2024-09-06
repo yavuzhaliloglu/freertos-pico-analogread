@@ -4,34 +4,92 @@
 // This function prints a 1 byte value as binary
 void printBinaryHex(uint8_t value)
 {
-    printf("Hexadecimal Value: %02X\t Binary Value: ", value);
+    PRINTF("Hexadecimal Value: %02X\t Binary Value: ", value);
 
     for (int i = 7; i >= 0; i--)
     {
         uint8_t binstr[2] = {0};
         snprintf((char *)binstr, 2, "%d", (value & (1 << i)) ? 1 : 0);
-        printf("%s", binstr);
+        PRINTF("%s", binstr);
     }
-    printf("\n");
+    PRINTF("\n");
 }
 
 // This function prints a buffer as hexadecimal values
 void printBufferHex(uint8_t *buf, size_t len)
 {
+#if DEBUG
     for (size_t i = 0; i < len; ++i)
     {
-        printf("%02X", buf[i]);
-        if (i % 16 == 15)
-            printf("\n");
-        else
-            printf(" ");
+        PRINTF("%02X", buf[i]);
 
-        if (i % 256 == 0 && i != 0)
+        if (i % 16 == 15)
         {
-            printf("\n\n");
-            printf("page %d\n", i / 256);
+            PRINTF("\n");
+        }
+        else
+        {
+            PRINTF(" ");
+        }
+
+        if (i % 256 == 255)
+        {
+            PRINTF("page %d\n\n", i / 256);
         }
     }
+#else
+    (void)buf;
+    (void)len;
+#endif
+}
+
+// This function prints a buffer as hexadecimal values
+void printBufferUint16T(uint16_t *buf, size_t len)
+{
+#if DEBUG
+    for (size_t i = 0; i < len; ++i)
+    {
+        PRINTF("%d,", buf[i]);
+
+        if (i % 10 == 9)
+        {
+            PRINTF("\n");
+        }
+        else
+        {
+            PRINTF(" ");
+        }
+
+        // if (i % 100 == 99)
+        // {
+        //     PRINTF("\n");
+        // }
+    }
+#else
+    (void)buf;
+    (void)len;
+#endif
+}
+
+// This function prints a buffer as hexadecimal values
+void printBufferFloat(float *buf, size_t len)
+{
+#if DEBUG
+    for (size_t i = 0; i < len; ++i)
+    {
+
+        if (i % 5 == 0)
+        {
+            PRINTF("\r\n");
+        }
+        PRINTF("%f ", buf[i]);
+    }
+
+    PRINTF("\r\n");
+#else
+    (void)buf;
+    (void)len;
+#endif
 }
 
 #endif

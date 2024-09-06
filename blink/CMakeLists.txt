@@ -23,21 +23,20 @@ add_executable(blink main.c
                     header/md5.c
                     header/adc.h
                     header/print.h
+                    header/fifo.h
                     )
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 pico_set_binary_type(blink copy_to_ram)
 pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
-# set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall")
-
+set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
 
 # pull in common dependencies
 target_link_libraries(blink pico_stdlib
                     pico_stdlib_headers
+                    pico_multicore
                     hardware_structs
                     hardware_watchdog
-                    FreeRTOS-Kernel
-                    FreeRTOS-Kernel-Heap4
                     hardware_uart
                     hardware_rtc
                     hardware_i2c
@@ -46,8 +45,11 @@ target_link_libraries(blink pico_stdlib
                     hardware_spi
                     hardware_flash
                     hardware_irq
-                    hardware_sync
                     hardware_timer
+                    hardware_gpio
+                    hardware_sync
+                    FreeRTOS-Kernel
+                    FreeRTOS-Kernel-Heap4
                     )
 
 # Enable/disable STDIO via USB and UART
@@ -57,4 +59,3 @@ pico_enable_stdio_uart(blink 0)
 
 # create map/bin/hex/uf2 file etc.
 pico_add_extra_outputs(blink)
-
