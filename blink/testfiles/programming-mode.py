@@ -250,6 +250,8 @@ def sendDatetimeSetRequest():
     sendMessage(passwordMessage)
     print("password request sent!")
     time.sleep(0.25)
+
+    print(seri.readline())
     # ------------------------------------------------------------------------ //
     time_str = current_time_obj["hour"] + ":" + current_time_obj["minute"] + ":" + current_time_obj["second"]
     time_str = time_str.encode()
@@ -263,11 +265,15 @@ def sendDatetimeSetRequest():
     sendMessage(timeset)
     print("timeset request sent!")
     time.sleep(0.25)
+
+    print(seri.readline())
     # ------------------------------------------------------------------------ //
     passwordMessage2 = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
     sendMessage(passwordMessage2)
     print("password request sent!")
     time.sleep(0.25)
+
+    print(seri.readline())
     # ------------------------------------------------------------------------ //
     date_str = current_time_obj["year"] + "-" + current_time_obj["month"] + "-" + current_time_obj["day"]
     date_str = date_str.encode()
@@ -282,6 +288,8 @@ def sendDatetimeSetRequest():
     print("dateset request sent!")
 
     time.sleep(0.25)
+
+    print(seri.readline())
 
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -507,7 +515,7 @@ if(args.baud_rate):
     max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 try:
-    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=2)
+    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=1)
 except FileNotFoundError:
     print("File not found, please check connection and try again!")
     exit(1)
@@ -552,7 +560,7 @@ seri = serial.Serial(
     bytesize=7,
     parity="E",
     stopbits=1,
-    timeout=2,
+    timeout=1,
 )
 
 # read information response message
