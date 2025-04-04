@@ -46,7 +46,7 @@ uint8_t initUART()
 
 void sendResetDates()
 {
-    uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
+    uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_DATES_ADDR);
     char date_buffer[23] = {0};
     uint16_t date_offset;
     int result;
@@ -95,8 +95,8 @@ void sendResetDates()
 
 void sendDeviceInfo()
 {
-    uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
-    int offset = 0;
+    uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
+    uint32_t offset = 0;
     uint16_t record_count = 0;
 
     char debug_uart_buffer[45] = {0};
@@ -113,11 +113,11 @@ void sendDeviceInfo()
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("SEND DEVICE INFO: set data mutex received\n");
-        for (offset = 0; offset < 1556480; offset += 16)
+        for (offset = 0; offset < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; offset += FLASH_RECORD_SIZE)
         {
             if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00)
             {
-                break;
+                continue;
             }
 
             char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
@@ -140,7 +140,7 @@ void sendDeviceInfo()
         xSemaphoreGive(xFlashMutex);
     }
 
-    sprintf(debug_uart_buffer, "usage of flash is: %d/%d bytes\n", record_count * 16, (PICO_FLASH_SIZE_BYTES - FLASH_DATA_OFFSET));
+    sprintf(debug_uart_buffer, "usage of flash is: %d/%d bytes\n", record_count * 16, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
     uart_puts(UART0_ID, debug_uart_buffer);
 
     sendResetDates();
@@ -473,6 +473,48 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     PRINTF("\n");
 }
 
+uint8_t is_message_reset_factory_settings_message(uint8_t *msg_buf, uint8_t msg_len)
+{
+    uint8_t rst_msg[] = "/?RSTFS?\r\n";
+    return msg_len == 10 && strncmp((char *)msg_buf, (char *)rst_msg, 10) == 0;
+}
+
+uint8_t is_message_reboot_device_message(uint8_t *msg_buf, uint8_t msg_len)
+{
+    uint8_t rbt_msg[] = "/?RBTDVC?\r\n";
+    return msg_len == 11 && strncmp((char *)msg_buf, (char *)rbt_msg, 11) == 0;
+}
+
+void reboot_device()
+{
+    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+    watchdog_hw->scratch[5] = ENTRY_MAGIC;
+    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+    watchdog_reboot(0, 0, 0);
+}
+
+void reset_to_factory_settings()
+{
+    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    {
+        flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
+        flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_RECORDS_ADDR, FLASH_THRESHOLD_RECORDS_SIZE);
+        flash_range_erase(FLASH_RESET_DATES_ADDR, FLASH_RESET_DATES_AREA_SIZE);
+        flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET, (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE));
+
+        xSemaphoreGive(xFlashMutex);
+    }
+
+    sleep_ms(1000);
+
+    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+    watchdog_hw->scratch[5] = ENTRY_MAGIC;
+    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+    watchdog_reboot(0, 0, 0);
+}
+
 uint8_t is_end_connection_message(uint8_t *msg_buf)
 {
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q
@@ -745,11 +787,11 @@ void resetState()
 void __not_in_flash_func(rebootProgram)()
 {
     // get contents of new program area
-    uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET));
-    uint32_t epoch_current = *((uint32_t *)(XIP_BASE + FLASH_PROGRAM_OFFSET));
-    uint32_t program_len = *((uint32_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 4));
-    uint8_t *md5_offset = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + 8);
-    uint8_t *program = (uint8_t *)(XIP_BASE + FLASH_REPROGRAM_OFFSET + FLASH_PAGE_SIZE);
+    uint32_t epoch_current = *((uint32_t *)(XIP_BASE + FLASH_PROGRAM_START_ADDR));
+    uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR));
+    uint32_t program_len = *((uint32_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + 4));
+    uint8_t *md5_offset = (uint8_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + 8);
+    uint8_t *program = (uint8_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + FLASH_PAGE_SIZE);
 
     // calculate MD5 checksum for new program area
     unsigned char md5_local[MD5_DIGEST_LENGTH];
@@ -764,7 +806,7 @@ void __not_in_flash_func(rebootProgram)()
         if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
         {
             PRINTF("REBOOTPROGRAM: write flash mutex received\n");
-            flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+            flash_range_erase(FLASH_OTA_PROGRAM_ADDR, FLASH_OTA_PROGRAM_SIZE);
             xSemaphoreGive(xFlashMutex);
         }
         else
@@ -1280,7 +1322,7 @@ void __not_in_flash_func(ReProgramHandler)()
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("REPROGRAMHANDLER: write flash mutex received!\n");
-        flash_range_erase(FLASH_REPROGRAM_OFFSET, FLASH_REPROGRAM_SIZE);
+        flash_range_erase(FLASH_OTA_PROGRAM_ADDR, FLASH_OTA_PROGRAM_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -1325,7 +1367,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     uint16_t threshold_val;
     // array and pointer to write updated values to flash memory
     uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
-    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
 
     // inc start pointer
     start_ptr++;
@@ -1355,8 +1397,8 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("SETTHRESHOLDVALUE: write flash mutex received\n");
-        flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
+        flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -1378,14 +1420,10 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
 {
     datetime_t start = {0};
     datetime_t end = {0};
-    datetime_t dt_start = {0};
-    datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
-    uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
     // record area offset pointer
-    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
+    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
     // buffer to format
     uint8_t buffer[35] = {0};
     // copy the flash content in struct
@@ -1398,36 +1436,18 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
     uint16_t vrms = 0;
     uint16_t variance = 0;
 
-    // if there are just ; character between parentheses and this function executes, it means load profile request got without dates so it means all records will be showed in load profile request
-    if (date_end - date_start == 2)
-    {
-        PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
-    }
-    // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
-    else
-    {
-        PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_THRESHOLD_OFFSET, 4 * FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE, state);
-    }
+    PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
+    getAllRecords(&start_index, &end_index, &start, &end, FLASH_THRESHOLD_RECORDS_ADDR, FLASH_THRESHOLD_RECORDS_SIZE, FLASH_RECORD_SIZE, state);
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
     PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
-
-    // if start index is bigger than end index, swap the values
-    if (start_index > end_index)
-    {
-        uint32_t temp = start_index;
-        start_index = end_index;
-        end_index = temp;
-    }
 
     if (start_index >= 0 && end_index >= 0)
     {
         // initialize the variables
         uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
-        uint32_t end_addr = start_index <= end_index ? end_index : 16384;
+        uint32_t end_addr = start_index <= end_index ? end_index : (int32_t)(FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE);
         int result;
 
         // send STX character
@@ -1437,6 +1457,11 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
         {
             if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
             {
+                if (record_ptr[start_addr] == 0xFF || record_ptr[start_addr] == 0x00)
+                {
+                    xSemaphoreGive(xFlashMutex);
+                    continue;
+                }
                 PRINTF("GETTHRESHOLDRECORD: set data mutex received\n");
 
                 // copy the flash content in struct
@@ -1477,26 +1502,27 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
 
             if (start_addr == end_addr)
             {
-                result = snprintf((char *)buffer, sizeof(buffer), "\r%c", ETX);
-                bccGenerate(buffer, result, &xor_result);
+                // last sector and record control
+                if (start_index > end_index && start_addr == (FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE))
+                {
+                    start_addr = 0;
+                    end_addr = end_index;
+                }
+                else
+                {
+                    result = snprintf((char *)buffer, sizeof(buffer), "\r%c", ETX);
+                    bccGenerate(buffer, result, &xor_result);
 
-                uart_puts(UART0_ID, (char *)buffer);
-                PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
-                uart_putc(UART0_ID, xor_result);
+                    uart_puts(UART0_ID, (char *)buffer);
+                    PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
+                    uart_putc(UART0_ID, xor_result);
+                }
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
             xTimerReset(timer, 0);
 
-            // last sector and record control
-            if (start_index > end_index && start_addr == 16384)
-            {
-                start_addr = 0;
-                end_addr = end_index;
-            }
-            // jump to next record
-            else
-                start_addr += FLASH_RECORD_SIZE;
+            start_addr += FLASH_RECORD_SIZE;
         }
     }
     else
@@ -1554,42 +1580,22 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
 {
     datetime_t start = {0};
     datetime_t end = {0};
-    datetime_t dt_start = {0};
-    datetime_t dt_end = {0};
     int32_t start_index = -1;
     int32_t end_index = -1;
-    uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
-    uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
     uint8_t *flash_sudden_amp_content = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
 
-    if (date_end - date_start == 2)
-    {
-        PRINTF("GETSUDDEAMPLITUDECHANGERECORDS: All Records are going to send.\n");
-        getAllRecords(&start_index, &end_index, &start, &end, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE);
-    }
-    else
-    {
-        PRINTF("GETSUDDENAMPLITUDECHANGERECORDS: Selected Records are going to send. \n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE, state);
-    }
+    PRINTF("GETSUDDEAMPLITUDECHANGERECORDS: All Records are going to send.\n");
+    getAllRecords(&start_index, &end_index, &start, &end, FLASH_AMPLITUDE_CHANGE_OFFSET, FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE, FLASH_SECTOR_SIZE, state);
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
     PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
-
-    // if start index is bigger than end index, swap the values
-    if (start_index > end_index)
-    {
-        uint32_t temp = start_index;
-        start_index = end_index;
-        end_index = temp;
-    }
 
     if (start_index >= 0 && end_index >= 0)
     {
         // initialize the variables
         uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
-        uint32_t end_addr = start_index <= end_index ? end_index : 409600;
+        uint32_t end_addr = start_index <= end_index ? end_index : (int32_t)((FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE) - FLASH_SECTOR_SIZE);
         uint8_t ac_record_buf[FLASH_SECTOR_SIZE];
 
         uart_putc(UART0_ID, STX);
@@ -1598,6 +1604,11 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
         {
             if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
             {
+                if (flash_sudden_amp_content[0] == 0xFF || flash_sudden_amp_content[0] == 0x00)
+                {
+                    xSemaphoreGive(xFlashMutex);
+                    continue;
+                }
                 memcpy(ac_record_buf, flash_sudden_amp_content + start_addr, FLASH_SECTOR_SIZE);
                 xSemaphoreGive(xFlashMutex);
             }
@@ -1619,27 +1630,29 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
 
             if (start_addr == end_addr)
             {
-                uart_putc(UART0_ID, '\r');
-                xor_result ^= '\r';
+                // last sector and record control
+                if (start_index > end_index && start_addr == ((FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE) - FLASH_SECTOR_SIZE))
+                {
+                    start_addr = 0;
+                    end_addr = end_index;
+                }
+                else
+                {
+                    uart_putc(UART0_ID, '\r');
+                    xor_result ^= '\r';
 
-                uart_putc(UART0_ID, ETX);
-                xor_result ^= ETX;
+                    uart_putc(UART0_ID, ETX);
+                    xor_result ^= ETX;
 
-                PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
-                uart_putc(UART0_ID, xor_result);
+                    PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
+                    uart_putc(UART0_ID, xor_result);
+                }
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
 
-            // last sector and record control
-            if (start_index > end_index && start_addr == 409600)
-            {
-                start_addr = 0;
-                end_addr = end_index;
-            }
             // jump to next record
-            else
-                start_addr += FLASH_SECTOR_SIZE;
+            start_addr += FLASH_SECTOR_SIZE;
         }
     }
     else

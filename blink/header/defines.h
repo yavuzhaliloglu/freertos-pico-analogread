@@ -1,25 +1,29 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//    36kb                236kB 256kB               504kB 512kB                                                         380 Sectors                                                                    2048kB
-// |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-// |   |                    | | |                      | | | |                                                                                     |                                                     |
-// | B |      Main Program  |X|T|      OTA Program     |R|N|S|                                  Records                                            |           Sudden Amplitude Change Records           |
-// |   |                    | | |                      | | | |                                                                                     |                                                     |
-// |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-//                          240kB                      508kB 516kB                              280 Sectors                                                             100 Sectors
-//  B -> Bootloader (26kB)
-//  X -> Threshold Variable and Sector Contents
-//  T -> Threshold Contents
-//  R -> Reset Count Contents
-//  N -> Serial Number Contents
-//  S -> Sector Contents
+//    36kB             256kB              512kB    528kB              588kB                   656kB            672kB
+// |---------------------------------------------------------------------------------------------------------------------------------------------   ---------------------------------------------------------------|
+// |   |                | |               | | | | | |            | | | |                     | |               | |                                             |                                                   |
+// | B |  Main Program  |P|  OTA Program  |P|N|P|S|P| LP Records |P|X|P|  Threshold Records  |P|  Reset Dates  |P|         Empty Area            ...           |         Sudden Amplitude Change Records           |      // NEW MEMORY MAP
+// |   |    (220kB)     | |    (248kB)    | | | | | |   (48kB)   | | | |       (64kB)        | |    (4kB)      | |          (964kB)                            |                      (400kB)                      |
+// |---------------------------------------------------------------------------------------------------------------------------------------------   ---------------------------------------------------------------|
+//                      260kB                 520kB              580kB                     652kB             668kB                                           1636kB
+
+//  P -> Padding(Empty area) (4kB)
+//  B -> Bootloader (36kB)
+//  N -> Serial Number Contents (4kB)
+//  S -> Sector Contents (4kB)
+//  X -> Threshold Variable and Sector Contents (4kB)
+
 
 // MESSAGES THAT THIS DEVICE ACCEPTS
 
 // Request Message Without Serial Number and Flag:  /?!\r\n                                                     -> Length: 5
 // Request Message Without Serial Number:           /?ALP!\r\n                                                  -> Length: 8
 // Request Message with Serial Number and Flag:     /?ALP612400001!\r\n                                         -> Length: 17
+
+// Reboot device message                            /?RBTDVC?\r\n                                               -> Length: 11
+// Reset To Factory Settings message                /?RSTFS?\r\n                                                -> Length: 10
 
 // Acknowledgement Message:                         [ACK]0ZX\r\n                                                -> Length: 6
 
@@ -46,36 +50,50 @@
 
 // FLASH DEFINES
 
+// padding size
+#define PADDING_SIZE FLASH_SECTOR_SIZE
 // this is the start offset of the program
-#define FLASH_PROGRAM_OFFSET 36 * 1024
-// threshold values offset (first 2 byte value is threshold value, second 2 byte value is threshold records sector value)
-#define FLASH_THRESHOLD_INFO_OFFSET (256 * 1024) - (5 * FLASH_SECTOR_SIZE)
-// threshold values offset
-#define FLASH_THRESHOLD_OFFSET (256 * 1024) - (4 * FLASH_SECTOR_SIZE)
+#define FLASH_PROGRAM_START_ADDR (36 * 1024)
+// this is the length of main program binary
+#define FLASH_PROGRAM_SIZE (220 * 1024)
 // this is the start offset of OTA program will written
-#define FLASH_REPROGRAM_OFFSET 256 * 1024
-// reset count offset
-#define FLASH_RESET_COUNT_OFFSET (512 * 1024) - (2 * FLASH_SECTOR_SIZE)
+#define FLASH_OTA_PROGRAM_ADDR (FLASH_PROGRAM_START_ADDR + FLASH_PROGRAM_SIZE) + PADDING_SIZE
+// OTA program size
+#define FLASH_OTA_PROGRAM_SIZE (248 * 1024)
 // this is the start offset of device serial number information
-#define FLASH_SERIAL_OFFSET (512 * 1024) - FLASH_SECTOR_SIZE
+#define FLASH_SERIAL_NUMBER_ADDR (FLASH_OTA_PROGRAM_ADDR + FLASH_OTA_PROGRAM_SIZE) + PADDING_SIZE
+// this is the size of serial number flah area
+#define FLASH_SERIAL_NUMBER_AREA_SIZE FLASH_SECTOR_SIZE
 // this is the start offset of sector information that load profile records will written
-#define FLASH_SECTOR_OFFSET 512 * 1024
+#define FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR (FLASH_SERIAL_NUMBER_ADDR + FLASH_SERIAL_NUMBER_AREA_SIZE) + PADDING_SIZE
+// this is the size of sector information area
+#define FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE FLASH_SECTOR_SIZE
 // this is the start offset of load profile records will written
-#define FLASH_DATA_OFFSET (512 * 1024) + FLASH_SECTOR_SIZE
+#define FLASH_LOAD_PROFILE_RECORD_ADDR (FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR + FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE) + PADDING_SIZE
+// this is the count of total sectors in flash
+#define FLASH_LOAD_PROFILE_AREA_TOTAL_SECTOR_COUNT 12
+// this is the size of load profile records
+#define FLASH_LOAD_PROFILE_RECORD_AREA_SIZE (FLASH_LOAD_PROFILE_AREA_TOTAL_SECTOR_COUNT * FLASH_SECTOR_SIZE)
+// threshold values offset (first 2 byte value is threshold value, second 2 byte value is threshold records sector value)
+#define FLASH_THRESHOLD_PARAMETERS_ADDR (FLASH_LOAD_PROFILE_RECORD_ADDR + FLASH_LOAD_PROFILE_RECORD_AREA_SIZE) + PADDING_SIZE
+// threshold parameters size
+#define FLASH_THRESHOLD_PARAMETERS_SIZE FLASH_SECTOR_SIZE
+// threshold values offset
+#define FLASH_THRESHOLD_RECORDS_ADDR (FLASH_THRESHOLD_PARAMETERS_ADDR + FLASH_THRESHOLD_PARAMETERS_SIZE) + PADDING_SIZE
+// threshold records area size
+#define FLASH_THRESHOLD_RECORDS_SIZE (16 * FLASH_SECTOR_SIZE)
+// reset count offset
+#define FLASH_RESET_DATES_ADDR (FLASH_THRESHOLD_RECORDS_ADDR + FLASH_THRESHOLD_RECORDS_SIZE) + PADDING_SIZE 
+// reset dates area size
+#define FLASH_RESET_DATES_AREA_SIZE FLASH_SECTOR_SIZE
 // amplitude change records offset
-#define FLASH_AMPLITUDE_CHANGE_OFFSET FLASH_DATA_OFFSET + (FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE)
-// repgrogram area size
-#define FLASH_REPROGRAM_SIZE FLASH_RESET_COUNT_OFFSET - FLASH_REPROGRAM_OFFSET
-// this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
-#define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
-// this is the count of total sectors in flash expect first 512kB + 4kB of flash (main program(256kB), OTA program(256kB), sector information(4kB))
-#define FLASH_TOTAL_SECTORS 280
+#define FLASH_AMPLITUDE_CHANGE_OFFSET (1636 * 1024)
 // amplitude records size as sectors
 #define FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR 100
+// this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
+#define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the size of one load profile record
-#define FLASH_RECORD_SIZE 16
-// this is the count of total records can be kept in a flash
-#define FLASH_TOTAL_RECORDS (PICO_FLASH_SIZE_BYTES - (FLASH_DATA_OFFSET)) / FLASH_RECORD_SIZE
+#define FLASH_RECORD_SIZE (16)
 // serial number size
 #define SERIAL_NUMBER_SIZE 9
 

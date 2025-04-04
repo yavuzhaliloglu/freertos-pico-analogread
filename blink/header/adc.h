@@ -80,9 +80,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
 
     // initialize the variables
     struct ThresholdData data;
-    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE));
-    // uint8_t *flash_threshold_recs_start = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET);
-    // uint8_t *flash_threshold_recs_end = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_OFFSET + (3 * FLASH_SECTOR_SIZE) + 14 * FLASH_PAGE_SIZE);
+    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
     uint16_t offset = 0;
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
@@ -116,16 +114,16 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
             {
                 if (offset == 0)
                 {
-                    PRINTF("SETFLASHDATA: last record is not found.\r\n");
+                    PRINTF("WRITETHRESHOLDRECORD: last record is not found.\r\n");
                 }
                 else
                 {
-                    PRINTF("SETFLASHDATA: last record is start in %d offset\r\n", offset - 16);
+                    PRINTF("WRITETHRESHOLDRECORD: last record is start in %d offset\r\n", offset - 16);
                 }
 
                 th_flash_buf[offset / FLASH_RECORD_SIZE] = data;
 
-                PRINTF("SETFLASHDATA: record saved to offset: %d. used %d/%d of sector.\r\n", offset, offset + 16, FLASH_SECTOR_SIZE);
+                PRINTF("WRITETHRESHOLDRECORD: record saved to offset: %d. used %d/%d of sector.\r\n", offset, offset + 16, FLASH_SECTOR_SIZE);
 
                 break;
             }
@@ -141,7 +139,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
     if (offset >= FLASH_SECTOR_SIZE)
     {
-        PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\r\n", th_sector_data);
+        PRINTF("WRITETHRESHOLDRECORD: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\r\n", th_sector_data);
 
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
         if (th_sector_data == 3)
@@ -153,25 +151,22 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
             th_sector_data++;
         }
 
-        PRINTF("SETFLASHDATA: new sector value is: %d\r\n", th_sector_data);
+        PRINTF("WRITETHRESHOLDRECORD: new sector value is: %d\r\n", th_sector_data);
 
         // reset variables and call setSectorData()
         memset(th_flash_buf, 0, FLASH_SECTOR_SIZE);
         th_flash_buf[0] = data;
         updateThresholdSector(th_sector_data);
 
-        PRINTF("SETFLASHDATA: Sector changing written to flash.\r\n");
+        PRINTF("WRITETHRESHOLDRECORD: Sector changing written to flash.\r\n");
     }
-
-    // PRINTF("WRITETHRESHOLDDATA: flash_th_buf as hexadecimal: \n");
-    // printBufferHex((uint8_t *)th_flash_buf, FLASH_PAGE_SIZE);
 
     // write buffer in flash
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("WRITETHRESHOLDRECORD: write flash mutex received\r\n");
-        flash_range_erase(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_OFFSET + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
         PRINTF("WRITETHRESHOLDDATA: threshold record written to flash.\r\n");
         xSemaphoreGive(xFlashMutex);
     }
@@ -179,11 +174,6 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     {
         PRINTF("MUTEX CANNOT RECEIVED!\r\n");
     }
-    // PRINTF("WRITETHRESHOLDDATA: threshold records start area: \n");
-    // printBufferHex(flash_threshold_recs_start, FLASH_PAGE_SIZE);
-
-    // PRINTF("WRITETHRESHOLDDATA: threshold records end area: \n");
-    // printBufferHex(flash_threshold_recs_end, 3 * FLASH_PAGE_SIZE);
 }
 
 uint8_t detectSuddenAmplitudeChangeWithDerivative(float *sample_buf, size_t buffer_size)

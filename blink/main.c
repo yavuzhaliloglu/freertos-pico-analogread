@@ -135,6 +135,16 @@ void vUARTTask(void *pvParameters)
                         break;
                     }
 
+                    if (is_message_reset_factory_settings_message(rx_buffer, rx_buffer_len))
+                    {
+                        reset_to_factory_settings();
+                    }
+
+                    if (is_message_reboot_device_message(rx_buffer, rx_buffer_len))
+                    {
+                        reboot_device();
+                    }
+
                     switch (state)
                     {
                     // This is the Initial state in device. In this state, modem and device will handshake.
@@ -424,11 +434,6 @@ void vADCSampleTask()
     while (1)
     {
         adc_sample = adc_read();
-        // if (bias_buffer_count % 20 == 0)
-        // {
-        //     PRINTF("\r\n");
-        // }
-        // PRINTF("%d,", adc_sample);
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
 
@@ -444,10 +449,7 @@ void vADCSampleTask()
         {
             bias_voltage = getMean(bias_buffer, BIAS_SAMPLE_SIZE);
             PRINTF("bias voltage is: %lf\r\n", bias_voltage);
-
             bias_buffer_count = 0;
-            displayFIFOStats(&adc_fifo);
-
             xTaskNotifyGive(xADCHandle);
         }
 
@@ -569,11 +571,6 @@ int main()
 
     watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
 
-    // uint8_t *flash_ac_buf = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
-    // uint8_t *flash_ac_buf2 = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET + FLASH_SECTOR_SIZE);
-    // printBufferHex(flash_ac_buf, 20);
-    // printBufferHex(flash_ac_buf2, 20);
-
     // if time is set correctly, start the processes.
     if (is_time_set)
     {
@@ -595,7 +592,10 @@ int main()
     else
     {
         PRINTF("Time is not SET. Please check the time setting.\n");
-        return 0;
+        hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
+        watchdog_hw->scratch[5] = ENTRY_MAGIC;
+        watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+        watchdog_reboot(0, 0, 0);
     }
 
     while (true)

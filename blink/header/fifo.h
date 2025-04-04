@@ -76,15 +76,6 @@ void displayFIFO(ADC_FIFO *f)
     PRINTF("\n");
 }
 
-void displayFIFOStats(ADC_FIFO *f)
-{
-#if DEBUG
-    PRINTF("ADCFIFO: head = %u, tail = %u, count = %u.\r\n", f->head, f->tail, f->count);
-#else
-    (void)f;
-#endif
-}
-
 bool removeFirstElementAddNewElement(ADC_FIFO *f, uint16_t data)
 {
     bool is_removed_from_fifo = removeFromFIFO(f);

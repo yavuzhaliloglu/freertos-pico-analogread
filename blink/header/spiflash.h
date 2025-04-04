@@ -44,7 +44,7 @@ void writeBlock(uint8_t *buffer, uint8_t size)
         if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
         {
             // write the buffer to flash
-            flash_range_program(FLASH_REPROGRAM_OFFSET + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
+            flash_range_program(FLASH_OTA_PROGRAM_ADDR + (ota_block_count * FLASH_RPB_BLOCK_SIZE), rpb, FLASH_RPB_BLOCK_SIZE);
             // jump to next block offset to write data automatically
 
             xSemaphoreGive(xFlashMutex);
@@ -81,20 +81,20 @@ void writeProgramToFlash(uint8_t chr)
 void getFlashContents()
 {
     // get sector count of records
-    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
+    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR);
     sector_data = flash_sector_content[0];
 
     // get record data
-    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR + (sector_data * FLASH_SECTOR_SIZE));
     memcpy(flash_data, flash_data_contents, FLASH_SECTOR_SIZE);
 
     // get threshold data
-    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
     vrms_threshold = th_ptr[0];
     th_sector_data = th_ptr[1];
 
     // set serial number
-    uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+    uint8_t *serial_number_offset = (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
     memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
 
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
@@ -113,8 +113,8 @@ void __not_in_flash_func(setSectorData)(uint16_t sector_value)
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("SETSECTORDATA: write flash mutex received\n");
-        flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
+        flash_range_program(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -208,7 +208,7 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values)
 {
     // initialize the variables
     struct FlashData data;
-    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE));
+    uint8_t *flash_data_contents = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR + (sector_data * FLASH_SECTOR_SIZE));
     uint16_t offset = 0;
 
     // set date values and VRMS values to FlashData struct variable
@@ -268,7 +268,7 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values)
         PRINTF("SETFLASHDATA: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\n", sector_data);
 
         // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
-        if (sector_data == FLASH_TOTAL_SECTORS)
+        if (sector_data == FLASH_LOAD_PROFILE_AREA_TOTAL_SECTOR_COUNT - 1)
         {
             sector_data = 0;
         }
@@ -299,8 +299,8 @@ void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values)
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("SPIWRITETOFLASH: write flash mutex received\n");
-        flash_range_erase(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_DATA_OFFSET + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
+        flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR + (sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_LOAD_PROFILE_RECORD_ADDR + (sector_data * FLASH_SECTOR_SIZE), (uint8_t *)flash_data, FLASH_SECTOR_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -378,33 +378,50 @@ void datetimeCopy(datetime_t *src, datetime_t *dst)
     dst->sec = src->sec;
 }
 
-void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size, uint16_t record_size)
+void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state)
 {
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
+    uint8_t *flash_data_ptr = (uint8_t *)(XIP_BASE + offset);
+
+    if (state == GetThreshold || state == GetSuddenAmplitudeChange || state == ReadResetDates)
+    {
+        arrayToDatetimeWithSecond(start, &flash_data_ptr[0]);
+        arrayToDatetimeWithSecond(end, &flash_data_ptr[0]);
+    }
+    else
+    {
+        arrayToDatetime(start, &flash_data_ptr[0]);
+        arrayToDatetime(end, &flash_data_ptr[0]);
+    }
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("GETALLRECORDS: offset loop mutex received\n");
-        for (unsigned int i = 0; i < size; i += record_size)
+        for (uint32_t i = 0; i < size; i += record_size)
         {
-            // this is the end index control. if start index occurs and current index starts with FF or current index is NULL which means this is the last index of records
-            if ((*st_idx != -1) && (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00))
-            {
-                arrayToDatetime(end, &flash_start_content[i - record_size]);
-                *end_idx = i - record_size;
-                break;
-            }
-
-            // if current index is 0xFF or 0x00, this is an empty record and no need to look for if it is start index, continue the loop
-            if (flash_start_content[i] == 0xFF || flash_start_content[i] == 0x00)
+            if (flash_data_ptr[i] == 0xFF || flash_data_ptr[i] == 0x00)
             {
                 continue;
             }
 
-            // if current record is not empty, this is start index of records.
-            if (*st_idx == -1)
+            datetime_t temp = {0};
+            if (state == GetThreshold || state == GetSuddenAmplitudeChange || state == ReadResetDates)
             {
-                arrayToDatetime(start, &flash_start_content[i]);
+                arrayToDatetimeWithSecond(&temp, &flash_data_ptr[i]);
+            }
+            else
+            {
+                arrayToDatetime(&temp, &flash_data_ptr[i]);
+            }
+
+            if (datetimeComp(&temp, end) >= 0)
+            {
+                datetimeCopy(&temp, end);
+                *end_idx = i;
+            }
+
+            if (datetimeComp(&temp, start) <= 0)
+            {
+                datetimeCopy(&temp, start);
                 *st_idx = i;
             }
         }
@@ -495,7 +512,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     int32_t start_index = -1;
     int32_t end_index = -1;
     char load_profile_line[41] = {0};
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_DATA_OFFSET);
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
     uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
     uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
     char year[3] = {0};
@@ -514,25 +531,17 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     if (date_end - date_start == 2)
     {
         PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE);
+        getAllRecords(&start_index, &end_index, &start, &end, FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE, FLASH_RECORD_SIZE, state);
     }
     // if rx_buffer_len is not 14, request got with dates and records will be showed between those dates.
     else
     {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_DATA_OFFSET, FLASH_TOTAL_RECORDS, FLASH_RECORD_SIZE, state);
+        getSelectedRecords(&start_index, &end_index, &start, &end, &dt_start, &dt_end, reading_state_start_time, reading_state_end_time, FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE, FLASH_RECORD_SIZE, state);
     }
 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
     PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
-
-    // if start index is bigger than end index, swap the values
-    if (start_index > end_index)
-    {
-        uint32_t temp = start_index;
-        start_index = end_index;
-        end_index = temp;
-    }
 
     // if there start and end index are set, there are records between these times so send them to UART
     if (start_index >= 0 && end_index >= 0)
@@ -542,7 +551,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
         // initialize the variables
         uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
-        uint32_t end_addr = start_index <= end_index ? end_index : 1572864;
+        uint32_t end_addr = start_index <= end_index ? end_index : (int32_t)(FLASH_LOAD_PROFILE_RECORD_AREA_SIZE - FLASH_RECORD_SIZE);
         int result;
 
         // send STX character
@@ -552,6 +561,11 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
         {
             if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
             {
+                if (flash_start_content[start_addr] == 0xFF || flash_start_content[start_addr] == 0x00)
+                {
+                    xSemaphoreGive(xFlashMutex);
+                    continue;
+                }
                 PRINTF("SEARCHDATAINFLASH: set data mutex received\n");
 
                 // set char arrays to initialize a string for record
@@ -592,26 +606,26 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
             // if start address equals to end address, it means there is just one record to send or this record is the last record to send
             if (start_addr == end_addr)
             {
-                result = snprintf(load_profile_line, sizeof(load_profile_line), "\r%c", ETX);
-                bccGenerate((uint8_t *)load_profile_line, result, &xor_result);
+                if (start_index > end_index && start_addr == FLASH_LOAD_PROFILE_RECORD_AREA_SIZE - FLASH_RECORD_SIZE)
+                {
+                    start_addr = 0;
+                    end_addr = end_index;
+                }
+                else
+                {
+                    result = snprintf(load_profile_line, sizeof(load_profile_line), "\r%c", ETX);
+                    bccGenerate((uint8_t *)load_profile_line, result, &xor_result);
 
-                uart_puts(UART0_ID, load_profile_line);
-                PRINTF("SEARCHDATAINFLASH: lp data block xor is: %02X\n", xor_result);
-                uart_putc(UART0_ID, xor_result);
+                    uart_puts(UART0_ID, load_profile_line);
+                    PRINTF("SEARCHDATAINFLASH: lp data block xor is: %02X\n", xor_result);
+                    uart_putc(UART0_ID, xor_result);
+                }
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
             xTimerReset(timer, 0);
 
-            // last sector and record control
-            if (start_index > end_index && start_addr == 1572848)
-            {
-                start_addr = 0;
-                end_addr = end_index;
-            }
-            // jump to next record
-            else
-                start_addr += FLASH_RECORD_SIZE;
+            start_addr += FLASH_RECORD_SIZE;
         }
     }
     // if start record or end record does not exist, send NACK message
@@ -636,10 +650,10 @@ void __not_in_flash_func(resetFlashSettings)()
     uint16_t reset_flash[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
 
     uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
+    flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
+    flash_range_program(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
 
-    flash_range_erase(FLASH_DATA_OFFSET, FLASH_TOTAL_SECTORS * FLASH_SECTOR_SIZE);
+    flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
     restore_interrupts(ints);
 
     PRINTF("RESETFLASHSETTINGS: erasing is successful.\n");
@@ -647,7 +661,7 @@ void __not_in_flash_func(resetFlashSettings)()
 
 void __not_in_flash_func(checkSectorContent)()
 {
-    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_SECTOR_OFFSET);
+    uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR);
 
     if (flash_sector_content[0] == 0xFFFF)
     {
@@ -655,15 +669,15 @@ void __not_in_flash_func(checkSectorContent)()
         uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
 
         uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_SECTOR_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_SECTOR_OFFSET, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
+        flash_range_program(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
         restore_interrupts(ints);
     }
 }
 
 void __not_in_flash_func(checkThresholdContent)()
 {
-    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_INFO_OFFSET);
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
 
     // Threshold value control
     if (th_ptr[0] == 0xFFFF)
@@ -675,8 +689,8 @@ void __not_in_flash_func(checkThresholdContent)()
         th_arr[1] = th_ptr[1];
 
         uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
+        flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         restore_interrupts(ints);
     }
     // Threshold Records Sector control
@@ -689,8 +703,8 @@ void __not_in_flash_func(checkThresholdContent)()
         th_arr[1] = 0;
 
         uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
+        flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         restore_interrupts(ints);
     }
 }
@@ -705,8 +719,8 @@ void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val)
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("UPDATETHRESHOLDSECTOR: write flash mutex received\n");
-        flash_range_erase(FLASH_THRESHOLD_INFO_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_THRESHOLD_INFO_OFFSET, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
+        flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -722,14 +736,14 @@ void __not_in_flash_func(addSerialNumber)()
     PRINTF("ADDSERIALNUMBER: entered addserialnumber function.\n");
 
     uint32_t ints = save_and_disable_interrupts();
-    uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_OFFSET);
+    uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
 
     if (snumber[0] == 0xFF)
     {
         PRINTF("ADDSERIALNUMBER: serial number is going to be added.\n");
 
-        flash_range_erase(FLASH_SERIAL_OFFSET, FLASH_SECTOR_SIZE);
-        flash_range_program(FLASH_SERIAL_OFFSET, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
+        flash_range_erase(FLASH_SERIAL_NUMBER_ADDR, FLASH_SERIAL_NUMBER_AREA_SIZE);
+        flash_range_program(FLASH_SERIAL_NUMBER_ADDR, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
     }
 
     restore_interrupts(ints);
@@ -738,7 +752,7 @@ void __not_in_flash_func(addSerialNumber)()
 
 void __not_in_flash_func(setProgramStartDate)(datetime_t *ct)
 {
-    uint8_t *flash_reset_count_offset = (uint8_t *)(XIP_BASE + FLASH_RESET_COUNT_OFFSET);
+    uint8_t *flash_reset_count_offset = (uint8_t *)(XIP_BASE + FLASH_RESET_DATES_ADDR);
     uint8_t current_time_buffer[16] = {0};
     uint8_t flash_reset_count_buffer[FLASH_SECTOR_SIZE] = {0};
     uint16_t offset = 0;
@@ -780,8 +794,8 @@ void __not_in_flash_func(setProgramStartDate)(datetime_t *ct)
     memcpy(flash_reset_count_buffer + offset, current_time_buffer, sizeof(current_time_buffer));
 
     uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_RESET_COUNT_OFFSET, FLASH_SECTOR_SIZE);
-    flash_range_program(FLASH_RESET_COUNT_OFFSET, flash_reset_count_buffer, FLASH_SECTOR_SIZE);
+    flash_range_erase(FLASH_RESET_DATES_ADDR, FLASH_RESET_DATES_AREA_SIZE);
+    flash_range_program(FLASH_RESET_DATES_ADDR, flash_reset_count_buffer, FLASH_SECTOR_SIZE);
     restore_interrupts(ints);
 
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
@@ -791,36 +805,37 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(struct Amplitu
 {
     PRINTF("write sudden amplitude change record to flash\r\n");
 
-    uint16_t ac_sector = 0;
+    uint16_t sector_index = 0;
     uint8_t *flash_ac_records = (uint8_t *)(XIP_BASE + FLASH_AMPLITUDE_CHANGE_OFFSET);
-    size_t sector_count = 0;
+    uint32_t data_index = 0;
     // amplitude change data buffer
     struct AmplitudeChangeData ac_flash_data;
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("WRITESUDDENAMPCHANGE: loop mutex received\r\n");
-        for (sector_count = 0; sector_count < FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE; sector_count += FLASH_SECTOR_SIZE)
+        for (data_index = 0; data_index < FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE; data_index += FLASH_SECTOR_SIZE)
         {
-            if (flash_ac_records[sector_count] == 0xFF)
+            if (flash_ac_records[data_index] == 0xFF)
             {
+                xSemaphoreGive(xFlashMutex);
                 break;
             }
             else
             {
-                ac_sector++;
+                sector_index++;
             }
         }
 
         xSemaphoreGive(xFlashMutex);
     }
 
-    if (ac_sector == FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR)
+    if (sector_index == FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR)
     {
-        ac_sector = 0;
+        sector_index = 0;
     }
 
-    PRINTF("ac sector = %d\r\n", ac_sector);
+    PRINTF("ac sector = %d\r\n", sector_index);
 
     // set current date
     setDateToCharArray(current_time.year, ac_flash_data.year);
@@ -855,15 +870,15 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(struct Amplitu
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
         PRINTF("WRITESUDDENAMPCHANGE: write flash mutex received\r\n");
-        if (ac_sector == (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR - 1))
+        if (sector_index == (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR - 1))
         {
-            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
+            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (sector_index * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
         }
         else
         {
-            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), 2 * FLASH_SECTOR_SIZE);
+            flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET + (sector_index * FLASH_SECTOR_SIZE), 2 * FLASH_SECTOR_SIZE);
         }
-        flash_range_program(FLASH_AMPLITUDE_CHANGE_OFFSET + (ac_sector * FLASH_SECTOR_SIZE), (const uint8_t *)&ac_flash_data, FLASH_SECTOR_SIZE);
+        flash_range_program(FLASH_AMPLITUDE_CHANGE_OFFSET + (sector_index * FLASH_SECTOR_SIZE), (const uint8_t *)&ac_flash_data, FLASH_SECTOR_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
@@ -871,7 +886,7 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(struct Amplitu
         PRINTF("MUTEX CANNOT RECEIVED!\r\n");
     }
 
-    PRINTF("Written ac sector: %d\r\n", ac_sector);
+    PRINTF("Written ac sector: %d\r\n", sector_index);
 }
 
 #endif
