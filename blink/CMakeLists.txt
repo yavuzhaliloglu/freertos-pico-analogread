@@ -13,7 +13,7 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-add_executable(blink main.c
+add_executable(blink main.c 
                     header/defines.h
                     header/variables.h
                     header/rtc.h
@@ -28,7 +28,6 @@ add_executable(blink main.c
 
 target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR})
 pico_set_binary_type(blink copy_to_ram)
-pico_set_linker_script(blink /home/yavuz/pico/freertos-pico/blink/blink.ld)
 set_target_properties(blink PROPERTIES COMPILE_FLAGS "-Wall -Wextra")
 
 # pull in common dependencies
@@ -54,7 +53,7 @@ target_link_libraries(blink pico_stdlib
 
 # Enable/disable STDIO via USB and UART
 # We use UART1 as a debug port because UART0 is attached to RS485
-pico_enable_stdio_usb(blink 0)
+pico_enable_stdio_usb(blink 1)
 pico_enable_stdio_uart(blink 0)
 
 # create map/bin/hex/uf2 file etc.

@@ -1,6 +1,74 @@
 #ifndef SPIFLASH_H
 #define SPIFLASH_H
 
+uint8_t read_sr(uint8_t sr_index)
+{
+    uint8_t tx[1];
+
+    if (sr_index == 1)
+    {
+        // tx[2] = {0x05, 0x00}; // Read Status Register 1 command
+        memcpy(tx, (uint8_t[]){0x05}, sizeof(tx));
+    }
+    else if (sr_index == 2)
+    {
+        // uint8_t tx[2] = {0x35, 0x00}; // Read Status Register 2 command
+        memcpy(tx, (uint8_t[]){0x35}, sizeof(tx));
+    }
+    else if (sr_index == 3)
+    {
+        // uint8_t tx[2] = {0x15, 0x00}; // Read Status Register 3 command
+        memcpy(tx, (uint8_t[]){0x15}, sizeof(tx));
+    }
+    else
+    {
+        PRINTF("Invalid SR index: %d\n", sr_index);
+        return 255;
+    }
+
+    uint8_t rx[1 + 1];
+
+    // Fill rx with zeros (not required but cleaner)
+    memset(rx, 0, sizeof(rx));
+
+    PRINTF("Sending command to read SR: %02X\n", tx[0]);
+
+    // Execute the flash command
+    flash_do_cmd(tx, rx, sizeof(rx));
+
+    // First 5 bytes are command, next 8 bytes are response
+    PRINTF("SR Content:\n");
+    for (int i = 1; i < 2; ++i)
+    {
+        PRINTF("0x%02X\n", rx[i]);
+        PRINTF("\n");
+        return rx[i]; // Return the value of the requested status register
+    }
+
+    return 255;
+}
+
+void __not_in_flash_func(send_write_enable_command)()
+{
+    uint8_t tx_wel[1] = {0x50}; // Write Enable command
+    flash_do_cmd(tx_wel, NULL, 1);
+    PRINTF("Write Enable command sent.\n");
+}
+
+void __not_in_flash_func(send_write_protect_command)()
+{
+    uint8_t tx_wsr1[2] = {0x01, 0x2C};
+    flash_do_cmd(tx_wsr1, NULL, 2);
+    PRINTF("Write Protect command sent.\n");
+}
+
+void read_flash_status_registers(){
+    read_sr(1);
+    read_sr(2);
+    read_sr(3);
+    PRINTF("Flash status registers read.\n");
+}
+
 // this functions gets a buffer and adds last element's bits to rest of buffer's elements
 void convertTo8Bit(uint8_t *buffer, uint8_t len)
 {

@@ -177,9 +177,6 @@ int data_cnt = 0;
 // this flag variable is used to write reamining contents in rpb buffer to flash
 bool is_program_end = false;
 // serial number of this device
-#if WITHOUT_BOOTLOADER
-static const char s_number[256] = "REPLACESN\0";
-#endif
 float bias_voltage = 0;
 // RTC VARIABLES
 

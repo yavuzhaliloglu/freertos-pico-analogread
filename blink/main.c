@@ -478,10 +478,9 @@ int main()
     gpio_set_dir(18, GPIO_OUT);
     gpio_put(POWER_LED_PIN, 1);
 
-#if DEBUG
     stdio_init_all();
     sleep_ms(2000);
-#endif
+
     // UART INIT
     if (!initUART())
     {
@@ -530,6 +529,13 @@ int main()
 
     // RTC Init
     rtc_init();
+
+    // Enable Write Protection for this device's firmware (first 256KB of flash memory)
+    read_flash_status_registers();
+    send_write_enable_command();
+    sleep_ms(10);
+    send_write_protect_command();
+    sleep_ms(10);
 
     // Get PT7C4338's Time information and set RP2040's RTC module
     if (!getTimePt7c4338(&current_time))
@@ -592,9 +598,6 @@ int main()
     else
     {
         PRINTF("Time is not SET. Please check the time setting.\n");
-        hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-        watchdog_hw->scratch[5] = ENTRY_MAGIC;
-        watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
         watchdog_reboot(0, 0, 0);
     }
 

@@ -5,9 +5,9 @@
 // production date of device (yy-mm-dd)
 #define PRODUCTION_DATE "24-03-13"
 // Debugs
-#define DEBUG 0
+#define DEBUG 1
 // bootloader select
-#define WITHOUT_BOOTLOADER 0
+#define WITHOUT_BOOTLOADER 1
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
 // watchdog timeout ms to reset device
@@ -17,4 +17,8 @@
 #define PRINTF(x, ...) printf(x, ##__VA_ARGS__)
 #else
 #define PRINTF(x, ...)
+#endif
+
+#if WITHOUT_BOOTLOADER
+static const char s_number[256] = "612400088";
 #endif

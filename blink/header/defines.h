@@ -172,7 +172,6 @@
 #define RTC_I2C_SCL_PIN 21
 
 // SPECIAL CHARACTERS
-
 #define SOH 0x01
 #define STX 0x02
 #define ETX 0x03
