@@ -67,14 +67,6 @@ void vUARTTask(void *pvParameters)
         NULL,
         resetState);
 
-    // This timer handles to reboot device if there is no character coming in WriteProgram state. When this timer executes, it means that program data coming from UART is over or cut off
-    TimerHandle_t ReprogramTimer = xTimerCreate(
-        "ReprogramTimer",
-        pdMS_TO_TICKS(5000),
-        pdFALSE,
-        NULL,
-        RebootHandler);
-
     TimerHandle_t ErrorTimer = xTimerCreate(
         "ErrorTimer",
         pdMS_TO_TICKS(1000),
@@ -96,16 +88,6 @@ void vUARTTask(void *pvParameters)
                 // Get character from UART
                 uint8_t rx_char = uart_getc(UART0_ID);
                 xTimerStart(ErrorTimer, 0);
-
-                // If state is ReProgram then the characters coming from UART are going to handle in this block, because that characters are represent program bytes.
-                if (state == ReProgram)
-                {
-                    xTimerReset(ReprogramTimer, 0);
-                    writeProgramToFlash(rx_char);
-
-                    continue;
-                }
-
                 PRINTF("%02X\r\n", rx_char);
 
                 rx_buffer[rx_buffer_len++] = rx_char;
@@ -131,7 +113,6 @@ void vUARTTask(void *pvParameters)
                     {
                         resetRxBuffer();
                         resetState();
-
                         break;
                     }
 
@@ -165,7 +146,7 @@ void vUARTTask(void *pvParameters)
                         settingStateHandler(rx_buffer, rx_buffer_len);
                         break;
 
-                    // This state handles the request messages for load profile, set date and time, send production info and also before entering WriteProgram state.
+                    // This state handles the request messages for load profile, set date and time, send production info.
                     case Listening:
                         PRINTF("UART TASK: entered listening state\n");
                         xTimerStart(ResetStateTimer, 0);
@@ -188,23 +169,6 @@ void vUARTTask(void *pvParameters)
                             PRINTF("UART TASK: entered listening-reading\n");
                             parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
                             searchDataInFlash(reading_state_start_time, reading_state_end_time, Reading, ResetStateTimer);
-                            break;
-
-                        // This state handles the tasks, timers and sets the state to WriteProgram to start program data handling.
-                        case WriteProgram:
-                            if (password_correct_flag)
-                            {
-                                PRINTF("UART TASK: entered listening-reprogram\n");
-                                ReProgramHandler();
-
-                                xTimerStop(ResetBufferTimer, 0);
-                                xTimerStop(ResetStateTimer, 0);
-                                xTimerStart(ReprogramTimer, pdMS_TO_TICKS(100));
-                            }
-                            else
-                            {
-                                sendErrorMessage((char *)"PWNOTENTERED");
-                            }
                             break;
 
                         // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.
@@ -294,9 +258,6 @@ void vUARTTask(void *pvParameters)
                             sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
                             break;
                         }
-                        break;
-                    case ReProgram:
-                        PRINTF("UART TASK: entered reprogram state (UNSUPPORTED!)\n");
                         break;
                     }
                     // After a request or message, buffers and index variables will be set to zero.

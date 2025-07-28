@@ -159,7 +159,6 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     char time_obis[] = "0.9.1";
     char date_obis[] = "0.9.2";
     char production_date_obis[] = "96.1.3";
-    char reprogram_str[] = "O.T.A";
     char threshold_set_obis[] = "T.V.1";
     char threshold_record_obis[] = "T.R.1";
     char threshold_pin_obis[] = "T.P.1";
@@ -239,13 +238,6 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
         {
             PRINTF("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
             return ProductionInfo;
-        }
-
-        // ReProgram Control (O.T.A)
-        else if (strstr((char *)data_buffer, reprogram_str) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Reprogram state is accepted in checklisteningdata.\n");
-            return WriteProgram;
         }
 
         // Set Threshold control (T.V.1)
@@ -487,9 +479,7 @@ uint8_t is_message_reboot_device_message(uint8_t *msg_buf, uint8_t msg_len)
 
 void reboot_device()
 {
-    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-    watchdog_hw->scratch[5] = ENTRY_MAGIC;
-    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
+    PRINTF("Rebooting Device...\n");
     watchdog_reboot(0, 0, 0);
 }
 
@@ -508,10 +498,6 @@ void reset_to_factory_settings()
     }
 
     sleep_ms(1000);
-
-    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-    watchdog_hw->scratch[5] = ENTRY_MAGIC;
-    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
     watchdog_reboot(0, 0, 0);
 }
 
@@ -602,9 +588,8 @@ void resetRxBuffer()
 //  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
 bool controlRXBuffer(uint8_t *buffer, uint8_t len)
 {
-    // message formats like password request, reprogram request, reading (load profile) request etc.
+    // message formats like password request request, reading (load profile) request etc.
     uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
-    uint8_t reprogram[12] = {0x01, 0x57, 0x32, 0x02, 0x4F, 0x2E, 0x54, 0x2E, 0x41, 0x28, 0x29, 0x03};                             // [SOH]W2[STX]O.T.A()[ETX]
     uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
     uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
     uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
@@ -631,7 +616,6 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     uint8_t time_len = 21;
     uint8_t date_len = 21;
     uint8_t reading_len = 41;
-    uint8_t reprogram_len = 13;
     uint8_t password_len = 16;
     uint8_t production_len = 14;
     uint8_t reading_all_len = 13;
@@ -655,11 +639,6 @@ bool controlRXBuffer(uint8_t *buffer, uint8_t len)
     if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
     {
         PRINTF("CONTROLRXBUFFER: incoming message is password request.\n");
-        return true;
-    }
-    else if ((len == reprogram_len) && (strncmp((char *)buffer, (char *)reprogram, sizeof(reprogram)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reprogram request.\n");
         return true;
     }
     else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
@@ -780,46 +759,6 @@ void resetState()
     resetRxBuffer();
 
     PRINTF("reset state func!\n");
-}
-
-// This function reboots this device. This function checks new program area and get the new program area contents and compares if the program written true.
-// If program is written correctly, device will be rebooted but if it's not, new program area will be deleted and device won't be rebooted
-void __not_in_flash_func(rebootProgram)()
-{
-    // get contents of new program area
-    uint32_t epoch_current = *((uint32_t *)(XIP_BASE + FLASH_PROGRAM_START_ADDR));
-    uint32_t epoch_new = *((uint32_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR));
-    uint32_t program_len = *((uint32_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + 4));
-    uint8_t *md5_offset = (uint8_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + 8);
-    uint8_t *program = (uint8_t *)(XIP_BASE + FLASH_OTA_PROGRAM_ADDR + FLASH_PAGE_SIZE);
-
-    // calculate MD5 checksum for new program area
-    unsigned char md5_local[MD5_DIGEST_LENGTH];
-    calculateMD5((char *)program, program_len, md5_local);
-
-    uint32_t ints = save_and_disable_interrupts();
-
-    // check if MD5 is true and program's epochs. If epoch is bigger it means the program is newer
-    if (!(strncmp((char *)md5_offset, (char *)md5_local, 16) == 0) || !(epoch_new > epoch_current))
-    {
-        PRINTF("REBOOTPROGRAM: md5 check is false or new program's epoch is smaller or equal.\n");
-        if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
-        {
-            PRINTF("REBOOTPROGRAM: write flash mutex received\n");
-            flash_range_erase(FLASH_OTA_PROGRAM_ADDR, FLASH_OTA_PROGRAM_SIZE);
-            xSemaphoreGive(xFlashMutex);
-        }
-        else
-        {
-            PRINTF("MUTEX CANNOT RECEIVED!\n");
-        }
-    }
-    restore_interrupts(ints);
-
-    hw_clear_bits(&watchdog_hw->ctrl, WATCHDOG_CTRL_ENABLE_BITS);
-    watchdog_hw->scratch[5] = ENTRY_MAGIC;
-    watchdog_hw->scratch[6] = ~ENTRY_MAGIC;
-    watchdog_reboot(0, 0, 0);
 }
 
 // This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
@@ -1305,48 +1244,6 @@ void passwordHandler(uint8_t *buffer)
     {
         sendErrorMessage((char *)"PWNOTCORRECT");
     }
-}
-
-// This function handles to request for reprogramming
-void __not_in_flash_func(ReProgramHandler)()
-{
-    // send ACK message to UART
-    uart_putc(UART0_ID, ACK);
-    PRINTF("REPROGRAMHANDLER: ACK send from reprogram handler.\n");
-
-    // change the state to reprogram
-    state = ReProgram;
-    PRINTF("REPROGRAMHANDLER: state changed from reprogram handler.\n");
-
-    // delete the reprogram area to write new program
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
-    {
-        PRINTF("REPROGRAMHANDLER: write flash mutex received!\n");
-        flash_range_erase(FLASH_OTA_PROGRAM_ADDR, FLASH_OTA_PROGRAM_SIZE);
-        xSemaphoreGive(xFlashMutex);
-    }
-    else
-    {
-        PRINTF("MUTEX CANNOT RECEIVED!\n");
-    }
-
-    PRINTF("REPROGRAMHANDLER: new program area cleaned from reprogram handler.\n");
-}
-
-// This function handles to reboot device. This function executes when there is no coming character in 5 second in WriteProgram state.
-void RebootHandler()
-{
-    PRINTF("REBOOTHANDLER: reboot Handler entered.\n");
-
-    // if there is any content in buffers, is_program_end flag is set
-    if ((rpb_len > 0) || (data_cnt > 0))
-    {
-        is_program_end = true;
-    }
-
-    // write program execution with null variable and reboot device
-    writeProgramToFlash(0x00);
-    rebootProgram();
 }
 
 void __not_in_flash_func(setThresholdValue)(uint8_t *data)

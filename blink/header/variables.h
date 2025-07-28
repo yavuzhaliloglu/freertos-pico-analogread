@@ -43,13 +43,11 @@ uint8_t threshold_set_before = 0;
 // Greeting: Initial state. When modem sends a message just like /?[SERIALNUM]!\r\n in this state, program handles that message and if serial number and message format is true, device will response and set the state setting.
 // Setting: This state handles to set Baud rate and also to send readout data. When coming message is [ACK]0Z0\r\n, that means device will be in readout mode and send readout data. If message is [ACK]0Z1\r\n, that means device is in programming mode and state is changed to Listening.
 // Listening: This state accepts request messages and process these messages, like reading, changing time and date, production info etc. In this state, messages handles in different states again, THese states are called ListeningStates which is described below.
-// ReProgram: This state handles task behaviors, cleaning the new program flash area and sends the ACK message
 enum States
 {
     Greeting = 0,
     Setting = 1,
     Listening = 2,
-    ReProgram = 3
 };
 
 // ListeningStates type keeps 7 values are meaning like:
@@ -57,7 +55,6 @@ enum States
 // Reading: In this state, device parses load profile data's date values, if exist, and show records according to dates.
 // TimeSet: This state handles to change time in device
 // DateSet: This state handles to change date in device
-// WriteProgram: In this state, device accepts all the characters as program variables and writes them in selected flash area, after writing device reboots itself
 // ProductionInfo: In this state, device sends production info about this device
 // Password: In this state, device controls password of this device. If password is correct, modem can change time and date in this device.
 // SetThreshold: In this state, threshold value is set via modem
@@ -78,7 +75,6 @@ enum ListeningStates
     Reading = 0,
     TimeSet = 1,
     DateSet = 2,
-    WriteProgram = 3,
     ProductionInfo = 4,
     Password = 5,
     SetThreshold = 6,
@@ -164,18 +160,6 @@ struct AmplitudeChangeTimerCallbackParameters
     size_t adc_fifo_size;
     size_t vrms_values_buffer_size_bytes;
 };
-// this is a buffer that stores 1792 bytes (7 * 256 bytes) new program data and writes it to flash when it's full.
-uint8_t rpb[FLASH_RPB_BLOCK_SIZE] = {0};
-// this small buffer keeps 8 bytes of program data and this buffer is converted 8-bit from 7-bit
-uint8_t data_pck[8] = {0};
-// this variables keeps length of characters in rpb buffer
-int rpb_len = 0;
-// this variables stores that how many blocks of new program data are written in flash. It is also used to jump next block while programming flash with new block data
-int ota_block_count = 0;
-// this variables stores length of characters in data_pck buffer
-int data_cnt = 0;
-// this flag variable is used to write reamining contents in rpb buffer to flash
-bool is_program_end = false;
 // serial number of this device
 float bias_voltage = 0;
 // RTC VARIABLES
@@ -194,7 +178,6 @@ datetime_t current_time = {
     .min = 46,
     .sec = 50};
 
-// This is ADCTaskHandler. This handler is used to delete ADCReadTask in ReProgram State.
 TaskHandle_t xADCHandle;
 TaskHandle_t xADCSampleHandle;
 TaskHandle_t xUARTHandle;

@@ -1,16 +1,15 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
-//    36kB             256kB              512kB    528kB              588kB                   656kB            672kB
+//                                         512kB    528kB              588kB                   656kB            672kB
 // |---------------------------------------------------------------------------------------------------------------------------------------------   ---------------------------------------------------------------|
-// |   |                | |               | | | | | |            | | | |                     | |               | |                                             |                                                   |
-// | B |  Main Program  |P|  OTA Program  |P|N|P|S|P| LP Records |P|X|P|  Threshold Records  |P|  Reset Dates  |P|         Empty Area            ...           |         Sudden Amplitude Change Records           |      // NEW MEMORY MAP
-// |   |    (220kB)     | |    (248kB)    | | | | | |   (48kB)   | | | |       (64kB)        | |    (4kB)      | |          (964kB)                            |                      (400kB)                      |
+// |                                      | | | | | |            | | | |                     | |               | |                                             |                                                   |
+// |              Main Program            |P|N|P|S|P| LP Records |P|X|P|  Threshold Records  |P|  Reset Dates  |P|         Sudden Amplitude Change Records     |                     Empty Area                    | // NEW MEMORY MAP
+// |                (508kb)               | | | | | |   (48kB)   | | | |       (64kB)        | |    (4kB)      | |                   (400kB)                   |                                                   |
 // |---------------------------------------------------------------------------------------------------------------------------------------------   ---------------------------------------------------------------|
-//                      260kB                 520kB              580kB                     652kB             668kB                                           1636kB
+//                                          520kB              580kB                     652kB             668kB                                           1636kB
 
 //  P -> Padding(Empty area) (4kB)
-//  B -> Bootloader (36kB)
 //  N -> Serial Number Contents (4kB)
 //  S -> Sector Contents (4kB)
 //  X -> Threshold Variable and Sector Contents (4kB)
@@ -26,8 +25,6 @@
 // Reset To Factory Settings message                /?RSTFS?\r\n                                                -> Length: 10
 
 // Acknowledgement Message:                         [ACK]0ZX\r\n                                                -> Length: 6
-
-// OTA Request:                                     [SOH]W2[STX]O.T.A()[ETX][BCC]                               -> Length: 13
 
 // Password:                                        [SOH]P1[STX](12345678)[ETX][BCC]                            -> Length: 16
 // Load Profile with Date:                          [SOH]R2[STX]P.01(24-07-13,13:00;24-07-14,14:00)[ETX][BCC]   -> Length: 41
@@ -49,19 +46,12 @@
 // End Connection:                                  [SOH]B0[ETX]q                                               -> Length: 5
 
 // FLASH DEFINES
-
 // padding size
 #define PADDING_SIZE FLASH_SECTOR_SIZE
-// this is the start offset of the program
-#define FLASH_PROGRAM_START_ADDR (36 * 1024)
-// this is the length of main program binary
-#define FLASH_PROGRAM_SIZE (220 * 1024)
-// this is the start offset of OTA program will written
-#define FLASH_OTA_PROGRAM_ADDR (FLASH_PROGRAM_START_ADDR + FLASH_PROGRAM_SIZE) + PADDING_SIZE
-// OTA program size
-#define FLASH_OTA_PROGRAM_SIZE (248 * 1024)
+// program size
+#define FLASH_PROGRAM_SIZE (508 * 1024)
 // this is the start offset of device serial number information
-#define FLASH_SERIAL_NUMBER_ADDR (FLASH_OTA_PROGRAM_ADDR + FLASH_OTA_PROGRAM_SIZE) + PADDING_SIZE
+#define FLASH_SERIAL_NUMBER_ADDR FLASH_PROGRAM_SIZE + PADDING_SIZE
 // this is the size of serial number flah area
 #define FLASH_SERIAL_NUMBER_AREA_SIZE FLASH_SECTOR_SIZE
 // this is the start offset of sector information that load profile records will written
@@ -87,11 +77,9 @@
 // reset dates area size
 #define FLASH_RESET_DATES_AREA_SIZE FLASH_SECTOR_SIZE
 // amplitude change records offset
-#define FLASH_AMPLITUDE_CHANGE_OFFSET (1636 * 1024)
+#define FLASH_AMPLITUDE_CHANGE_OFFSET (FLASH_RESET_DATES_ADDR + FLASH_RESET_DATES_AREA_SIZE) + PADDING_SIZE
 // amplitude records size as sectors
 #define FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR 100
-// this is the size of OTA program block will written to flash. it has to be multiple size of flash area.
-#define FLASH_RPB_BLOCK_SIZE 7 * FLASH_PAGE_SIZE
 // this is the size of one load profile record
 #define FLASH_RECORD_SIZE (16)
 // serial number size
@@ -99,10 +87,6 @@
 
 // UART DEFINES
 
-// MD5 checksum length
-#define MD5_DIGEST_LENGTH 16
-// This is the required number for the watchdog timer.
-#define ENTRY_MAGIC 0xb105f00d
 // UART ID for communication
 #define UART0_ID uart0
 // Baud Rate for UART. 300 bits per second.
