@@ -1,0 +1,156 @@
+#ifndef PROJECT_GLOBALS_H
+#define PROJECT_GLOBALS_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+#include "pico/util/datetime.h"
+#include "hardware/flash.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "semphr.h"
+
+#include "defines.h"
+#include "project_conf.h"
+
+typedef struct
+{
+    uint16_t data[ADC_FIFO_SIZE];
+    uint16_t head;
+    uint16_t tail;
+    uint16_t count;
+} ADC_FIFO;
+
+typedef struct
+{
+    uint8_t vrms_max;
+    uint8_t vrms_min;
+    uint8_t vrms_mean;
+    uint8_t vrms_max_dec;
+    uint8_t vrms_min_dec;
+    uint8_t vrms_mean_dec;
+} VRMS_VALUES_RECORD;
+
+enum States
+{
+    Greeting = 0,
+    Setting = 1,
+    Listening = 2,
+};
+
+enum ListeningStates
+{
+    BCCError = -2,
+    DataError = -1,
+    Reading = 0,
+    TimeSet = 1,
+    DateSet = 2,
+    ProductionInfo = 4,
+    Password = 5,
+    SetThreshold = 6,
+    GetThreshold = 7,
+    ThresholdPin = 8,
+    GetSuddenAmplitudeChange = 9,
+    ReadTime = 10,
+    ReadDate = 11,
+    ReadSerialNumber = 12,
+    ReadLastVRMSMax = 13,
+    ReadLastVRMSMin = 14,
+    ReadLastVRMSMean = 15,
+    ReadResetDates = 16,
+    GetThresholdObis = 17
+};
+
+struct FlashData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    uint8_t max_volt;
+    uint8_t max_volt_dec;
+    uint8_t min_volt;
+    uint8_t min_volt_dec;
+    uint8_t mean_volt;
+    uint8_t mean_volt_dec;
+};
+
+struct ThresholdData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    char sec[2];
+    uint16_t vrms;
+    uint16_t variance;
+};
+
+struct AmplitudeChangeData
+{
+    char year[2];
+    char month[2];
+    char day[2];
+    char hour[2];
+    char min[2];
+    char sec[2];
+    uint8_t sample_buffer[ADC_FIFO_SIZE];
+    float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t variance;
+    uint8_t padding[42];
+};
+
+struct AmplitudeChangeTimerCallbackParameters
+{
+    float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
+    uint16_t variance;
+    size_t adc_fifo_size;
+    size_t vrms_values_buffer_size_bytes;
+};
+
+// ADC VARIABLES
+extern ADC_FIFO adc_fifo;
+extern uint8_t load_profile_record_period;
+extern float vrms_max_last;
+extern float vrms_min_last;
+extern float vrms_mean_last;
+extern uint16_t vrms_threshold;
+extern uint8_t threshold_set_before;
+extern float bias_voltage;
+
+// UART VARIABLES
+extern volatile TaskHandle_t xTaskToNotify_UART;
+extern enum States state;
+extern uint8_t rx_buffer[256];
+extern uint8_t rx_buffer_len;
+extern bool password_correct_flag;
+
+// SPI VARIABLES
+extern uint8_t serial_number[10];
+extern uint16_t sector_data;
+extern uint16_t th_sector_data;
+extern struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)];
+extern struct ThresholdData th_flash_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdData)];
+
+// RTC VARIABLES
+extern char datetime_buffer[64];
+extern char *datetime_str;
+extern datetime_t current_time;
+
+// FreeRTOS HANDLES
+extern TaskHandle_t xADCHandle;
+extern TaskHandle_t xADCSampleHandle;
+extern TaskHandle_t xUARTHandle;
+extern TaskHandle_t xResetHandle;
+extern TaskHandle_t xWriteDebugHandle;
+
+extern SemaphoreHandle_t xFlashMutex;
+extern SemaphoreHandle_t xFIFOMutex;
+extern SemaphoreHandle_t xVRMSLastValuesMutex;
+extern SemaphoreHandle_t xVRMSThresholdMutex;
+extern SemaphoreHandle_t xThresholdSetFlagMutex;
+
+
+#endif

@@ -1,3 +1,8 @@
+#ifndef PROJECT_CONF_H
+#define PROJECT_CONF_H
+
+#include <stdio.h>
+
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
@@ -21,4 +26,6 @@
 
 #if WITHOUT_BOOTLOADER
 static const char s_number[256] = "612400088";
+#endif
+
 #endif

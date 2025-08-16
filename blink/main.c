@@ -1,43 +1,22 @@
-#include <stdio.h>
-#include "header/project-conf.h"
-#include <time.h>
+#include "header/bcc.h"
+
 #include <string.h>
-#include <float.h>
-#include <stdlib.h>
-#include <math.h>
 #include "pico/stdlib.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "timers.h"
-#include "semphr.h"
-#include "pico/util/datetime.h"
-#include "pico/binary_info.h"
-#include "pico/bootrom.h"
-#include "pico/time.h"
 #include "pico/multicore.h"
-#include "hardware/gpio.h"
-#include "hardware/uart.h"
-#include "hardware/rtc.h"
-#include "hardware/i2c.h"
-#include "hardware/adc.h"
-#include "hardware/spi.h"
-#include "hardware/dma.h"
-#include "hardware/irq.h"
-#include "hardware/flash.h"
-#include "hardware/sync.h"
 #include "hardware/watchdog.h"
 #include "hardware/structs/watchdog.h"
-#include "hardware/timer.h"
-#include "header/defines.h"
-#include "header/variables.h"
-#include "header/print.h"
-#include "header/fifo.h"
-#include "header/md5.h"
-#include "header/bcc.h"
+#include "hardware/adc.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+#include "header/project_globals.h"
+#include "header/adc.h"
+#include "header/uart.h"
 #include "header/rtc.h"
 #include "header/spiflash.h"
-#include "header/uart.h"
-#include "header/adc.h"
+#include "header/mutex.h"
+#include "header/fifo.h"
+#include "header/print.h" // vWriteDebugTask için
 
 // UART TASK: This task gets uart characters and handles them
 void vUARTTask(void *pvParameters)
@@ -463,7 +442,6 @@ int main()
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
-    // adc_set_clkdiv((1e-3 * 48000000) / 96);
     adc_set_round_robin(0x03);
 
     // I2C Init
@@ -481,9 +459,6 @@ int main()
     // sector content control
     checkSectorContent();
     checkThresholdContent();
-
-    // // Reset Record Settings
-    // resetFlashSettings();
 
     // FLASH CONTENTS
     getFlashContents();
