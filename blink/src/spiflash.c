@@ -298,9 +298,7 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values)
 void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values)
 {
     PRINTF("SPIWRITETOFLASH: Setting flash data...\n");
-
     setFlashData(vrms_values);
-    // setSectorData();
 
     if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
     {
@@ -648,23 +646,6 @@ void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state
     PRINTF("SEARCHDATAINFLASH: time values are deleted.\n");
 }
 
-// This function resets records and sector data and set sector data to 0 (UNUSUED FUNCTION)
-void __not_in_flash_func(resetFlashSettings)()
-{
-    PRINTF("RESETFLASHSETTINGS: resetting records anad sector values\n");
-
-    uint16_t reset_flash[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
-
-    uint32_t ints = save_and_disable_interrupts();
-    flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
-    flash_range_program(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, (uint8_t *)reset_flash, FLASH_PAGE_SIZE);
-
-    flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
-    restore_interrupts(ints);
-
-    PRINTF("RESETFLASHSETTINGS: erasing is successful.\n");
-}
-
 void __not_in_flash_func(checkSectorContent)()
 {
     uint16_t *flash_sector_content = (uint16_t *)(XIP_BASE + FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR);
@@ -674,10 +655,8 @@ void __not_in_flash_func(checkSectorContent)()
         PRINTF("CHECKSECTORCONTENT: sector area is empty. Sector content is going to set 0.\n");
         uint16_t sector_buffer[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
 
-        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
         flash_range_program(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, (uint8_t *)sector_buffer, FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
     }
 }
 
@@ -694,10 +673,8 @@ void __not_in_flash_func(checkThresholdContent)()
         th_arr[0] = vrms_threshold;
         th_arr[1] = th_ptr[1];
 
-        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
     }
     // Threshold Records Sector control
     if (th_ptr[1] == 0xFFFF)
@@ -708,10 +685,8 @@ void __not_in_flash_func(checkThresholdContent)()
         th_arr[0] = th_ptr[0];
         th_arr[1] = 0;
 
-        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
     }
 }
 
@@ -741,7 +716,6 @@ void __not_in_flash_func(addSerialNumber)()
 {
     PRINTF("ADDSERIALNUMBER: entered addserialnumber function.\n");
 
-    uint32_t ints = save_and_disable_interrupts();
     uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
 
     if (snumber[0] == 0xFF)
@@ -752,7 +726,6 @@ void __not_in_flash_func(addSerialNumber)()
         flash_range_program(FLASH_SERIAL_NUMBER_ADDR, (const uint8_t *)s_number, FLASH_PAGE_SIZE);
     }
 
-    restore_interrupts(ints);
 }
 #endif
 
@@ -799,10 +772,8 @@ void __not_in_flash_func(setProgramStartDate)(datetime_t *ct)
 
     memcpy(flash_reset_count_buffer + offset, current_time_buffer, sizeof(current_time_buffer));
 
-    uint32_t ints = save_and_disable_interrupts();
     flash_range_erase(FLASH_RESET_DATES_ADDR, FLASH_RESET_DATES_AREA_SIZE);
     flash_range_program(FLASH_RESET_DATES_ADDR, flash_reset_count_buffer, FLASH_SECTOR_SIZE);
-    restore_interrupts(ints);
 
     printBufferHex(flash_reset_count_offset, FLASH_PAGE_SIZE);
 }

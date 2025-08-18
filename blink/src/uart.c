@@ -22,6 +22,45 @@
 #include "header/spiflash.h"
 #include "header/project_globals.h"
 
+typedef enum
+{
+    CMD_TYPE_ANY,
+    CMD_TYPE_READ,
+    CMD_TYPE_WRITE
+} CommandType;
+
+// struct type for lookup table
+typedef struct
+{
+    const char *obis_code;
+    enum ListeningStates state;
+    CommandType type;
+} ObisCommand;
+
+// Lookup table for listening state
+static const ObisCommand command_table[] = {
+    {"P.01", Reading, CMD_TYPE_ANY},
+    {"0.9.1", TimeSet, CMD_TYPE_WRITE},
+    {"0.9.2", DateSet, CMD_TYPE_WRITE},
+    {"0.9.1", ReadTime, CMD_TYPE_READ},
+    {"0.9.2", ReadDate, CMD_TYPE_READ},
+    {"0.0.0", ReadSerialNumber, CMD_TYPE_READ},
+    {"96.1.3", ProductionInfo, CMD_TYPE_ANY},
+    {"T.V.1", SetThreshold, CMD_TYPE_WRITE},
+    {"T.V.1", GetThresholdObis, CMD_TYPE_READ},
+    {"T.R.1", GetThreshold, CMD_TYPE_ANY},
+    {"T.P.1", ThresholdPin, CMD_TYPE_ANY},
+    {"9.9.0", GetSuddenAmplitudeChange, CMD_TYPE_ANY},
+    {"32.7.0", ReadLastVRMSMax, CMD_TYPE_ANY},
+    {"52.7.0", ReadLastVRMSMin, CMD_TYPE_ANY},
+    {"72.7.0", ReadLastVRMSMean, CMD_TYPE_ANY},
+    {"R.D.0", ReadResetDates, CMD_TYPE_ANY}};
+
+// Ana komutlar hala aynı
+static const uint8_t password_cmd[4] = {0x01, 0x50, 0x31, 0x02};
+static const uint8_t reading_control_cmd[4] = {0x01, 0x52, 0x32, 0x02};
+static const uint8_t reading_control_alt_cmd[4] = {0x01, 0x52, 0x35, 0x02};
+static const uint8_t writing_control_cmd[4] = {0x01, 0x57, 0x32, 0x02};
 
 // UART Receiver function
 void UARTReceive()
@@ -171,165 +210,52 @@ void sendDeviceInfo()
 // This function check the data which comes when State is Listening, and compares the message to defined strings, and returns a ListeningState value to process the request
 enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
 {
-    // define the process strings
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};            // [SOH]P1[STX]
-    uint8_t reading_control[4] = {0x01, 0x52, 0x32, 0x02};     // [SOH]R2[STX]
-    uint8_t reading_control_alt[4] = {0x01, 0x52, 0x35, 0x02}; // [SOH]R5[STX]
-    uint8_t writing_control[4] = {0x01, 0x57, 0x32, 0x02};     // [SOH]W2[STX]
-
-    char reading_str[] = "P.01";
-    char time_obis[] = "0.9.1";
-    char date_obis[] = "0.9.2";
-    char production_date_obis[] = "96.1.3";
-    char threshold_set_obis[] = "T.V.1";
-    char threshold_record_obis[] = "T.R.1";
-    char threshold_pin_obis[] = "T.P.1";
-    char sudden_amplitude_change_records_obis[] = "9.9.0";
-    char read_serial_number_obis[] = "0.0.0";
-    char read_last_vrms_max_obis[] = "32.7.0";
-    char read_last_vrms_min_obis[] = "52.7.0";
-    char read_last_vrms_mean_obis[] = "72.7.0";
-    char read_reset_dates_obis[] = "R.D.0";
-
-    bool is_reading_msg = strncmp((char *)data_buffer, (char *)reading_control, sizeof(reading_control)) == 0 ? true : false;
-    bool is_reading_alt_msg = strncmp((char *)data_buffer, (char *)reading_control_alt, sizeof(reading_control_alt)) == 0 ? true : false;
-    bool is_writing_msg = strncmp((char *)data_buffer, (char *)writing_control, sizeof(writing_control)) == 0 ? true : false;
-
-    // if BCC control for this message is false, it means message transfer is not correct so it returns Error
-    if (!(bccControl(data_buffer, size)))
+    if (!bccControl(data_buffer, size))
     {
-        PRINTF("CHECKLISTENINGDATA: bcc control error.\n");
         return BCCError;
     }
 
-    // Password Control ([SOH]P1[STX])
-    if (strncmp((char *)data_buffer, (char *)password, sizeof(password)) == 0)
+    if (memcmp(data_buffer, password_cmd, sizeof(password_cmd)) == 0)
     {
-        PRINTF("CHECKLISTENINGDATA: Password state is accepted in checklisteningdata\n");
         return Password;
     }
 
-    // Reading Control ([SOH]R2[STX])([SOH]R5[STX]), or Writing Control ([SOH]W2[STX])
-    if (is_reading_msg || is_reading_alt_msg || is_writing_msg)
+    const bool is_any_reading_msg = (memcmp(data_buffer, reading_control_cmd, sizeof(reading_control_cmd)) == 0) ||
+                                    (memcmp(data_buffer, reading_control_alt_cmd, sizeof(reading_control_alt_cmd)) == 0);
+    const bool is_writing_msg = (memcmp(data_buffer, writing_control_cmd, sizeof(writing_control_cmd)) == 0);
+
+    if (is_any_reading_msg || is_writing_msg)
     {
-        PRINTF("CHECKLISTENINGDATA: default control is accepted in checklisteningdata\n");
-
-        // Reading Control (P.01)
-        if (strstr((char *)data_buffer, reading_str) != NULL)
+        const char *buffer_as_char = (const char *)data_buffer;
+        for (size_t i = 0; i < (sizeof(command_table) / sizeof(command_table[0])); ++i)
         {
-            PRINTF("CHECKLISTENINGDATA: Reading state is accepted in checklisteningdata\n");
-            return Reading;
-        }
+            if (strstr(buffer_as_char, command_table[i].obis_code) != NULL)
+            {
+                bool type_match = false;
+                if (command_table[i].type == CMD_TYPE_ANY)
+                {
+                    type_match = true;
+                }
+                else if (command_table[i].type == CMD_TYPE_READ && is_any_reading_msg)
+                {
+                    type_match = true;
+                }
+                else if (command_table[i].type == CMD_TYPE_WRITE && is_writing_msg)
+                {
+                    type_match = true;
+                }
 
-        // Time Set Control (0.9.1)
-        else if (is_writing_msg && strstr((char *)data_buffer, time_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Timeset state is accepted in checklisteningdata\n");
-            return TimeSet;
-        }
-
-        // Date Set Control (0.9.2)
-        else if (is_writing_msg && strstr((char *)data_buffer, date_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Dateset state is accepted in checklisteningdata\n");
-            return DateSet;
-        }
-
-        // Read Time Control (0.9.1)
-        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, time_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: ReadTime state is accepted in checklisteningdata\n");
-            return ReadTime;
-        }
-
-        // Read Date Control (0.9.2)
-        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, date_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: ReadDate state is accepted in checklisteningdata\n");
-            return ReadDate;
-        }
-
-        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, read_serial_number_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: ReadSerialNumber state is accepted in checklisteningdata\n");
-            return ReadSerialNumber;
-        }
-
-        // Production Date Control (96.1.3)
-        else if (strstr((char *)data_buffer, production_date_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Productioninfo state is accepted in checklisteningdata\n");
-            return ProductionInfo;
-        }
-
-        // Set Threshold control (T.V.1)
-        else if (is_writing_msg && strstr((char *)data_buffer, threshold_set_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
-            return SetThreshold;
-        }
-
-        // Get Threshold msg control (T.V.1)
-        else if ((is_reading_msg || is_reading_alt_msg) && strstr((char *)data_buffer, threshold_set_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Set threshold value is accepted in checklisteningdata.\n");
-            return GetThresholdObis;
-        }
-
-        // Get Threshold control (T.R.1)
-        else if (strstr((char *)data_buffer, threshold_record_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Get threshold value is accepted in checklisteningdata.\n");
-            return GetThreshold;
-        }
-
-        // Set Threshold PIN (T.P.1)
-        else if (strstr((char *)data_buffer, threshold_pin_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Threshold PIN value is accepted in checklisteningdata.\n");
-            return ThresholdPin;
-        }
-
-        // Get Sudden Amplitude Change (9.9.0)
-        else if (strstr((char *)data_buffer, sudden_amplitude_change_records_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Get sudden amplitude change is accepted in checklisteningdata.\n");
-            return GetSuddenAmplitudeChange;
-        }
-
-        // Read Last VRMS max control (32.7.0)
-        else if (strstr((char *)data_buffer, read_last_vrms_max_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Read last VRMS max is accepted in checklisteningdata.\n");
-            return ReadLastVRMSMax;
-        }
-
-        // Read Last VRMS min control (52.7.0)
-        else if (strstr((char *)data_buffer, read_last_vrms_min_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Read last VRMS min is accepted in checklisteningdata.\n");
-            return ReadLastVRMSMin;
-        }
-
-        // Read Last VRMS mean control (72.7.0)
-        else if (strstr((char *)data_buffer, read_last_vrms_mean_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Read last VRMS mean is accepted in checklisteningdata.\n");
-            return ReadLastVRMSMean;
-        }
-
-        // Read Reset Dates Control (R.D.0)
-        else if (strstr((char *)data_buffer, read_reset_dates_obis) != NULL)
-        {
-            PRINTF("CHECKLISTENINGDATA: Read reset dates is accepted in checklisteningdata.\n");
-            return ReadResetDates;
+                if (type_match)
+                {
+                    PRINTF("CHECKLISTENINGDATA: State %d is accepted.\n", command_table[i].state);
+                    return command_table[i].state;
+                }
+            }
         }
     }
 
-    PRINTF("CHECKLISTENINGDATA: dataerror state is accepted in checklisteningdata\n");
     return DataError;
 }
-
 // This function deletes a character from a given string
 void deleteChar(uint8_t *str, uint8_t len, char chr)
 {
@@ -605,161 +531,6 @@ void resetRxBuffer()
     rx_buffer_len = 0;
 
     PRINTF("reset Buffer func!\n");
-}
-
-//  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
-bool controlRXBuffer(uint8_t *buffer, uint8_t len)
-{
-    // message formats like password request request, reading (load profile) request etc.
-    uint8_t password[4] = {0x01, 0x50, 0x31, 0x02};                                                                               // [SOH]P1[STX]
-    uint8_t reading[8] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                        // [SOH]R2[STX]P.01
-    uint8_t reading_alt[8] = {0x01, 0x52, 0x35, 0x02, 0x50, 0x2E, 0x30, 0x31};                                                    // [SOH]R5[STX]P.01
-    uint8_t time[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31};                                                     // [SOH]W2[STX]0.9.1
-    uint8_t date[9] = {0x01, 0x57, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32};                                                     // [SOH]W2[STX]0.9.2
-    uint8_t production[10] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x36, 0x2E, 0x31, 0x2E, 0x33};                                        // [SOH]R2[STX]96.1.3
-    uint8_t reading_all[12] = {0x01, 0x52, 0x32, 0x02, 0x50, 0x2E, 0x30, 0x31, 0x28, 0x3B, 0x29, 0x03};                           // [SOH]R2[STX]P.01(;)[ETX]
-    uint8_t set_threshold_val[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31};                                        // [SOH]W2[STX]T.V.1
-    uint8_t get_threshold_val[12] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x56, 0x2E, 0x31, 0x28, 0x29, 0x03};                     // [SOH]R2[STX]T.V.1()[ETX]
-    uint8_t get_threshold_with_dates[9] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31};                                 // [SOH]R2[STX]T.R.1
-    uint8_t get_threshold_all[13] = {0x01, 0x52, 0x32, 0x02, 0x54, 0x2E, 0x52, 0x2E, 0x31, 0x28, 0x3B, 0x29, 0x03};               // [SOH]R2[STX]T.R.1(;)[ETX]
-    uint8_t set_threshold_pin[9] = {0x01, 0x57, 0x32, 0x02, 0x54, 0x2E, 0x50, 0x2E, 0x31};                                        // [SOH]W2[STX]T.P.1
-    uint8_t get_sudden_amplitude_change_all[13] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30, 0x28, 0x3B, 0x29, 0x03}; // [SOH]R2[STX]9.9.0(;)[ETX]
-    uint8_t get_sudden_amplitude_change_with_date[9] = {0x01, 0x52, 0x32, 0x02, 0x39, 0x2E, 0x39, 0x2E, 0x30};                    // [SOH]R2[STX]9.9.0
-    uint8_t read_time[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x31, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.1()[ETX]
-    uint8_t read_date[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x39, 0x2E, 0x32, 0x28, 0x29, 0x03};                             // [SOH]R2[STX]0.9.2()[ETX]
-    uint8_t read_serial_number[12] = {0x01, 0x52, 0x32, 0x02, 0x30, 0x2E, 0x30, 0x2E, 0x30, 0x28, 0x29, 0x03};                    // [SOH]R2[STX]0.0.0()[ETX]
-    uint8_t last_vrms_max[13] = {0x01, 0x52, 0x32, 0x02, 0x33, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]32.7.0()[ETX]
-    uint8_t last_vrms_min[13] = {0x01, 0x52, 0x32, 0x02, 0x35, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                   // [SOH]R2[STX]52.7.0()[ETX]
-    uint8_t last_vrms_mean[13] = {0x01, 0x52, 0x32, 0x02, 0x37, 0x32, 0x2E, 0x37, 0x2E, 0x30, 0x28, 0x29, 0x03};                  // [SOH]R2[STX]72.7.0()[ETX]
-    uint8_t reset_dates[12] = {0x01, 0x52, 0x32, 0x02, 0x52, 0x2E, 0x44, 0x2E, 0x30, 0x28, 0x29, 0x03};                           // [SOH]R2[STX]R.D.0()[ETX]
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71};                                                               // [SOH]B0[ETX]q
-
-    // length of message that should be
-    uint8_t time_len = 21;
-    uint8_t date_len = 21;
-    uint8_t reading_len = 41;
-    uint8_t password_len = 16;
-    uint8_t production_len = 14;
-    uint8_t reading_all_len = 13;
-    uint8_t set_threshold_len = 16;
-    uint8_t get_threshold_len = 13;
-    uint8_t get_threshold_with_dates_len = 48;
-    uint8_t get_threshold_all_len = 14;
-    uint8_t set_threshold_pin_len = 13;
-    uint8_t get_sudden_amplitude_change_all_len = 14;
-    uint8_t get_sudden_amplitude_change_with_date_len = 48;
-    uint8_t read_time_len = 13;
-    uint8_t read_date_len = 13;
-    uint8_t read_serial_number_len = 13;
-    uint8_t last_vrms_max_len = 14;
-    uint8_t last_vrms_min_len = 14;
-    uint8_t last_vrms_mean_len = 14;
-    uint8_t reset_dates_len = 13;
-    uint8_t end_connection_str_len = 5;
-
-    // controls for the message
-    if ((len == password_len) && (strncmp((char *)buffer, (char *)password, sizeof(password)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is password request.\n");
-        return true;
-    }
-    else if (((len == reading_len) && ((strncmp((char *)buffer, (char *)reading, sizeof(reading)) == 0) || (strncmp((char *)buffer, (char *)reading_alt, sizeof(reading_alt)) == 0))) || ((len == reading_all_len) && (strncmp((char *)buffer, (char *)reading_all, sizeof(reading_all)) == 0)))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reading or reading all request.\n");
-        return true;
-    }
-    else if ((len == time_len) && (strncmp((char *)buffer, (char *)time, sizeof(time)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is time change request.\n");
-        return true;
-    }
-    else if ((len == date_len) && (strncmp((char *)buffer, (char *)date, sizeof(date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is date change request.\n");
-        return true;
-    }
-    else if ((len == production_len) && (strncmp((char *)buffer, (char *)production, sizeof(production)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is production info request.\n");
-        return true;
-    }
-    else if ((len == set_threshold_len) && (strncmp((char *)buffer, (char *)set_threshold_val, sizeof(set_threshold_val)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
-        return true;
-    }
-    else if ((len == get_threshold_len) && (strncmp((char *)buffer, (char *)get_threshold_val, sizeof(get_threshold_val)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is set threshold value.\n");
-        return true;
-    }
-    else if ((len == get_threshold_with_dates_len) && (strncmp((char *)buffer, (char *)get_threshold_with_dates, sizeof(get_threshold_with_dates)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get threshold with dates.\n");
-        return true;
-    }
-    else if ((len == get_threshold_all_len) && (strncmp((char *)buffer, (char *)get_threshold_all, sizeof(get_threshold_all)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get threshold all.\n");
-        return true;
-    }
-    else if ((len == set_threshold_pin_len) && (strncmp((char *)buffer, (char *)set_threshold_pin, sizeof(set_threshold_pin)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is set threshold pin value.\n");
-        return true;
-    }
-    else if ((len == get_sudden_amplitude_change_all_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_all, sizeof(get_sudden_amplitude_change_all)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change all records.\n");
-        return true;
-    }
-    else if ((len == get_sudden_amplitude_change_with_date_len) && (strncmp((char *)buffer, (char *)get_sudden_amplitude_change_with_date, sizeof(get_sudden_amplitude_change_with_date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is get sudden amplitude change records.\n");
-        return true;
-    }
-    else if ((len == read_time_len) && (strncmp((char *)buffer, (char *)read_time, sizeof(read_time)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read time.\n");
-        return true;
-    }
-    else if ((len == read_date_len) && (strncmp((char *)buffer, (char *)read_date, sizeof(read_date)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read date.\n");
-        return true;
-    }
-    else if ((len == read_serial_number_len) && (strncmp((char *)buffer, (char *)read_serial_number, sizeof(read_serial_number)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is read serial number.\n");
-        return true;
-    }
-    else if ((len == last_vrms_max_len) && (strncmp((char *)buffer, (char *)last_vrms_max, sizeof(last_vrms_max)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms max.\n");
-        return true;
-    }
-    else if ((len == last_vrms_min_len) && (strncmp((char *)buffer, (char *)last_vrms_min, sizeof(last_vrms_min)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms min.\n");
-        return true;
-    }
-    else if ((len == last_vrms_mean_len) && (strncmp((char *)buffer, (char *)last_vrms_mean, sizeof(last_vrms_mean)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is last vrms mean.\n");
-        return true;
-    }
-    else if ((len == reset_dates_len) && (strncmp((char *)buffer, (char *)reset_dates, sizeof(reset_dates)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is reset dates.\n");
-        return true;
-    }
-    else if ((len == end_connection_str_len) && (strncmp((char *)buffer, (char *)end_connection_str, sizeof(end_connection_str)) == 0))
-    {
-        PRINTF("CONTROLRXBUFFER: incoming message is end connection request.\n");
-        return true;
-    }
-
-    return false;
 }
 
 void sendInvalidMsg()

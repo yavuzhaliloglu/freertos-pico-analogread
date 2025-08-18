@@ -16,7 +16,7 @@
 #include "header/spiflash.h"
 #include "header/mutex.h"
 #include "header/fifo.h"
-#include "header/print.h" // vWriteDebugTask için
+#include "header/print.h"
 
 // UART TASK: This task gets uart characters and handles them
 void vUARTTask(void *pvParameters)
@@ -72,8 +72,17 @@ void vUARTTask(void *pvParameters)
                 rx_buffer[rx_buffer_len++] = rx_char;
 
                 // The end of the message could be '\n' character or a BCC, so this if block checks if the character is '\n' or the whole message is request message according to its length and order of characters
-                if (rx_char == '\n' || controlRXBuffer(rx_buffer, rx_buffer_len))
+                if (rx_char == '\n' || rx_char == ETX)
                 {
+                    // if the incoming character is ETX, wait for bcc
+                    if (rx_char == ETX)
+                    {
+                        uint8_t bcc = uart_getc(UART0_ID);
+                        rx_buffer[rx_buffer_len++] = bcc;
+
+                        PRINTF("UART TASK: Got BCC: %02X\n", bcc);
+                    }
+
                     // Get the last character of the message and wait for 250 ms. This waiting function is a requirement for the IEC 620256-21 protocol.
                     vTaskDelay(pdMS_TO_TICKS(250));
 
