@@ -14,7 +14,6 @@
 //  S -> Sector Contents (4kB)
 //  X -> Threshold Variable and Sector Contents (4kB)
 
-
 // MESSAGES THAT THIS DEVICE ACCEPTS
 
 // Request Message Without Serial Number and Flag:  /?!\r\n                                                     -> Length: 5
@@ -102,9 +101,13 @@
 #define PARITY UART_PARITY_EVEN
 // UART Task priority for the FreeRTOS Kernel
 #define UART_TASK_PRIORITY 3
-// Stack size for UART Task
-#define UART_TASK_STACK_SIZE (1024 * 3)
-
+// Stack sizes for tasks
+#define ADC_READ_TASK_STACK_SIZE (5 * 1024)
+#define UART_TASK_STACK_SIZE (2 * 1024)
+#define WRITE_DEBUG_TASK_STACK_SIZE (3 * 256)
+#define RESET_TASK_STACK_SIZE (3 * 256)
+#define ADC_SAMPLE_TASK_STACK_SIZE (4 * 1024)
+#define POWER_BLINK_STACK_SIZE (3 * 256)
 // POWER LED
 #define POWER_LED_PIN 18
 

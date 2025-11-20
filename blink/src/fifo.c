@@ -26,7 +26,7 @@ bool addToFIFO(ADC_FIFO *f, uint16_t data)
 {
     bool result = false;
 
-    if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         if (!isFIFOFull(f))
         {
@@ -47,7 +47,7 @@ bool removeFromFIFO(ADC_FIFO *f)
 
     bool result = false;
 
-    if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         if (!isFIFOEmpty(f))
         {

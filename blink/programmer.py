@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 # Build klasörü oluşturulmamışsa oluştur
 build_dir = "build"
@@ -35,3 +36,9 @@ result = subprocess.run(
 )
 print("Picotool output:")
 print(result.stdout)
+
+time.sleep(0.5)
+
+result = subprocess.run(["sudo", "picotool", "reboot"], capture_output=True, text=True)
+print("Reboot successful!")
+

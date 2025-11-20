@@ -294,6 +294,14 @@ def sendDatetimeSetRequest():
 # ---------------------------------------------------------------------------------------------------------------------
 
 def sendThresholdSetRequest():
+    passwordMessage = bytearray(b'\x01\x50\x31\x02\x2812345678\x29\x03')
+    # ------------------------------------------------------------------------ //
+    sendMessage(passwordMessage)
+    print("password request sent!")
+    time.sleep(0.25)
+
+    print(seri.readline())
+
     threshold_head = bytearray(b'\x01\x57\x32\x02T.V.1(')
     threshold_val = args.threshold_set
     threshold_tail = bytearray(b')\x03')

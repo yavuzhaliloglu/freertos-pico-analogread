@@ -13,7 +13,7 @@
     # Initialize the SDK
     pico_sdk_init()
 
-    set(KAYNAK_DOSYALARI
+    set(SRC_FLS
         main.c
         src/adc.c
         src/bcc.c
@@ -27,7 +27,7 @@
         src/globals.c
     )
 
-    add_executable(blink ${KAYNAK_DOSYALARI})
+    add_executable(blink ${SRC_FLS})
 
     target_include_directories(blink PRIVATE ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/header)
     pico_set_binary_type(blink copy_to_ram)

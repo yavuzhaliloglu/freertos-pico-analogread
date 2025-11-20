@@ -123,12 +123,12 @@ extern float bias_voltage;
 // UART VARIABLES
 extern volatile TaskHandle_t xTaskToNotify_UART;
 extern enum States state;
-extern uint8_t rx_buffer[256];
+extern uint8_t rx_buffer[RX_BUFFER_SIZE];
 extern uint8_t rx_buffer_len;
 extern bool password_correct_flag;
 
 // SPI VARIABLES
-extern uint8_t serial_number[10];
+extern uint8_t serial_number[SERIAL_NUMBER_SIZE + 1];
 extern uint16_t sector_data;
 extern uint16_t th_sector_data;
 extern struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)];

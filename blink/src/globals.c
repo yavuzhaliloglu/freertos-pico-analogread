@@ -17,12 +17,12 @@ float bias_voltage = 0;
 // UART VARIABLES
 volatile TaskHandle_t xTaskToNotify_UART = NULL;
 enum States state = Greeting;
-uint8_t rx_buffer[256] = {0};
+uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
 uint8_t rx_buffer_len = 0;
 bool password_correct_flag = false;
 
 // SPI VARIABLES
-uint8_t serial_number[10] = {0};
+uint8_t serial_number[SERIAL_NUMBER_SIZE + 1] = {0};
 uint16_t sector_data = 0;
 uint16_t th_sector_data = 0;
 struct FlashData flash_data[FLASH_SECTOR_SIZE / sizeof(struct FlashData)] = {0};

@@ -122,9 +122,9 @@ if(args.baud_rate):
     selected_baud_rate = bytes([ord(args.baud_rate)])
     selected_baud_rate_integer = int(selected_baud_rate.decode("utf-8"))
 
-if(serial_number and len(serial_number) != 9):
-    print("Wrong serial number format! Serial number should be 9 characters long!")
-    exit(1)
+# if(serial_number and len(serial_number) != 9):
+#     print("Wrong serial number format! Serial number should be 9 characters long!")
+#     exit(1)
 
 # generate communication request
 communication_request_message = replaceSerialNumber(communication_req_msg_base, serial_number)

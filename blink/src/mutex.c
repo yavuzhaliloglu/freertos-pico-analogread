@@ -7,7 +7,7 @@
 uint16_t getVRMSThresholdValue()
 {
     uint16_t vrms_th_val = 0;
-    if (xSemaphoreTake(xVRMSThresholdMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xVRMSThresholdMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         vrms_th_val = vrms_threshold;
         xSemaphoreGive(xVRMSThresholdMutex);
@@ -18,7 +18,7 @@ uint16_t getVRMSThresholdValue()
 
 void setVRMSThresholdValue(uint16_t value)
 {
-    if (xSemaphoreTake(xVRMSThresholdMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xVRMSThresholdMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         vrms_threshold = value;
         xSemaphoreGive(xVRMSThresholdMutex);
@@ -28,7 +28,7 @@ void setVRMSThresholdValue(uint16_t value)
 uint8_t getThresholdSetBeforeFlag()
 {
     uint8_t th_set_flag = 0;
-    if (xSemaphoreTake(xThresholdSetFlagMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xThresholdSetFlagMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         th_set_flag = threshold_set_before;
         xSemaphoreGive(xThresholdSetFlagMutex);
@@ -39,7 +39,7 @@ uint8_t getThresholdSetBeforeFlag()
 
 void setThresholdSetBeforeFlag(uint8_t value)
 {
-    if (xSemaphoreTake(xThresholdSetFlagMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xThresholdSetFlagMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         threshold_set_before = value;
         xSemaphoreGive(xThresholdSetFlagMutex);

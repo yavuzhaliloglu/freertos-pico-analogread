@@ -117,7 +117,7 @@ void sendResetDates()
 
     for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16)
     {
-        xSemaphoreTake(xFlashMutex, portMAX_DELAY);
+        xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250));
         PRINTF("SEND RESET DATES: set data mutex received\n");
         if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00)
         {
@@ -171,7 +171,7 @@ void sendDeviceInfo()
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         PRINTF("SEND DEVICE INFO: set data mutex received\n");
         for (offset = 0; offset < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; offset += FLASH_RECORD_SIZE)
@@ -433,15 +433,16 @@ void reboot_device()
 
 void reset_to_factory_settings()
 {
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
         flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_erase(FLASH_THRESHOLD_RECORDS_ADDR, FLASH_THRESHOLD_RECORDS_SIZE);
         flash_range_erase(FLASH_RESET_DATES_ADDR, FLASH_RESET_DATES_AREA_SIZE);
         flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET, (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE));
-
+        restore_interrupts(ints);
         xSemaphoreGive(xFlashMutex);
     }
 
@@ -535,7 +536,7 @@ void resetRxBuffer()
 
 void sendInvalidMsg()
 {
-    if (rx_buffer_len != 0 && !controlRXBuffer(rx_buffer, rx_buffer_len) && state == Listening)
+    if (rx_buffer_len != 0 && state == Listening)
     {
         PRINTF("SENDING INVALID MSG!!\n");
         sendErrorMessage((char *)"INVALIDMSGFORMAT!");
@@ -767,7 +768,7 @@ void settingStateHandler(uint8_t *buffer, uint8_t size)
             printBufferHex((uint8_t *)mread_data_buff, 21);
             PRINTF("\n");
 
-            if (xSemaphoreTake(xVRMSLastValuesMutex, portMAX_DELAY) == pdTRUE)
+            if (xSemaphoreTake(xVRMSLastValuesMutex, pdMS_TO_TICKS(250)) == pdTRUE)
             {
                 result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
                 bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
@@ -1046,13 +1047,13 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
         sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
-    PRINTF("threshold value before change is: %d\n", getVRMSThresholdValue());
+    PRINTF("SETTHRESHOLDVALUE: threshold value before change is: %d\n", getVRMSThresholdValue());
 
     // get value start and end pointers
     char *start_ptr = strchr((char *)data, '(');
     char *end_ptr = strchr((char *)data, ')');
     // to keep string threshold value
-    uint8_t threshold_val_str[3];
+    char threshold_val_str[4];
     // converted threshold value from string
     uint16_t threshold_val;
     // array and pointer to write updated values to flash memory
@@ -1063,40 +1064,40 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     start_ptr++;
 
     // get string threshold value
-    strncpy((char *)threshold_val_str, start_ptr, end_ptr - start_ptr);
-
+    uint8_t len = end_ptr - start_ptr;
+    strncpy(threshold_val_str, start_ptr, len);
+    threshold_val_str[len] = '\0';
     // convert threshold value to uint16_t type
-    threshold_val = atoi((char *)threshold_val_str);
+    threshold_val = atoi(threshold_val_str);
 
-    PRINTF("threshold value as string is: %s\n", threshold_val_str);
-    PRINTF("threshold value as int is: %d\n", threshold_val);
+    PRINTF("SETTHRESHOLDVALUE: threshold value as string is: %s\n", threshold_val_str);
+    PRINTF("SETTHRESHOLDVALUE: threshold value as int is: %d\n", threshold_val);
+
+    // if the current value is the same with requested value, do nothing
+    if(getVRMSThresholdValue() == threshold_val){
+        return;
+    }
 
     // set the threshold value to use in program
     setVRMSThresholdValue(threshold_val);
 
     // set array variables to updated values (just threshold changed)
     th_arr[0] = getVRMSThresholdValue();
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         PRINTF("SETTHRESHOLDVALUE: write data mutex received\n");
         th_arr[1] = th_ptr[1];
-        xSemaphoreGive(xFlashMutex);
-    }
 
-    // write updated values to flash
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
-    {
-        PRINTF("SETTHRESHOLDVALUE: write flash mutex received\n");
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
     }
     else
     {
-        PRINTF("MUTEX CANNOT RECEIVED!\n");
+        PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
     }
 
-    PRINTF("threshold info content is:  \n");
+    PRINTF("SETTHRESHOLDVALUE: threshold info content is:  \n");
     printBufferHex((uint8_t *)th_ptr, FLASH_PAGE_SIZE);
     PRINTF("\n");
 
@@ -1145,7 +1146,7 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
 
         for (; start_addr <= end_addr;)
         {
-            if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
             {
                 if (record_ptr[start_addr] == 0xFF || record_ptr[start_addr] == 0x00)
                 {
@@ -1292,7 +1293,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
 
         for (; start_addr <= end_addr;)
         {
-            if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
             {
                 if (flash_sudden_amp_content[0] == 0xFF || flash_sudden_amp_content[0] == 0x00)
                 {

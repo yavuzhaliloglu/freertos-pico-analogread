@@ -29,8 +29,7 @@ void vUARTTask(void *pvParameters)
     uint8_t reading_state_start_time[14] = {0};
     // this buffer stores end time for load profile data
     uint8_t reading_state_end_time[14] = {0};
-
-    // This timer deletes rx_buffer if there is no character coming in 5 seconds.
+    // This timer deletes rx_buffer if there is no character coming in 1.5 seconds, according to IEC62056-21, Section 6.4.3.6
     TimerHandle_t ResetBufferTimer = xTimerCreate(
         "BufferTimer",
         pdMS_TO_TICKS(5000),
@@ -48,7 +47,7 @@ void vUARTTask(void *pvParameters)
 
     TimerHandle_t ErrorTimer = xTimerCreate(
         "ErrorTimer",
-        pdMS_TO_TICKS(1000),
+        pdMS_TO_TICKS(1500),
         pdFALSE,
         NULL,
         sendInvalidMsg);
@@ -68,6 +67,13 @@ void vUARTTask(void *pvParameters)
                 uint8_t rx_char = uart_getc(UART0_ID);
                 xTimerStart(ErrorTimer, 0);
                 PRINTF("%02X\r\n", rx_char);
+
+                if (rx_buffer_len >= sizeof(rx_buffer) - 1)
+                {
+                    PRINTF("Buffer is Full!\n");
+                    resetRxBuffer();
+                    continue;
+                }
 
                 rx_buffer[rx_buffer_len++] = rx_char;
 
@@ -276,7 +282,7 @@ void vADCReadTask()
         // delay until next cycle
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
-        if (xSemaphoreTake(xFIFOMutex, portMAX_DELAY) == pdTRUE)
+        if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE)
         {
             getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
             xSemaphoreGive(xFIFOMutex);
@@ -433,7 +439,7 @@ int main()
     // UART INIT
     if (!initUART())
     {
-        return 0;
+        watchdog_reboot(0, 0, 0);
     }
     gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
@@ -456,7 +462,7 @@ int main()
     // I2C Init
     if (!initI2C())
     {
-        return 0;
+        watchdog_reboot(0, 0, 0);
     }
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
@@ -485,7 +491,7 @@ int main()
     // Get PT7C4338's Time information and set RP2040's RTC module
     if (!getTimePt7c4338(&current_time))
     {
-        return 0;
+        watchdog_reboot(0, 0, 0);
     }
 
     // If current time which is get from Chip has invalid value, adjust the value.
@@ -517,7 +523,7 @@ int main()
     if (!setMutexes())
     {
         PRINTF("Failed to set mutexes!\n");
-        return 0;
+        watchdog_reboot(0, 0, 0);
     }
 
     watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
@@ -527,12 +533,12 @@ int main()
     {
         PRINTF("Time is set. Starting tasks...\n");
 
-        xTaskCreate(vADCReadTask, "ADCReadTask", 6 * 1024, NULL, 3, &xADCHandle);
+        xTaskCreate(vADCReadTask, "ADCReadTask", ADC_READ_TASK_STACK_SIZE, NULL, 3, &xADCHandle);
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 3, &xUARTHandle);
-        xTaskCreate(vWriteDebugTask, "WriteDebugTask", 256, NULL, 5, &xWriteDebugHandle);
-        xTaskCreate(vResetTask, "ResetTask", 256, NULL, 1, &xResetHandle);
-        xTaskCreate(vADCSampleTask, "ADCSampleTask", 3 * 1024, NULL, 3, &xADCSampleHandle);
-        xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", 256, NULL, 1, NULL);
+        xTaskCreate(vWriteDebugTask, "WriteDebugTask", WRITE_DEBUG_TASK_STACK_SIZE, NULL, 5, &xWriteDebugHandle);
+        xTaskCreate(vResetTask, "ResetTask", RESET_TASK_STACK_SIZE, NULL, 1, &xResetHandle);
+        xTaskCreate(vADCSampleTask, "ADCSampleTask", ADC_SAMPLE_TASK_STACK_SIZE, NULL, 3, &xADCSampleHandle);
+        xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", POWER_BLINK_STACK_SIZE, NULL, 1, NULL);
 
         vTaskCoreAffinitySet(xADCHandle, 1 << 0);
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);

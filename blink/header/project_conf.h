@@ -6,17 +6,19 @@
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
-#define SOFTWARE_VERSION "V1.1.0"
+#define SOFTWARE_VERSION "V1.2.0"
 // production date of device (yy-mm-dd)
-#define PRODUCTION_DATE "24-03-13"
+#define PRODUCTION_DATE "25-08-20"
 // Debugs
-#define DEBUG 1
+#define DEBUG 0
 // bootloader select
 #define WITHOUT_BOOTLOADER 1
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
 // watchdog timeout ms to reset device
 #define WATCHDOG_TIMEOUT_MS 5000
+// RX Buffer Size
+#define RX_BUFFER_SIZE 256
 // DEBUG MACRO
 #if DEBUG
 #define PRINTF(x, ...) printf(x, ##__VA_ARGS__)
@@ -25,7 +27,7 @@
 #endif
 
 #if WITHOUT_BOOTLOADER
-static const char s_number[256] = "612400088";
+static const char s_number[256] = "612400073";
 #endif
 
 #endif

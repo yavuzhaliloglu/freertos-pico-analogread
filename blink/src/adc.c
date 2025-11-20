@@ -4,8 +4,8 @@
 #include "hardware/flash.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include <string.h> // memcpy ve memset için
-#include <math.h>   // sqrt ve fabs için
+#include <string.h>
+#include <math.h>
 #include <stdio.h>
 
 #include "header/project_globals.h"
@@ -96,7 +96,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
     uint16_t offset = 0;
 
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         PRINTF("WRITETHRESHOLDRECORD: memcpy mutex received\r\n");
         memcpy(th_flash_buf, flash_threshold_recs, FLASH_SECTOR_SIZE);
@@ -117,7 +117,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     data.vrms = vrms;
     data.variance = variance;
 
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         PRINTF("WRITETHRESHOLDRECORD: offset loop mutex received\r\n");
         // find the last offset of flash records and write current values to last offset of flash_data buffer
@@ -175,11 +175,13 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     }
 
     // write buffer in flash
-    if (xSemaphoreTake(xFlashMutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
         PRINTF("WRITETHRESHOLDRECORD: write flash mutex received\r\n");
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE), FLASH_SECTOR_SIZE);
         flash_range_program(FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE), (uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE);
+        restore_interrupts(ints);
         PRINTF("WRITETHRESHOLDDATA: threshold record written to flash.\r\n");
         xSemaphoreGive(xFlashMutex);
     }
