@@ -225,9 +225,6 @@ void vUARTTask() {
                         reset_uart_software_buffer();
                         uart_get_hw(UART0_ID)->rsr = (UART_UARTRSR_OE_BITS | UART_UARTRSR_BE_BITS | UART_UARTRSR_PE_BITS | UART_UARTRSR_FE_BITS);
                         irq_set_enabled(UART_IRQ, true);
-
-                        // --------------------------------
-
                         break;
                     }
 

@@ -45,8 +45,8 @@ static const ObisCommand command_table[] = {
     {"0.9.2", ReadDate, CMD_TYPE_READ},
     {"0.0.0", ReadSerialNumber, CMD_TYPE_READ},
     {"96.1.3", ProductionInfo, CMD_TYPE_ANY},
-    {"T.V.1", SetThreshold, CMD_TYPE_WRITE},
-    {"T.V.1", GetThresholdObis, CMD_TYPE_READ},
+    {"96.3.12", SetThreshold, CMD_TYPE_WRITE},
+    {"96.3.12", GetThresholdObis, CMD_TYPE_READ},
     {"T.R.1", GetThreshold, CMD_TYPE_ANY},
     {"T.P.1", ThresholdPin, CMD_TYPE_ANY},
     {"9.9.0", GetSuddenAmplitudeChange, CMD_TYPE_ANY},
@@ -560,7 +560,7 @@ void send_readout_message() {
     bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
     uart_puts(UART0_ID, readout_line_buffer);
 
-    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "T.V.1(%03d)\r\n", getVRMSThresholdValue());
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "96.3.12(%03d)\r\n", getVRMSThresholdValue());
     bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
     uart_puts(UART0_ID, readout_line_buffer);
 
@@ -817,19 +817,35 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
     // get value start and end pointers
     char *start_ptr = strchr((char *)data, '(');
     char *end_ptr = strchr((char *)data, ')');
-    // to keep string threshold value
-    char threshold_val_str[4];
-    // converted threshold value from string
-    uint16_t threshold_val;
-    // array and pointer to write updated values to flash memory
-    uint16_t th_arr[256 / sizeof(uint16_t)] = {0};
-    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
+
+    // VALIDATION: Check if pointers are valid
+    if (start_ptr == NULL || end_ptr == NULL || end_ptr <= start_ptr) {
+        PRINTF("SETTHRESHOLDVALUE: Invalid data format\n");
+        sendErrorMessage((char *)"DATAFORMATERROR");
+        return;
+    }
 
     // inc start pointer
     start_ptr++;
 
     // get string threshold value
-    uint8_t len = end_ptr - start_ptr;
+    size_t len = end_ptr - start_ptr;
+    
+    // VALIDATION: Check length to prevent buffer overflow (buffer is size 4)
+    if (len == 0 || len >= 4) {
+         PRINTF("SETTHRESHOLDVALUE: Invalid value length\n");
+         sendErrorMessage((char *)"VALUELENGTHERROR");
+         return;
+    }
+
+    // to keep string threshold value
+    char threshold_val_str[4];
+    // converted threshold value from string
+    uint16_t threshold_val;
+    // array and pointer to write updated values to flash memory
+    uint16_t th_arr[FLASH_PAGE_SIZE / sizeof(uint16_t)] = {0};
+    uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
+
     strncpy(threshold_val_str, start_ptr, len);
     threshold_val_str[len] = '\0';
     // convert threshold value to uint16_t type
@@ -840,6 +856,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
 
     // if the current value is the same with requested value, do nothing
     if (getVRMSThresholdValue() == threshold_val) {
+        uart_putc(UART0_ID, ACK);
         return;
     }
 
@@ -850,13 +867,20 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
     th_arr[0] = getVRMSThresholdValue();
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         PRINTF("SETTHRESHOLDVALUE: write data mutex received\n");
+        // Read existing value safely before erasing
         th_arr[1] = th_ptr[1];
 
+        // CRITICAL SECTION: Disable interrupts on this core to prevent context switch during flash op
+        taskENTER_CRITICAL();
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
+        taskEXIT_CRITICAL();
+        
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
+        sendErrorMessage((char *)"FLASHBUSY");
+        return;
     }
 
     PRINTF("SETTHRESHOLDVALUE: threshold info content is:  \n");
@@ -1190,7 +1214,7 @@ void sendThresholdObis() {
     char buffer[22] = {0};
     uint8_t xor_result = 0x02;
 
-    int result = snprintf((char *)buffer, sizeof(buffer), "%cT.V.1(%03d)%c", 0x02, getVRMSThresholdValue(), 0x03);
+    int result = snprintf((char *)buffer, sizeof(buffer), "%c96.3.12(%03d)%c", 0x02, getVRMSThresholdValue(), 0x03);
     if (result >= (int)sizeof(buffer)) {
         PRINTF("SENDTHRESHOLDOBIS: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");

@@ -303,7 +303,7 @@ def sendThresholdSetRequest():
 
     print(seri.readline())
 
-    threshold_head = bytearray(b'\x01\x57\x32\x02T.V.1(')
+    threshold_head = bytearray(b'\x01\x57\x32\x0296.3.12(')
     threshold_val = args.threshold_set
     threshold_tail = bytearray(b')\x03')
 
@@ -664,7 +664,7 @@ if args.read_reset_date:
     reset_date_request_msg = bytearray(b'\x01\x52\x32\x02\x52\x2E\x44\x2E\x30\x28\x29\x03')
     sendLoadProfileRequest(reset_date_request_msg)
 
-# sendEndConnectionMessage()
+sendEndConnectionMessage()
 
 seri.close()
     
