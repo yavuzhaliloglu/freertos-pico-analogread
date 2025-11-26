@@ -1,29 +1,28 @@
 #include "header/uart.h"
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
-#include "pico/stdlib.h"
-#include "hardware/uart.h"
-#include "hardware/irq.h"
-#include "hardware/watchdog.h"
 #include "hardware/flash.h"
-#include "hardware/rtc.h"
 #include "hardware/gpio.h"
+#include "hardware/irq.h"
+#include "hardware/rtc.h"
+#include "hardware/uart.h"
+#include "hardware/watchdog.h"
+#include "pico/stdlib.h"
 
 #include "FreeRTOS.h"
-#include "task.h"
 #include "semphr.h"
+#include "task.h"
 
-#include "header/mutex.h"
 #include "header/bcc.h"
+#include "header/mutex.h"
 #include "header/print.h"
+#include "header/project_globals.h"
 #include "header/rtc.h"
 #include "header/spiflash.h"
-#include "header/project_globals.h"
 
-typedef enum
-{
+typedef enum {
     CMD_TYPE_ANY,
     CMD_TYPE_READ,
     CMD_TYPE_WRITE
@@ -61,52 +60,9 @@ static const uint8_t password_cmd[4] = {0x01, 0x50, 0x31, 0x02};
 static const uint8_t reading_control_cmd[4] = {0x01, 0x52, 0x32, 0x02};
 static const uint8_t reading_control_alt_cmd[4] = {0x01, 0x52, 0x35, 0x02};
 static const uint8_t writing_control_cmd[4] = {0x01, 0x57, 0x32, 0x02};
+static const uint8_t break_command[5] = {0x01, 0x42, 0x30, 0x03, 0x71};
 
-// UART Receiver function
-void UARTReceive()
-{
-    configASSERT(xTaskToNotify_UART == NULL);
-    xTaskToNotify_UART = xTaskGetCurrentTaskHandle();
-    uart_set_irq_enables(UART0_ID, true, false);
-}
-
-// UART Interrupt Service
-void UARTIsr()
-{
-    BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-    uart_set_irq_enables(UART0_ID, false, false);
-
-    if (xTaskToNotify_UART != NULL)
-    {
-        vTaskNotifyGiveFromISR(xTaskToNotify_UART, &xHigherPriorityTaskWoken);
-        xTaskToNotify_UART = NULL;
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-    }
-}
-
-// UART Initialization
-uint8_t initUART()
-{
-    uint set_brate = 0;
-    set_brate = uart_init(UART0_ID, BAUD_RATE);
-    if (set_brate == 0)
-    {
-        PRINTF("UART INIT ERROR!\n");
-        return 0;
-    }
-
-    uart_set_format(UART0_ID, DATA_BITS, STOP_BITS, PARITY);
-    uart_set_fifo_enabled(UART0_ID, true);
-    int UART_IRQ = UART0_ID == uart0 ? UART0_IRQ : UART1_IRQ;
-    irq_set_exclusive_handler(UART_IRQ, UARTIsr);
-    irq_set_enabled(UART_IRQ, true);
-    uart_set_translate_crlf(UART0_ID, true);
-
-    return 1;
-}
-
-void sendResetDates()
-{
+void sendResetDates() {
     uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_DATES_ADDR);
     char date_buffer[23] = {0};
     uint16_t date_offset;
@@ -115,12 +71,10 @@ void sendResetDates()
 
     uart_putc(UART0_ID, STX);
 
-    for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16)
-    {
+    for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16) {
         xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250));
         PRINTF("SEND RESET DATES: set data mutex received\n");
-        if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00)
-        {
+        if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00) {
             xSemaphoreGive(xFlashMutex);
             break;
         }
@@ -135,8 +89,7 @@ void sendResetDates()
 
         result = snprintf(date_buffer, sizeof(date_buffer), "(%s-%s-%s,%s:%s:%s)\r\n", year, month, day, hour, min, sec);
 
-        if (result >= (int)sizeof(date_buffer))
-        {
+        if (result >= (int)sizeof(date_buffer)) {
             sendErrorMessage((char *)"DATEBUFFERSMALL");
             continue;
         }
@@ -154,8 +107,11 @@ void sendResetDates()
     uart_putc(UART0_ID, xor_result);
 }
 
-void sendDeviceInfo()
-{
+uint8_t is_message_break_command(uint8_t *buf){
+    return (memcmp(buf, break_command, sizeof(break_command)) == 0);
+}
+
+void sendDeviceInfo() {
     uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
     uint32_t offset = 0;
     uint16_t record_count = 0;
@@ -171,13 +127,10 @@ void sendDeviceInfo()
     sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n", serial_number);
     uart_puts(UART0_ID, debug_uart_buffer);
 
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-    {
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         PRINTF("SEND DEVICE INFO: set data mutex received\n");
-        for (offset = 0; offset < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; offset += FLASH_RECORD_SIZE)
-        {
-            if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00)
-            {
+        for (offset = 0; offset < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; offset += FLASH_RECORD_SIZE) {
+            if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00) {
                 continue;
             }
 
@@ -208,45 +161,38 @@ void sendDeviceInfo()
 }
 
 // This function check the data which comes when State is Listening, and compares the message to defined strings, and returns a ListeningState value to process the request
-enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
-{
-    if (!bccControl(data_buffer, size))
-    {
+enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size) {
+    if (!bccControl(data_buffer, size)) {
         return BCCError;
     }
 
-    if (memcmp(data_buffer, password_cmd, sizeof(password_cmd)) == 0)
-    {
+    if (memcmp(data_buffer, password_cmd, sizeof(password_cmd)) == 0) {
         return Password;
+    }
+
+    if(memcmp(data_buffer, break_command, sizeof(break_command)) == 0) {
+        PRINTF("CHECKLISTENINGDATA: Break command received.\n");
+        return BreakMessage;
     }
 
     const bool is_any_reading_msg = (memcmp(data_buffer, reading_control_cmd, sizeof(reading_control_cmd)) == 0) ||
                                     (memcmp(data_buffer, reading_control_alt_cmd, sizeof(reading_control_alt_cmd)) == 0);
     const bool is_writing_msg = (memcmp(data_buffer, writing_control_cmd, sizeof(writing_control_cmd)) == 0);
 
-    if (is_any_reading_msg || is_writing_msg)
-    {
+    if (is_any_reading_msg || is_writing_msg) {
         const char *buffer_as_char = (const char *)data_buffer;
-        for (size_t i = 0; i < (sizeof(command_table) / sizeof(command_table[0])); ++i)
-        {
-            if (strstr(buffer_as_char, command_table[i].obis_code) != NULL)
-            {
+        for (size_t i = 0; i < (sizeof(command_table) / sizeof(command_table[0])); ++i) {
+            if (strstr(buffer_as_char, command_table[i].obis_code) != NULL) {
                 bool type_match = false;
-                if (command_table[i].type == CMD_TYPE_ANY)
-                {
+                if (command_table[i].type == CMD_TYPE_ANY) {
                     type_match = true;
-                }
-                else if (command_table[i].type == CMD_TYPE_READ && is_any_reading_msg)
-                {
+                } else if (command_table[i].type == CMD_TYPE_READ && is_any_reading_msg) {
                     type_match = true;
-                }
-                else if (command_table[i].type == CMD_TYPE_WRITE && is_writing_msg)
-                {
+                } else if (command_table[i].type == CMD_TYPE_WRITE && is_writing_msg) {
                     type_match = true;
                 }
 
-                if (type_match)
-                {
+                if (type_match) {
                     PRINTF("CHECKLISTENINGDATA: State %d is accepted.\n", command_table[i].state);
                     return command_table[i].state;
                 }
@@ -257,13 +203,10 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size)
     return DataError;
 }
 // This function deletes a character from a given string
-void deleteChar(uint8_t *str, uint8_t len, char chr)
-{
+void deleteChar(uint8_t *str, uint8_t len, char chr) {
     uint8_t i, j;
-    for (i = j = 0; i < len; i++)
-    {
-        if (str[i] != chr)
-        {
+    for (i = j = 0; i < len; i++) {
+        if (str[i] != chr) {
             str[j++] = str[i];
         }
     }
@@ -271,21 +214,16 @@ void deleteChar(uint8_t *str, uint8_t len, char chr)
 }
 
 // This function gets the load profile data and finds the date characters and add them to time arrays
-void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time)
-{
+void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time) {
     uint8_t date_start[14] = {0};
     uint8_t date_end[14] = {0};
 
-    for (uint8_t i = 0; i < len; i++)
-    {
-        if (buffer[i] == 0x28)
-        {
+    for (uint8_t i = 0; i < len; i++) {
+        if (buffer[i] == 0x28) {
             uint8_t k;
 
-            for (k = i + 1; buffer[k] != 0x3B; k++)
-            {
-                if (k == len)
-                {
+            for (k = i + 1; buffer[k] != 0x3B; k++) {
+                if (k == len) {
                     break;
                 }
 
@@ -293,26 +231,22 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
             }
 
             // Delete the characters from start date array
-            if (len == 41)
-            {
+            if (len == 41) {
                 deleteChar(date_start, strlen((char *)date_start), '-');
                 deleteChar(date_start, strlen((char *)date_start), ',');
                 deleteChar(date_start, strlen((char *)date_start), ':');
             }
 
             // add end time to array
-            for (uint8_t l = k + 1; buffer[l] != 0x29; l++)
-            {
-                if (l == len)
-                {
+            for (uint8_t l = k + 1; buffer[l] != 0x29; l++) {
+                if (l == len) {
                     break;
                 }
 
                 date_end[l - (k + 1)] = buffer[l];
             }
 
-            if (len == 41)
-            {
+            if (len == 41) {
                 // Delete the characters from end date array
                 deleteChar(date_end, strlen((char *)date_end), '-');
                 deleteChar(date_end, strlen((char *)date_end), ',');
@@ -334,8 +268,7 @@ void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_
     PRINTF("\n");
 }
 
-void parseThresholdRequestDates(uint8_t *buffer, uint8_t *start_date_inc, uint8_t *end_date_inc)
-{
+void parseThresholdRequestDates(uint8_t *buffer, uint8_t *start_date_inc, uint8_t *end_date_inc) {
     char *date_start_ptr = strchr((char *)buffer, '(');
     char *date_end_ptr = strchr((char *)buffer, ')');
     char *date_division_ptr = strchr((char *)buffer, ';');
@@ -373,8 +306,7 @@ void parseThresholdRequestDates(uint8_t *buffer, uint8_t *start_date_inc, uint8_
     PRINTF("\n");
 }
 
-void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
-{
+void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date) {
     char *date_start_ptr = strchr((char *)buffer, '(');
     char *date_end_ptr = strchr((char *)buffer, ')');
     char *date_division_ptr = strchr((char *)buffer, ';');
@@ -413,28 +345,23 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     PRINTF("\n");
 }
 
-uint8_t is_message_reset_factory_settings_message(uint8_t *msg_buf, uint8_t msg_len)
-{
+uint8_t is_message_reset_factory_settings_message(uint8_t *msg_buf, uint8_t msg_len) {
     uint8_t rst_msg[] = "/?RSTFS?\r\n";
     return msg_len == 10 && strncmp((char *)msg_buf, (char *)rst_msg, 10) == 0;
 }
 
-uint8_t is_message_reboot_device_message(uint8_t *msg_buf, uint8_t msg_len)
-{
+uint8_t is_message_reboot_device_message(uint8_t *msg_buf, uint8_t msg_len) {
     uint8_t rbt_msg[] = "/?RBTDVC?\r\n";
     return msg_len == 11 && strncmp((char *)msg_buf, (char *)rbt_msg, 11) == 0;
 }
 
-void reboot_device()
-{
+void reboot_device() {
     PRINTF("Rebooting Device...\n");
     watchdog_reboot(0, 0, 0);
 }
 
-void reset_to_factory_settings()
-{
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-    {
+void reset_to_factory_settings() {
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
         flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
@@ -450,20 +377,17 @@ void reset_to_factory_settings()
     watchdog_reboot(0, 0, 0);
 }
 
-uint8_t is_end_connection_message(uint8_t *msg_buf)
-{
+uint8_t is_end_connection_message(uint8_t *msg_buf) {
     uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q
 
     return (strncmp((char *)msg_buf, (char *)end_connection_str, 5) == 0) ? 1 : 0;
 }
 
 // This function gets the baud rate number like 1-6
-uint8_t getProgramBaudRate(uint16_t b_rate)
-{
+uint8_t getProgramBaudRate(uint16_t b_rate) {
     uint8_t baudrate = 0;
 
-    switch (b_rate)
-    {
+    switch (b_rate) {
     case 300:
         baudrate = 0;
         break;
@@ -491,53 +415,48 @@ uint8_t getProgramBaudRate(uint16_t b_rate)
 }
 
 // This function sets the device's baud rate according to given number like 0,1,2,3,4,5,6
-uint setProgramBaudRate(uint8_t b_rate)
-{
-    uint selected_baud_rate = 300;
+void set_device_baud_rate(uint8_t b_rate_hex) {
     uint set_baud_rate = 0;
 
-    switch (b_rate)
-    {
-    case 0:
-        selected_baud_rate = 300;
+    switch (b_rate_hex) {
+    case 0x30:
+        set_baud_rate = 300;
         break;
-    case 1:
-        selected_baud_rate = 600;
+    case 0x31:
+        set_baud_rate = 600;
         break;
-    case 2:
-        selected_baud_rate = 1200;
+    case 0x32:
+        set_baud_rate = 1200;
         break;
-    case 3:
-        selected_baud_rate = 2400;
+    case 0x33:
+        set_baud_rate = 2400;
         break;
-    case 4:
-        selected_baud_rate = 4800;
+    case 0x34:
+        set_baud_rate = 4800;
         break;
-    case 5:
-        selected_baud_rate = 9600;
+    case 0x35:
+        set_baud_rate = 9600;
         break;
-    case 6:
-        selected_baud_rate = 19200;
+    case 0x36:
+        set_baud_rate = 19200;
+        break;
+    default:
+        set_baud_rate = 300;
         break;
     }
-    // set UART's baud rate
-    set_baud_rate = uart_set_baudrate(UART0_ID, selected_baud_rate);
-    return set_baud_rate;
+    uart_set_baudrate(UART0_ID, set_baud_rate);
 }
 
 // This function resets rx_buffer content
-void resetRxBuffer()
-{
+void resetRxBuffer() {
     memset(rx_buffer, 0, sizeof(rx_buffer));
     rx_buffer_len = 0;
 
     PRINTF("reset Buffer func!\n");
 }
 
-void sendInvalidMsg()
-{
-    if (rx_buffer_len != 0 && state == Listening)
-    {
+void sendInvalidMsg() {
+    if (rx_buffer_len != 0 && state == Listening) {
         PRINTF("SENDING INVALID MSG!!\n");
         sendErrorMessage((char *)"INVALIDMSGFORMAT!");
         resetRxBuffer();
@@ -545,292 +464,170 @@ void sendInvalidMsg()
 }
 
 // This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
-void resetState()
-{
-    sendInvalidMsg();
-    state = Greeting;
-    setProgramBaudRate(0);
+void reset_uart() {
+    PRINTF("Reset State Timer Trigger!\n");
+    set_init_baud_rate();
     resetRxBuffer();
-
-    PRINTF("reset state func!\n");
 }
 
-// This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
-void greetingStateHandler(uint8_t *buffer)
-{
-    // initialize variables,
-    uint8_t *serial_num;
-    uint8_t greeting_head[2] = {0x2F, 0x3F};                       // /?
-    uint8_t greeting_head_new[5] = {0x2F, 0x3F, 0x41, 0x4C, 0x50}; // /?ALP
-    uint8_t greeting_tail[3] = {0x21, 0x0D, 0x0A};                 // !\r\n
-    uint8_t *buffer_tail = (uint8_t *)strchr((char *)buffer, 0x21);
-    uint16_t max_baud_rate = 19200;
+uint8_t *get_serial_number_ptr() {
+    return (uint8_t *)serial_number;
+}
 
-    bool greeting_head_check = strncmp((char *)greeting_head, (char *)buffer, sizeof(greeting_head)) == 0 ? true : false;
-    bool greeting_head_new_check = strncmp((char *)greeting_head_new, (char *)buffer, sizeof(greeting_head_new)) == 0 ? true : false;
-    bool greeting_tail_check = strncmp((char *)greeting_tail, (char *)buffer_tail, sizeof(greeting_tail)) == 0 ? true : false;
-
-    uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
-    char greeting_uart_buffer[20] = {0};
-
-    // check greeting head, greeting head new strings and greeting tail. If these checks are true, the message format is true and this block will be executed
-    if ((greeting_head_check || greeting_head_new_check) && greeting_tail_check)
-    {
-        PRINTF("GREETINGSTATEHANDLER: greeting default control passed.\n");
-
-        // if greeting head does not include [ALP] characters, then serial number beginning offset is just after 0x3F character
-        if (greeting_head_check)
-        {
-            serial_num = (uint8_t *)strchr((char *)buffer, 0x3F) + 1;
-        }
-        // if greeting head includes [ALP] characters, then serial number beginning offset is just after 0x50 character
-        if (greeting_head_new_check)
-        {
-            serial_num = (uint8_t *)strchr((char *)buffer, 0x50) + 1;
-        }
-
-        PRINTF("GREETINGSTATEHANDLER: serial number: %s\n", serial_num);
-
-        // check if greeting message received with serial number
-        if (serial_num[0] != 0x21)
-        {
-            PRINTF("GREETINGSTATEHANDLER: request came with serial number.\n");
-
-            // if the message is not correct, do nothing
-            if (strncmp((char *)serial_num, (char *)serial_number, SERIAL_NUMBER_SIZE) != 0 || (buffer_tail - serial_num != SERIAL_NUMBER_SIZE))
-            {
-                PRINTF("GREETINGSTATEHANDLER: serial number is false.\n");
-                return;
-            }
-            // is serial num 9 character and is it the correct serial number
-            else
-            {
-                PRINTF("GREETINGSTATEHANDLER: serial number is true.\n");
-            }
-        }
-        else
-        {
-            PRINTF("GREETINGSTATEHANDLER: request came without serial number.\n");
-        }
-
-        // send handshake message
-        int result = snprintf(greeting_uart_buffer, 20, "/ALP%d<2>MAVIALPV2\r\n", program_baud_rate);
-
-        if (result >= (int)sizeof(greeting_uart_buffer))
-        {
-            PRINTF("GREETINGSTATEHANDLER: handshake message is too big.\n");
-            sendErrorMessage((char *)"GREETINGBUFOVERFLOW");
-            return;
-        }
-
-        PRINTF("GREETINGSTATEHANDLER: handshake message:\n");
-        printBufferHex((uint8_t *)greeting_uart_buffer, 20);
-        PRINTF("\n");
-
-        uart_puts(UART0_ID, greeting_uart_buffer);
-        state = Setting;
-
-        PRINTF("GREETINGSTATEHANDLER: handshake message sent.\n");
+void set_init_baud_rate() {
+    uart_tx_wait_blocking(UART0_ID);
+    uart_set_baudrate(UART0_ID, 300);
+    // Clear the RX FIFO to remove any garbage characters received during baud rate switch
+    while (uart_is_readable(UART0_ID)) {
+        uart_getc(UART0_ID);
     }
 }
 
-// This function handles in Setting State. It sets the baud rate and if the message is requested to readout data, it gives readout message
-void settingStateHandler(uint8_t *buffer, uint8_t size)
-{
-    // initialize request strings, can be load profile and meter read, also there is default control which is always in the beginning of the request
-    uint8_t short_read[3] = {0x36, 0x0D, 0x0A};       // 6\r\n
-    uint8_t programming_mode[3] = {0x31, 0x0D, 0x0A}; // 1\r\n
-    uint8_t readout[3] = {0x30, 0x0D, 0x0A};          // 0\r\n
-    uint8_t debug_mode[3] = {0x34, 0x0D, 0x0A};       // 4\r\n
-    uint8_t default_control[2] = {0x06, 0x30};        // [ACK]0
-    uint16_t max_baud_rate = 19200;
+bool control_serial_number(uint8_t *identification_req_buf, size_t req_size) {
+    uint8_t i;
+    uint8_t *serial_num_ptr = get_serial_number_ptr();
 
-    // if default control is true and size of message is 6, it means the message format is true.
-    if ((strncmp((char *)buffer, (char *)default_control, sizeof(default_control)) == 0) && (size == 6))
-    {
-        PRINTF("SETTINGSTATEHANDLER: default control is passed.\n");
+    if (serial_num_ptr == NULL || identification_req_buf == NULL) {
+        PRINTF("Serial number pointer is NULL!\n");
+        return false;
+    }
 
-        uint8_t program_baud_rate = getProgramBaudRate(max_baud_rate);
-        uint8_t modem_baud_rate = buffer[2] - '0';
-
-        PRINTF("SETTINGSTATEHANDLER: modem's baud rate is: %d.\n", modem_baud_rate);
-
-        if (modem_baud_rate > 6)
-        {
-            PRINTF("SETTINGSTATEHANDLER: modem's baud rate is bigger than 6 or smaller than 0.\n");
-
-            uart_putc(UART0_ID, NACK);
-            return;
-        }
-
-        if (modem_baud_rate > program_baud_rate)
-        {
-            PRINTF("SETTINGSTATEHANDLER: modem's baud rate is bigger than baud rate that device can support.\n");
-
-            uart_putc(UART0_ID, NACK);
-            return;
-        }
-
-        PRINTF("SETTINGSTATEHANDLER: modem's baud rate is acceptable value.\n");
-#if DEBUG
-        uint selectedrate = setProgramBaudRate(modem_baud_rate);
-        PRINTF("SETTINGSTATEHANDLER: selected baud rate is: %d.\n", selectedrate);
-#else
-        setProgramBaudRate(modem_baud_rate);
-#endif
-
-        // Load Profile ([ACK]0Z1[CR][LF])
-        if (strncmp((char *)programming_mode, (char *)(buffer + 3), 3) == 0)
-        {
-            PRINTF("SETTINGSTATEHANDLER: programming mode accepted.\n");
-
-            // Generate the message to send UART
-            uint8_t ack_buff[18] = {0};
-            uint8_t ack_bcc = SOH;
-
-            int result = snprintf((char *)ack_buff, sizeof(ack_buff), "%cP0%c(%s)%c", SOH, STX, serial_number, ETX);
-            if (result >= (int)sizeof(ack_buff))
-            {
-                PRINTF("SETTINGSTATEHANDLER: ack message is too big.\n");
-                sendErrorMessage((char *)"ACKBUFOVERFLOW");
-                return;
-            }
-
-            // Generate BCC for acknowledgement message
-            bccGenerate(ack_buff, result, &ack_bcc);
-
-            PRINTF("SETTINGSTATEHANDLER: ack message to send:\n");
-            printBufferHex(ack_buff, 18);
-            PRINTF("\n");
-
-            // SEND Message
-            uart_puts(UART0_ID, (char *)ack_buff);
-            uart_putc(UART0_ID, ack_bcc);
-
-            // Change state
-            state = Listening;
-        }
-
-        // Read Out ([ACK]0Z0[CR][LF]) or ([ACK]0Z6[CR][LF])
-        if (strncmp((char *)readout, (char *)(buffer + 3), 3) == 0 || strncmp((char *)short_read, (char *)(buffer + 3), 3) == 0)
-        {
-            PRINTF("SETTINGSTATEHANDLER: readout request accepted.\n");
-
-            char mread_data_buff[21] = {0};
-            int result = 0;
-            uint8_t readout_xor = 0x00;
-
-            PRINTF("SETTINGSTATEHANDLER: data buffer before starting: \n");
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            uart_putc(UART0_ID, STX);
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.0.0(%s)\r\n", serial_number);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.8.4(%d*min)\r\n", load_profile_record_period);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "96.1.3(%s)\r\n", PRODUCTION_DATE);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "T.V.1(%03d)\r\n", getVRMSThresholdValue());
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            if (xSemaphoreTake(xVRMSLastValuesMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-            {
-                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "32.7.0(%.2f)\r\n", vrms_max_last);
-                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-                uart_puts(UART0_ID, mread_data_buff);
-                printBufferHex((uint8_t *)mread_data_buff, 21);
-                PRINTF("\n");
-
-                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "52.7.0(%.2f)\r\n", vrms_min_last);
-                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-                uart_puts(UART0_ID, mread_data_buff);
-                printBufferHex((uint8_t *)mread_data_buff, 21);
-                PRINTF("\n");
-
-                result = snprintf(mread_data_buff, sizeof(mread_data_buff), "72.7.0(%.2f)\r\n", vrms_mean_last);
-                bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-                uart_puts(UART0_ID, mread_data_buff);
-                printBufferHex((uint8_t *)mread_data_buff, 21);
-                PRINTF("\n");
-
-                xSemaphoreGive(xVRMSLastValuesMutex);
-            }
-
-            result = snprintf(mread_data_buff, sizeof(mread_data_buff), "!\r\n%c", ETX);
-            bccGenerate((uint8_t *)mread_data_buff, result, &readout_xor);
-            uart_puts(UART0_ID, mread_data_buff);
-            printBufferHex((uint8_t *)mread_data_buff, 21);
-            PRINTF("\n");
-
-            PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
-            uart_putc(UART0_ID, readout_xor);
-
-            uart_tx_wait_blocking(UART0_ID);
-            resetState();
-        }
-
-        // Debug Mode ([ACK]0Z4[CR][LF])
-        if (strncmp((char *)debug_mode, (char *)(buffer + 3), 3) == 0)
-        {
-            PRINTF("SETTINGSTATEHANDLER: debug mode accepted.\n");
-            sendDeviceInfo();
-
-            // delay and init state
-            vTaskDelay(pdMS_TO_TICKS(20));
-            resetState();
+    for (i = 0; *identification_req_buf != '/'; identification_req_buf++, i++) {
+        if (i == req_size) {
+            PRINTF("Identification is wrong!\n");
+            return false;
         }
     }
+
+    if(strncmp((char *)identification_req_buf, (char *)"/?!\r\n", req_size) == 0){
+        return true;
+    }
+    else if(strncmp((char *)identification_req_buf, (char *)serial_num_ptr, SERIAL_NUMBER_SIZE) != 0){
+        return false;
+    }
+
+    return true;
 }
 
-uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec)
-{
-    if (hour > 23 || min > 59 || sec > 59)
-    {
+size_t create_identify_response_message(char *response_buf, size_t buf_size) {
+    memset(response_buf, 0, buf_size);
+    return snprintf(response_buf, buf_size, "/%s%d<%d>---(MA-V3)\r\n", METER_FLAG_CODE, METER_MAX_SUPPORTED_BAUDRATE, METER_VERSION);
+}
+
+uint8_t exract_baud_rate_and_mode_from_message(uint8_t *msg_buf, size_t msg_len, int8_t *requested_mode) {
+
+    if (msg_buf == NULL || msg_len < 3) {
+        PRINTF("Message buffer is NULL or message length is invalid!\n");
+        return 0;
+    }
+
+    uint8_t baud_rate = msg_buf[2];
+    *requested_mode = (int8_t)msg_buf[3];
+
+    return baud_rate;
+}
+
+void send_readout_message() {
+    char readout_line_buffer[32];
+    int result = 0;
+    uint8_t readout_xor = 0x00;
+
+    memset(readout_line_buffer, 0, sizeof(readout_line_buffer));
+
+    uart_putc(UART0_ID, STX);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "0.0.0(%s)\r\n", serial_number);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "0.2.0(%s)\r\n", SOFTWARE_VERSION);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "0.8.4(%d*min)\r\n", load_profile_record_period);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "0.9.1(%02d:%02d:%02d)\r\n", current_time.hour, current_time.min, current_time.sec);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "0.9.2(%02d-%02d-%02d)\r\n", current_time.year, current_time.month, current_time.day);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "96.1.3(%s)\r\n", PRODUCTION_DATE);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "T.V.1(%03d)\r\n", getVRMSThresholdValue());
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    if (xSemaphoreTake(xVRMSLastValuesMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+        result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "32.7.0(%.2f)\r\n", vrms_max_last);
+        bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+        uart_puts(UART0_ID, readout_line_buffer);
+
+        result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "52.7.0(%.2f)\r\n", vrms_min_last);
+        bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+        uart_puts(UART0_ID, readout_line_buffer);
+
+        result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "72.7.0(%.2f)\r\n", vrms_mean_last);
+        bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+        uart_puts(UART0_ID, readout_line_buffer);
+
+        xSemaphoreGive(xVRMSLastValuesMutex);
+    }
+
+    result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "!\r\n%c", ETX);
+    bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
+    uart_puts(UART0_ID, readout_line_buffer);
+
+    PRINTF("SETTINGSTATEHANDLER: readout XOR is: %02X.\n", readout_xor);
+    uart_putc(UART0_ID, readout_xor);
+    uart_tx_wait_blocking(UART0_ID);
+}
+
+void send_programming_acknowledgement() {
+    // Generate the message to send UART
+    uint8_t ack_buff[32];
+    uint8_t ack_bcc = SOH;
+
+    memset(ack_buff, 0, sizeof(ack_buff));
+
+    int result = snprintf((char *)ack_buff, sizeof(ack_buff), "%cP0%c(%s)%c", SOH, STX, serial_number, ETX);
+    if (result >= (int)sizeof(ack_buff)) {
+        sendErrorMessage((char *)"ACKBUFOVERFLOW");
+        return;
+    }
+
+    // Generate BCC for acknowledgement message
+    bccGenerate(ack_buff, result, &ack_bcc);
+
+    PRINTF("<--- ");
+    printBufferHex(ack_buff, 18);
+    PRINTF("\n");
+
+    // SEND Message
+    uart_puts(UART0_ID, (char *)ack_buff);
+    uart_putc(UART0_ID, ack_bcc);
+
+    PRINTF("Waiting to block\n");
+    uart_tx_wait_blocking(UART0_ID);
+    PRINTF("block finish!\n");
+}
+
+uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec) {
+    if (hour > 23 || min > 59 || sec > 59) {
         return 0;
     }
 
     return 1;
 }
 
-uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day)
-{
-    if (year > 99 || month > 12 || day > 31)
-    {
+uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day) {
+    if (year > 99 || month > 12 || day > 31) {
         return 0;
     }
 
@@ -838,10 +635,8 @@ uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day)
 }
 
 // This function sets time via UART
-void setTimeFromUART(uint8_t *buffer)
-{
-    if (!password_correct_flag)
-    {
+void setTimeFromUART(uint8_t *buffer) {
+    if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
@@ -857,8 +652,7 @@ void setTimeFromUART(uint8_t *buffer)
     start_ptr++;
     char *end_ptr = strchr((char *)buffer, ')');
 
-    if (start_ptr == NULL && end_ptr == NULL)
-    {
+    if (start_ptr == NULL && end_ptr == NULL) {
         return;
     }
 
@@ -873,17 +667,14 @@ void setTimeFromUART(uint8_t *buffer)
 
     PRINTF("SETTIMEFROMUART: hour: %d, min: %d, sec: %d\n", hour, min, sec);
 
-    if (verifyHourMinSec(hour, min, sec))
-    {
+    if (verifyHourMinSec(hour, min, sec)) {
         // Get the current time and set chip's Time value according to variables and current date values
-        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year))
-        {
+        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, sec, min, hour, (uint8_t)current_time.dotw, (uint8_t)current_time.day, (uint8_t)current_time.month, (uint8_t)current_time.year)) {
             sendErrorMessage((char *)"PT7CTIMENOTSET");
             return;
         }
 
-        if (!getTimePt7c4338(&current_time))
-        {
+        if (!getTimePt7c4338(&current_time)) {
             sendErrorMessage((char *)"PT7CTIMENOTGET");
             return;
         }
@@ -891,8 +682,7 @@ void setTimeFromUART(uint8_t *buffer)
         // Get new current time from RTC Chip and set to RP2040's RTC module
 
         // ??
-        if (current_time.dotw < 0 || current_time.dotw > 6)
-        {
+        if (current_time.dotw < 0 || current_time.dotw > 6) {
             PRINTF("SETTIMEFROMUART: invalid day of the week: %d!\n", current_time.dotw);
             current_time.dotw = 2;
         }
@@ -900,19 +690,14 @@ void setTimeFromUART(uint8_t *buffer)
 
         bool is_rtc_set = rtc_set_datetime(&current_time);
 
-        if (is_rtc_set)
-        {
+        if (is_rtc_set) {
             PRINTF("SETTIMEFROMUART: time was set to: %d:%d:%d\n", current_time.hour, current_time.min, current_time.sec);
             uart_putc(UART0_ID, ACK);
-        }
-        else
-        {
+        } else {
             PRINTF("SETTTIMEFROMUART: time was not set!\n");
             sendErrorMessage((char *)"TIMENOTSET");
         }
-    }
-    else
-    {
+    } else {
         PRINTF("SETTIMEFROMUART: invalid tim values!\n");
         sendErrorMessage((char *)"INVALIDTIMEVAL");
     }
@@ -921,10 +706,8 @@ void setTimeFromUART(uint8_t *buffer)
 }
 
 // This function sets date via UART
-void setDateFromUART(uint8_t *buffer)
-{
-    if (!password_correct_flag)
-    {
+void setDateFromUART(uint8_t *buffer) {
+    if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
@@ -940,8 +723,7 @@ void setDateFromUART(uint8_t *buffer)
     start_ptr++;
     char *end_ptr = strchr((char *)buffer, ')');
 
-    if (start_ptr == NULL && end_ptr == NULL)
-    {
+    if (start_ptr == NULL && end_ptr == NULL) {
         return;
     }
 
@@ -956,42 +738,33 @@ void setDateFromUART(uint8_t *buffer)
 
     PRINTF("SETDATEFROMUART: year: %d, month: %d, day: %d\n", year, month, day);
 
-    if (verifyYearMonthDay(year, month, day))
-    {
+    if (verifyYearMonthDay(year, month, day)) {
         // Get the current time and set chip's date value according to variables and current time values
-        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year))
-        {
+        if (!setTimePt7c4338(I2C_PORT, I2C_ADDRESS, (uint8_t)current_time.sec, (uint8_t)current_time.min, (uint8_t)current_time.hour, (uint8_t)current_time.dotw, day, month, year)) {
             sendErrorMessage((char *)"PT7CDATENOTSET");
             return;
         }
         // Get new current time from RTC Chip and set to RP2040's RTC module
-        if (!getTimePt7c4338(&current_time))
-        {
+        if (!getTimePt7c4338(&current_time)) {
             sendErrorMessage((char *)"PT7CDATENOTGET");
             return;
         }
 
-        if (current_time.dotw < 0 || current_time.dotw > 6)
-        {
+        if (current_time.dotw < 0 || current_time.dotw > 6) {
             PRINTF("SETDATEFROMUART: invalid day of the week: %d!\n", current_time.dotw);
             current_time.dotw = 2;
         }
 
         bool is_rtc_set = rtc_set_datetime(&current_time);
 
-        if (is_rtc_set)
-        {
+        if (is_rtc_set) {
             PRINTF("SETDATEFROMUART: date was set to: %d-%d-%d\n", current_time.year, current_time.month, current_time.day);
             uart_putc(UART0_ID, ACK);
-        }
-        else
-        {
+        } else {
             PRINTF("SETDATEFROMUART: date was not set!\n");
             sendErrorMessage((char *)"DATENOTSET");
         }
-    }
-    else
-    {
+    } else {
         PRINTF("SETDATEFROMUART: invalid date values!\n");
         sendErrorMessage((char *)"INVALIDDATEVAL");
     }
@@ -1000,16 +773,14 @@ void setDateFromUART(uint8_t *buffer)
 }
 
 // This function generates a product,on info message and sends it to UART
-void sendProductionInfo()
-{
+void sendProductionInfo() {
     // initialize the buffer and get the current time
     char production_obis_buffer[24] = {0};
     uint8_t production_bcc = STX;
 
     // generate the message and add BCC to the message
     int result = snprintf(production_obis_buffer, sizeof(production_obis_buffer), "%c96.1.3(%s)\r\n%c", STX, PRODUCTION_DATE, ETX);
-    if (result >= (int)sizeof(production_obis_buffer))
-    {
+    if (result >= (int)sizeof(production_obis_buffer)) {
         PRINTF("SENDPRODUCTIONINFO: production buffer is too small.\n");
         sendErrorMessage((char *)"SMALLBUFFERSIZE");
         return;
@@ -1024,26 +795,20 @@ void sendProductionInfo()
 }
 
 // This function gets a password and controls the password, if password is true, device sends an ACK message, if not, device sends NACK message
-void passwordHandler(uint8_t *buffer)
-{
+void passwordHandler(uint8_t *buffer) {
     char *ptr = strchr((char *)buffer, '(');
     ptr++;
 
-    if (strncmp(ptr, DEVICE_PASSWORD, 8) == 0)
-    {
+    if (strncmp(ptr, DEVICE_PASSWORD, 8) == 0) {
         uart_putc(UART0_ID, ACK);
         password_correct_flag = true;
-    }
-    else
-    {
+    } else {
         sendErrorMessage((char *)"PWNOTCORRECT");
     }
 }
 
-void __not_in_flash_func(setThresholdValue)(uint8_t *data)
-{
-    if (!password_correct_flag)
-    {
+void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
+    if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
@@ -1074,7 +839,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     PRINTF("SETTHRESHOLDVALUE: threshold value as int is: %d\n", threshold_val);
 
     // if the current value is the same with requested value, do nothing
-    if(getVRMSThresholdValue() == threshold_val){
+    if (getVRMSThresholdValue() == threshold_val) {
         return;
     }
 
@@ -1083,17 +848,14 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
 
     // set array variables to updated values (just threshold changed)
     th_arr[0] = getVRMSThresholdValue();
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-    {
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         PRINTF("SETTHRESHOLDVALUE: write data mutex received\n");
         th_arr[1] = th_ptr[1];
 
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         xSemaphoreGive(xFlashMutex);
-    }
-    else
-    {
+    } else {
         PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
     }
 
@@ -1107,7 +869,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data)
     password_correct_flag = false;
 }
 
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer)
+void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
 {
     datetime_t start = {0};
     datetime_t end = {0};
@@ -1133,8 +895,7 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
     PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
 
-    if (start_index >= 0 && end_index >= 0)
-    {
+    if (start_index >= 0 && end_index >= 0) {
         // initialize the variables
         uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
@@ -1144,12 +905,9 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
         // send STX character
         uart_putc(UART0_ID, STX);
 
-        for (; start_addr <= end_addr;)
-        {
-            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-            {
-                if (record_ptr[start_addr] == 0xFF || record_ptr[start_addr] == 0x00)
-                {
+        for (; start_addr <= end_addr;) {
+            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+                if (record_ptr[start_addr] == 0xFF || record_ptr[start_addr] == 0x00) {
                     xSemaphoreGive(xFlashMutex);
                     continue;
                 }
@@ -1180,27 +938,20 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
             printBufferHex(buffer, result);
             PRINTF("\n");
 
-            if (result >= (int)sizeof(buffer))
-            {
+            if (result >= (int)sizeof(buffer)) {
                 PRINTF("GETTHRESHOLDRECORD: Buffer Overflow! Sending NACK.\n");
                 sendErrorMessage((char *)"THBUFFEROVERFLOW");
-            }
-            else
-            {
+            } else {
                 // Send the readout data
                 uart_puts(UART0_ID, (char *)buffer);
             }
 
-            if (start_addr == end_addr)
-            {
+            if (start_addr == end_addr) {
                 // last sector and record control
-                if (start_index > end_index && start_addr == (FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE))
-                {
+                if (start_index > end_index && start_addr == (FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE)) {
                     start_addr = 0;
                     end_addr = end_index;
-                }
-                else
-                {
+                } else {
                     result = snprintf((char *)buffer, sizeof(buffer), "\r%c", ETX);
                     bccGenerate(buffer, result, &xor_result);
 
@@ -1211,13 +962,9 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
-            xTimerReset(timer, 0);
-
             start_addr += FLASH_RECORD_SIZE;
         }
-    }
-    else
-    {
+    } else {
         PRINTF("SEARCHDATAINFLASH: data not found.\n");
         sendErrorMessage((char *)"NODATAFOUND");
     }
@@ -1225,16 +972,13 @@ void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_stat
     memset(reading_state_start_time, 0, 10);
     memset(reading_state_end_time, 0, 10);
 }
-void resetThresholdPIN()
-{
-    if (!password_correct_flag)
-    {
+void resetThresholdPIN() {
+    if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
         return;
     }
 
-    if (getThresholdSetBeforeFlag())
-    {
+    if (getThresholdSetBeforeFlag()) {
         PRINTF("RESETTHRESHOLDPIN: Threshold PIN set before, resetting pin...\n");
 
         gpio_put(THRESHOLD_PIN, 0);
@@ -1243,9 +987,7 @@ void resetThresholdPIN()
 
         PRINTF("RESETTHRESHOLDPIN: ACK send from set threshold pin.\n");
         uart_putc(UART0_ID, ACK);
-    }
-    else
-    {
+    } else {
         PRINTF("RESETTHRESHOLDPIN: Threshold PIN not set before, sending NACK.\n");
         sendErrorMessage((char *)"NOPINSET");
     }
@@ -1253,10 +995,8 @@ void resetThresholdPIN()
     password_correct_flag = false;
 }
 
-void setThresholdPIN()
-{
-    if (!getThresholdSetBeforeFlag())
-    {
+void setThresholdPIN() {
+    if (!getThresholdSetBeforeFlag()) {
         PRINTF("SETTHRESHOLDPIN: Threshold PIN set before, setting pin...\n");
 
         gpio_put(THRESHOLD_PIN, 1);
@@ -1267,8 +1007,7 @@ void setThresholdPIN()
     }
 }
 
-void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer)
-{
+void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state) {
     datetime_t start = {0};
     datetime_t end = {0};
     int32_t start_index = -1;
@@ -1281,8 +1020,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
     PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
     PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
 
-    if (start_index >= 0 && end_index >= 0)
-    {
+    if (start_index >= 0 && end_index >= 0) {
         // initialize the variables
         uint8_t xor_result = 0x00;
         uint32_t start_addr = start_index;
@@ -1291,12 +1029,9 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
 
         uart_putc(UART0_ID, STX);
 
-        for (; start_addr <= end_addr;)
-        {
-            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
-            {
-                if (flash_sudden_amp_content[0] == 0xFF || flash_sudden_amp_content[0] == 0x00)
-                {
+        for (; start_addr <= end_addr;) {
+            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+                if (flash_sudden_amp_content[0] == 0xFF || flash_sudden_amp_content[0] == 0x00) {
                     xSemaphoreGive(xFlashMutex);
                     continue;
                 }
@@ -1304,12 +1039,10 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
                 xSemaphoreGive(xFlashMutex);
             }
 
-            for (uint16_t j = 0; j < FLASH_SECTOR_SIZE; j++)
-            {
+            for (uint16_t j = 0; j < FLASH_SECTOR_SIZE; j++) {
                 // send record as bytes
                 xor_result ^= ac_record_buf[j];
                 uart_putc(UART0_ID, ac_record_buf[j]);
-                xTimerReset(timer, 0);
             }
 
             // send cr and lf
@@ -1319,16 +1052,12 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
             uart_putc(UART0_ID, '\n');
             xor_result ^= '\n';
 
-            if (start_addr == end_addr)
-            {
+            if (start_addr == end_addr) {
                 // last sector and record control
-                if (start_index > end_index && start_addr == ((FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE) - FLASH_SECTOR_SIZE))
-                {
+                if (start_index > end_index && start_addr == ((FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE) - FLASH_SECTOR_SIZE)) {
                     start_addr = 0;
                     end_addr = end_index;
-                }
-                else
-                {
+                } else {
                     uart_putc(UART0_ID, '\r');
                     xor_result ^= '\r';
 
@@ -1345,9 +1074,7 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
             // jump to next record
             start_addr += FLASH_SECTOR_SIZE;
         }
-    }
-    else
-    {
+    } else {
         PRINTF("SEARCHDATAINFLASH: data not found.\n");
         sendErrorMessage((char *)"NODATAFOUND");
     }
@@ -1356,15 +1083,13 @@ void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t 
     memset(reading_state_end_time, 0, 10);
 }
 
-void readTime()
-{
+void readTime() {
     char buffer[20] = {0};
     uint8_t xor_result = 0x02;
 
     int result = snprintf((char *)buffer, sizeof(buffer), "%c0.9.1(%02d:%02d:%02d)%c", 0x02, current_time.hour, current_time.min, current_time.sec, 0x03);
 
-    if (result >= (int)sizeof(buffer))
-    {
+    if (result >= (int)sizeof(buffer)) {
         PRINTF("READTIME: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"TIMEBUFFEROVERFLOW");
         return;
@@ -1380,14 +1105,12 @@ void readTime()
     uart_putc(UART0_ID, xor_result);
 }
 
-void readDate()
-{
+void readDate() {
     char buffer[20] = {0};
     uint8_t xor_result = 0x02;
 
     int result = snprintf((char *)buffer, sizeof(buffer), "%c0.9.2(%02d:%02d:%02d)%c", 0x02, current_time.year, current_time.month, current_time.day, 0x03);
-    if (result >= (int)sizeof(buffer))
-    {
+    if (result >= (int)sizeof(buffer)) {
         PRINTF("READDATE: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"DATEBUFFEROVERFLOW");
         return;
@@ -1403,14 +1126,12 @@ void readDate()
     uart_putc(UART0_ID, xor_result);
 }
 
-void readSerialNumber()
-{
+void readSerialNumber() {
     char buffer[22] = {0};
     uint8_t xor_result = 0x02;
 
     int result = snprintf((char *)buffer, sizeof(buffer), "%c0.0.0(%s)%c", 0x02, serial_number, 0x03);
-    if (result >= (int)sizeof(buffer))
-    {
+    if (result >= (int)sizeof(buffer)) {
         PRINTF("READSERIALNUMBER: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");
         return;
@@ -1426,14 +1147,12 @@ void readSerialNumber()
     uart_putc(UART0_ID, xor_result);
 }
 
-void sendLastVRMSXValue(enum ListeningStates vrmsState)
-{
+void sendLastVRMSXValue(enum ListeningStates vrmsState) {
     char buffer[20] = {0};
     int result = -1;
     uint8_t xor_result = 0x02;
 
-    switch (vrmsState)
-    {
+    switch (vrmsState) {
     case ReadLastVRMSMax:
         result = snprintf((char *)buffer, sizeof(buffer), "%c32.7.0(%.2f)%c", 0x02, vrms_max_last, 0x03);
         break;
@@ -1451,8 +1170,7 @@ void sendLastVRMSXValue(enum ListeningStates vrmsState)
         break;
     }
 
-    if (result == -1 || result >= (int)sizeof(buffer))
-    {
+    if (result == -1 || result >= (int)sizeof(buffer)) {
         PRINTF("SENDLASTVRMSXVALUE: Buffer Overflow or Unknown state! Sending NACK.\n");
         sendErrorMessage((char *)"VRMSBUFFEROVERFLOW");
         return;
@@ -1468,14 +1186,12 @@ void sendLastVRMSXValue(enum ListeningStates vrmsState)
     uart_putc(UART0_ID, xor_result);
 }
 
-void sendThresholdObis()
-{
+void sendThresholdObis() {
     char buffer[22] = {0};
     uint8_t xor_result = 0x02;
 
     int result = snprintf((char *)buffer, sizeof(buffer), "%cT.V.1(%03d)%c", 0x02, getVRMSThresholdValue(), 0x03);
-    if (result >= (int)sizeof(buffer))
-    {
+    if (result >= (int)sizeof(buffer)) {
         PRINTF("SENDTHRESHOLDOBIS: Buffer Overflow! Sending NACK.\n");
         sendErrorMessage((char *)"SERIALBUFFEROVERFLOW");
         return;

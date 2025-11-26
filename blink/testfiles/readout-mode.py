@@ -131,7 +131,6 @@ communication_request_message = replaceSerialNumber(communication_req_msg_base, 
 seri.write(communication_request_message)
 
 # read response
-time.sleep(0.25)
 communication_request_message_response = bytearray(seri.readline())
 time.sleep(0.25)
 print(communication_request_message_response)
@@ -148,7 +147,7 @@ if(response_max_b_rate == -1):
     exit(1)
 
 if args.readout_mode:
-    information_message = bytearray(b"\x0600\r\n")
+    information_message = bytearray(b"\x0606\r\n")
 elif args.debug_mode:
     information_message = bytearray(b"\x0604\r\n")
 else:

@@ -202,6 +202,7 @@ def sendLoadProfileRequest(msg):
 
     msg_bcc = calculateBCC(msg, msg[0])
     msg.append(msg_bcc)
+    print("message to send for load profile: ", msg)    
     seri.write(msg)
 
     while True:
@@ -663,7 +664,7 @@ if args.read_reset_date:
     reset_date_request_msg = bytearray(b'\x01\x52\x32\x02\x52\x2E\x44\x2E\x30\x28\x29\x03')
     sendLoadProfileRequest(reset_date_request_msg)
 
-sendEndConnectionMessage()
+# sendEndConnectionMessage()
 
 seri.close()
     

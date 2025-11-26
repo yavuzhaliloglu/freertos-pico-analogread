@@ -1,0 +1,11 @@
+# Use a common style as a base
+BasedOnStyle: K&R
+
+# Override specific settings for control flow braces (like if, for, while)
+# This explicitly ensures that the opening brace is placed on the same line.
+AllowShortBlocksOnASingleLine: false
+BreakBeforeBraces: Attach
+
+# Configure switch/case indentation (this ensures 'case' is indented)
+# 4 means 4 spaces indentation for case statements relative to the switch block.
+IndentCaseLabels: true

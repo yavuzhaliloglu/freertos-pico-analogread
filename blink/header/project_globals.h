@@ -58,7 +58,8 @@ enum ListeningStates
     ReadLastVRMSMin = 14,
     ReadLastVRMSMean = 15,
     ReadResetDates = 16,
-    GetThresholdObis = 17
+    GetThresholdObis = 17,
+    BreakMessage = 18
 };
 
 struct FlashData
@@ -113,9 +114,9 @@ struct AmplitudeChangeTimerCallbackParameters
 // ADC VARIABLES
 extern ADC_FIFO adc_fifo;
 extern uint8_t load_profile_record_period;
-extern float vrms_max_last;
-extern float vrms_min_last;
-extern float vrms_mean_last;
+extern volatile float vrms_max_last;
+extern volatile float vrms_min_last;
+extern volatile float vrms_mean_last;
 extern uint16_t vrms_threshold;
 extern uint8_t threshold_set_before;
 extern float bias_voltage;
@@ -144,7 +145,7 @@ extern TaskHandle_t xADCHandle;
 extern TaskHandle_t xADCSampleHandle;
 extern TaskHandle_t xUARTHandle;
 extern TaskHandle_t xResetHandle;
-extern TaskHandle_t xWriteDebugHandle;
+extern TaskHandle_t xGetRTCHandle;
 
 extern SemaphoreHandle_t xFlashMutex;
 extern SemaphoreHandle_t xFIFOMutex;

@@ -491,7 +491,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start,
 // show load profile content
 void searchDataInFlash(uint8_t *reading_state_start_time,
                        uint8_t *reading_state_end_time,
-                       enum ListeningStates state, TimerHandle_t timer) {
+                       enum ListeningStates state) {
     // initialize the variables
     datetime_t start = {0};
     datetime_t end = {0};
@@ -635,8 +635,6 @@ void searchDataInFlash(uint8_t *reading_state_start_time,
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
-            xTimerReset(timer, 0);
-
             start_addr += FLASH_RECORD_SIZE;
         }
     }
@@ -841,14 +839,13 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(
     setDateToCharArray(current_time.sec, ac_flash_data.sec);
 
     // set samples
-    if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+    {
         uint16_t copy_buffer[ADC_FIFO_SIZE] = {0};
         getLastNElementsToBuffer(&adc_fifo, copy_buffer, ADC_FIFO_SIZE);
 
         for (uint16_t i = 0; i < ADC_FIFO_SIZE; i++) {
             ac_flash_data.sample_buffer[i] = (copy_buffer[i] >> 4) & 0xFF;
         }
-        xSemaphoreGive(xFIFOMutex);
     }
 
     // set vrms values

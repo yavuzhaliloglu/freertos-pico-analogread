@@ -31,14 +31,14 @@ uint8_t is_end_connection_message(uint8_t *msg_buf);
 // This function gets the baud rate number like 1-6
 uint8_t getProgramBaudRate(uint16_t b_rate);
 // This function sets the device's baud rate according to given number like 0,1,2,3,4,5,6
-uint setProgramBaudRate(uint8_t b_rate);
+void set_device_baud_rate(uint8_t b_rate);
 // This function resets rx_buffer content
 void resetRxBuffer();
 //  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
 bool controlRXBuffer(uint8_t *buffer, uint8_t len);
 void sendInvalidMsg();
 // This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
-void resetState();
+void reset_uart();
 // This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
 void greetingStateHandler(uint8_t *buffer);
 // This function handles in Setting State. It sets the baud rate and if the message is requested to readout data, it gives readout message
@@ -54,13 +54,20 @@ void sendProductionInfo();
 // This function gets a password and controls the password, if password is true, device sends an ACK message, if not, device sends NACK message
 void passwordHandler(uint8_t *buffer);
 void __not_in_flash_func(setThresholdValue)(uint8_t *data);
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer);
+void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
 void resetThresholdPIN();
 void setThresholdPIN();
-void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer);
+void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
 void readTime();
 void readDate();
 void readSerialNumber();
 void sendLastVRMSXValue(enum ListeningStates vrmsState);
 void sendThresholdObis();
+bool control_serial_number(uint8_t *identification_req_buf, size_t req_size);
+size_t create_identify_response_message(char *response_buf, size_t buf_size);
+uint8_t exract_baud_rate_and_mode_from_message(uint8_t *msg_buf, size_t msg_len, int8_t *requested_mode);
+void send_readout_message();
+void set_init_baud_rate();
+void send_programming_acknowledgement();
+uint8_t is_message_break_command(uint8_t *buf);
 #endif

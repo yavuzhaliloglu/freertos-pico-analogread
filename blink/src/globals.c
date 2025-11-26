@@ -7,9 +7,9 @@
 // ADC VARIABLES
 ADC_FIFO adc_fifo;
 uint8_t load_profile_record_period = 15;
-float vrms_max_last = 0.0;
-float vrms_min_last = 0.0;
-float vrms_mean_last = 0.0;
+volatile float vrms_max_last = 0.0;
+volatile float vrms_min_last = 0.0;
+volatile float vrms_mean_last = 0.0;
 uint16_t vrms_threshold = 5;
 uint8_t threshold_set_before = 0;
 float bias_voltage = 0;
@@ -46,7 +46,7 @@ TaskHandle_t xADCHandle;
 TaskHandle_t xADCSampleHandle;
 TaskHandle_t xUARTHandle;
 TaskHandle_t xResetHandle;
-TaskHandle_t xWriteDebugHandle;
+TaskHandle_t xGetRTCHandle;
 
 SemaphoreHandle_t xFlashMutex;
 SemaphoreHandle_t xFIFOMutex;

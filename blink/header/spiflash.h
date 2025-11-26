@@ -38,7 +38,7 @@ void datetimeCopy(datetime_t *src, datetime_t *dst);
 void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state);
 void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state);
 // This function searches the requested data in flash by starting from flash record beginning offset, collects data from flash and sends it to UART to show load profile content
-void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state, TimerHandle_t timer);
+void searchDataInFlash(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
 // This function resets records and sector data and set sector data to 0 (UNUSUED FUNCTION)
 void __not_in_flash_func(resetFlashSettings)();
 void __not_in_flash_func(checkSectorContent)();
