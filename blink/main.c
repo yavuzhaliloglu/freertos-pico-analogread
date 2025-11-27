@@ -370,11 +370,18 @@ void vADCReadTask() {
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
+#if CONF_THRESHOLD_PIN_ENABLED || CONF_THRESHOLD_GET_ENABLED
         if (vrms >= (float)getVRMSThresholdValue()) {
+#if CONF_THRESHOLD_PIN_ENABLED
             setThresholdPIN();
+#endif
+#if CONF_THRESHOLD_GET_ENABLED
             writeThresholdRecord(vrms, variance);
+#endif
         }
+#endif
 
+#if CONF_SUDDEN_AMPLITUDE_CHANGE_ENABLED
         if (detectSuddenAmplitudeChangeWithDerivative(vrms_values_per_second, VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC) || amplitude_change_detect_flag) {
             PRINTF("ADC READ TASK: sudden amplitude change detected with Derivate method.\r\n");
             if (amplitude_change_detect_flag) {
@@ -385,6 +392,7 @@ void vADCReadTask() {
                 amplitude_change_detect_flag = 1;
             }
         }
+#endif
 
         if (current_time.sec == 0) {
             if (current_time.min % load_profile_record_period == 0) {
