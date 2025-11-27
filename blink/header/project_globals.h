@@ -33,26 +33,26 @@ typedef struct
 
 enum ListeningStates
 {
-    BCCError = -2,
-    DataError = -1,
-    Reading = 0,
-    TimeSet = 1,
-    DateSet = 2,
-    ProductionInfo = 4,
-    Password = 5,
-    SetThreshold = 6,
-    GetThreshold = 7,
-    ThresholdPin = 8,
-    GetSuddenAmplitudeChange = 9,
-    ReadTime = 10,
-    ReadDate = 11,
-    ReadSerialNumber = 12,
-    ReadLastVRMSMax = 13,
-    ReadLastVRMSMin = 14,
-    ReadLastVRMSMean = 15,
-    ReadResetDates = 16,
-    GetThresholdObis = 17,
-    BreakMessage = 18
+    BCCError = 0,
+    DataError,
+    Password,
+    Reading,
+    TimeSet,
+    DateSet,
+    ProductionInfo,
+    SetThreshold,
+    GetThreshold,
+    ThresholdPin,
+    GetSuddenAmplitudeChange,
+    ReadTime,
+    ReadDate,
+    ReadSerialNumber,
+    ReadLastVRMSMax,
+    ReadLastVRMSMin,
+    ReadLastVRMSMean,
+    ReadResetDates,
+    GetThresholdObis,
+    BreakMessage
 };
 
 struct FlashData

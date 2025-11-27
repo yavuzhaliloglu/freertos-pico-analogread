@@ -47,13 +47,13 @@ static const ObisCommand command_table[] = {
     {"96.1.3", ProductionInfo, CMD_TYPE_ANY},
     {"96.3.12", SetThreshold, CMD_TYPE_WRITE},
     {"96.3.12", GetThresholdObis, CMD_TYPE_READ},
-    {"T.R.1", GetThreshold, CMD_TYPE_ANY},
-    {"T.P.1", ThresholdPin, CMD_TYPE_ANY},
+    {"96.77.4*", GetThreshold, CMD_TYPE_ANY},
+    {"96.3.10", ThresholdPin, CMD_TYPE_ANY},
     {"9.9.0", GetSuddenAmplitudeChange, CMD_TYPE_ANY},
     {"32.7.0", ReadLastVRMSMax, CMD_TYPE_ANY},
     {"52.7.0", ReadLastVRMSMin, CMD_TYPE_ANY},
     {"72.7.0", ReadLastVRMSMean, CMD_TYPE_ANY},
-    {"R.D.0", ReadResetDates, CMD_TYPE_ANY}};
+    {"0.1.2*", ReadResetDates, CMD_TYPE_ANY}};
 
 // Ana komutlar hala aynı
 static const uint8_t password_cmd[4] = {0x01, 0x50, 0x31, 0x02};

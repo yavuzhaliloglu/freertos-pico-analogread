@@ -232,107 +232,102 @@ void vUARTTask() {
 
                     switch (checkListeningData(rx_buffer, received_bytes)) {
                         case DataError:
-                            PRINTF("UART TASK: entered listening-dataerror\n");
                             sendErrorMessage((char *)"DATAERROR");
                             break;
 
                         case BCCError:
-                            PRINTF("UART TASK: entered listening-bccerror\n");
                             sendErrorMessage((char *)"BCCERROR");
                             break;
 
-                        // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
-                        case Reading:
-                            PRINTF("UART TASK: entered listening-reading\n");
-                            parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
-                            searchDataInFlash(rx_buffer, reading_state_start_time, reading_state_end_time, Reading);
-                            break;
-
-                        // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.
                         case Password:
-                            PRINTF("UART TASK: entered listening-password\n");
                             passwordHandler(rx_buffer);
                             break;
 
-                        // This state changes time of this device.
+#if CONF_LOAD_PROFILE_ENABLED
+                        case Reading:
+                            parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
+                            searchDataInFlash(rx_buffer, reading_state_start_time, reading_state_end_time, Reading);
+                            break;
+#endif
+#if CONF_TIME_SET_ENABLED
                         case TimeSet:
-                            PRINTF("UART TASK: entered listening-timeset\n");
                             setTimeFromUART(rx_buffer);
                             break;
-
-                        // This state changes date of this device.
+#endif
+#if CONF_DATE_SET_ENABLED
                         case DateSet:
-                            PRINTF("UART TASK: entered listening-dateset\n");
                             setDateFromUART(rx_buffer);
                             break;
-
-                        // This state sends production info for this device.
+#endif
+#if CONF_PRODUCTION_INFO_ENABLED
                         case ProductionInfo:
-                            PRINTF("UART TASK: entered listening-productioninfo\n");
                             sendProductionInfo();
                             break;
-
+#endif
+#if CONF_THRESHOLD_SET_ENABLED
                         case SetThreshold:
-                            PRINTF("UART TASK: entered listening-setthreshold\n");
                             setThresholdValue(rx_buffer);
                             break;
-
+#endif
+#if CONF_THRESHOLD_GET_ENABLED
                         case GetThreshold:
-                            PRINTF("UART TASK: entered listening-getthreshold\n");
                             parseThresholdRequestDates(rx_buffer, reading_state_start_time, reading_state_end_time);
                             getThresholdRecord(reading_state_start_time, reading_state_end_time, GetThreshold);
                             break;
-
+#endif
+#if CONF_THRESHOLD_PIN_ENABLED
                         case ThresholdPin:
-                            PRINTF("UART TASK: entered listening-thresholdpin\n");
                             resetThresholdPIN();
                             break;
-
+#endif
+#if CONF_SUDDEN_AMPLITUDE_CHANGE_ENABLED
                         case GetSuddenAmplitudeChange:
-                            PRINTF("UART TASK: entered listening-suddenamplitudechange\n");
                             parseACRequestDate(rx_buffer, reading_state_start_time, reading_state_end_time);
                             getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time, GetSuddenAmplitudeChange);
                             break;
-
+#endif
+#if CONF_TIME_READ_ENABLED
                         case ReadTime:
-                            PRINTF("UART TASK: entered listening-readtime\n");
                             readTime();
                             break;
-
+#endif
+#if CONF_DATE_SET_ENABLED
                         case ReadDate:
-                            PRINTF("UART TASK: entered listening-readdate\n");
                             readDate();
                             break;
-
+#endif
+#if CONF_SERIAL_NUMBER_READ_ENABLED
                         case ReadSerialNumber:
-                            PRINTF("UART TASK: entered listening-readserialnumber\n");
                             readSerialNumber();
                             break;
-
+#endif
+#if CONF_VRMS_MAX_READ_ENABLED
                         case ReadLastVRMSMax:
-                            PRINTF("UART TASK: entered listening-readlastvrmsmax\n");
                             sendLastVRMSXValue(ReadLastVRMSMax);
                             break;
-
+#endif
+#if CONF_VRMS_MIN_READ_ENABLED
                         case ReadLastVRMSMin:
                             sendLastVRMSXValue(ReadLastVRMSMin);
                             break;
-
+#endif
+#if CONF_VRMS_MEAN_READ_ENABLED
                         case ReadLastVRMSMean:
                             sendLastVRMSXValue(ReadLastVRMSMean);
                             break;
-
+#endif
+#if CONF_RESET_DATES_READ_ENABLED
                         case ReadResetDates:
                             sendResetDates();
                             break;
-
+#endif
+#if CONF_THRESHOLD_OBIS_ENABLED
                         case GetThresholdObis:
                             sendThresholdObis();
                             break;
-
+#endif
                         default:
-                            PRINTF("UART TASK: entered listening-default\n");
-                            sendErrorMessage((char *)"UNSUPPORTEDLSTMSG");
+                            sendErrorMessage((char *)"UNSUPPORTEDOPERATION");
                             break;
                     }
                 }
