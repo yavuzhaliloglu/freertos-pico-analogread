@@ -447,27 +447,10 @@ void set_device_baud_rate(uint8_t b_rate_hex) {
     uart_set_baudrate(UART0_ID, set_baud_rate);
 }
 
-// This function resets rx_buffer content
-void resetRxBuffer() {
-    memset(rx_buffer, 0, sizeof(rx_buffer));
-    rx_buffer_len = 0;
-
-    PRINTF("reset Buffer func!\n");
-}
-
-void sendInvalidMsg() {
-    if (rx_buffer_len != 0 && state == Listening) {
-        PRINTF("SENDING INVALID MSG!!\n");
-        sendErrorMessage((char *)"INVALIDMSGFORMAT!");
-        resetRxBuffer();
-    }
-}
-
 // This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
 void reset_uart() {
     PRINTF("Reset State Timer Trigger!\n");
     set_init_baud_rate();
-    resetRxBuffer();
 }
 
 uint8_t *get_serial_number_ptr() {

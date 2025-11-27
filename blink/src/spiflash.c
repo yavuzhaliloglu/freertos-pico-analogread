@@ -489,7 +489,7 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start,
 // This function searches the requested data in flash by starting from flash
 // record beginning offset, collects data from flash and sends it to UART to
 // show load profile content
-void searchDataInFlash(uint8_t *reading_state_start_time,
+void searchDataInFlash(uint8_t *buf, uint8_t *reading_state_start_time,
                        uint8_t *reading_state_end_time,
                        enum ListeningStates state) {
     // initialize the variables
@@ -502,8 +502,8 @@ void searchDataInFlash(uint8_t *reading_state_start_time,
     char load_profile_line[41] = {0};
     uint8_t *flash_start_content =
         (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
-    uint8_t *date_start = (uint8_t *)strchr((char *)rx_buffer, '(');
-    uint8_t *date_end = (uint8_t *)strchr((char *)rx_buffer, ')');
+    uint8_t *date_start = (uint8_t *)strchr((char *)buf, '(');
+    uint8_t *date_end = (uint8_t *)strchr((char *)buf, ')');
     char year[3] = {0};
     char month[3] = {0};
     char day[3] = {0};
@@ -525,10 +525,7 @@ void searchDataInFlash(uint8_t *reading_state_start_time,
                       FLASH_LOAD_PROFILE_RECORD_ADDR,
                       FLASH_LOAD_PROFILE_RECORD_AREA_SIZE, FLASH_RECORD_SIZE,
                       state);
-    }
-    // if rx_buffer_len is not 14, request got with dates and records will be
-    // showed between those dates.
-    else {
+    } else {
         PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
         getSelectedRecords(
             &start_index, &end_index, &start, &end, &dt_start, &dt_end,

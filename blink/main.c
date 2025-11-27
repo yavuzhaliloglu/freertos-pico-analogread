@@ -244,8 +244,8 @@ void vUARTTask() {
                         // This state represents Load Profile request and send a load profile message for specified dates. If there is no date information, device send all the load profile contents.
                         case Reading:
                             PRINTF("UART TASK: entered listening-reading\n");
-                            parseLoadProfileDates(rx_buffer, rx_buffer_len, reading_state_start_time, reading_state_end_time);
-                            searchDataInFlash(reading_state_start_time, reading_state_end_time, Reading);
+                            parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
+                            searchDataInFlash(rx_buffer, reading_state_start_time, reading_state_end_time, Reading);
                             break;
 
                         // This state accepts the password and checks. If the password is not correct, time and date in this device cannot be changed.

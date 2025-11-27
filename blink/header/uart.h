@@ -7,10 +7,6 @@
 #include "timers.h"
 #include "header/project_globals.h"
 
-// UART Receiver function
-void UARTReceive();
-// UART Interrupt Service
-void UARTIsr();
 // UART Initialization
 uint8_t initUART();
 void sendResetDates();
@@ -32,17 +28,8 @@ uint8_t is_end_connection_message(uint8_t *msg_buf);
 uint8_t getProgramBaudRate(uint16_t b_rate);
 // This function sets the device's baud rate according to given number like 0,1,2,3,4,5,6
 void set_device_baud_rate(uint8_t b_rate);
-// This function resets rx_buffer content
-void resetRxBuffer();
-//  This function controls message coming from UART. If coming message is provides the formats that described below, this message is accepted to precessing.
-bool controlRXBuffer(uint8_t *buffer, uint8_t len);
-void sendInvalidMsg();
 // This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
 void reset_uart();
-// This function handles in Greeting state. It checks the handshake request message (/? or /?ALP) and if check is true,
-void greetingStateHandler(uint8_t *buffer);
-// This function handles in Setting State. It sets the baud rate and if the message is requested to readout data, it gives readout message
-void settingStateHandler(uint8_t *buffer, uint8_t size);
 uint8_t verifyHourMinSec(uint8_t hour, uint8_t min, uint8_t sec);
 uint8_t verifyYearMonthDay(uint8_t year, uint8_t month, uint8_t day);
 // This function sets time via UART

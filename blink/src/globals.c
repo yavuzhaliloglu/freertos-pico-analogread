@@ -1,7 +1,7 @@
 #include "header/project_globals.h"
 
 // =============================================================================
-// GLOBAL DEĞİŞKEN TANIMLAMALARI
+// GLOBAL VARIABLES
 // =============================================================================
 
 // ADC VARIABLES
@@ -15,10 +15,6 @@ uint8_t threshold_set_before = 0;
 float bias_voltage = 0;
 
 // UART VARIABLES
-volatile TaskHandle_t xTaskToNotify_UART = NULL;
-enum States state = Greeting;
-uint8_t rx_buffer[RX_BUFFER_SIZE] = {0};
-uint8_t rx_buffer_len = 0;
 bool password_correct_flag = false;
 
 // SPI VARIABLES
