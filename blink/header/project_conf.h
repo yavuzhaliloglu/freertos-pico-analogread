@@ -50,6 +50,9 @@
 #define CONF_RESET_DATES_READ_ENABLED 1
 #define CONF_THRESHOLD_OBIS_ENABLED 1
 
+// indexed obis configuration
+#define THRESHOLD_RECORD_OBIS_COUNT 10
+
 // DEBUG MACRO
 #if DEBUG
 #define PRINTF(x, ...) printf(x, ##__VA_ARGS__)

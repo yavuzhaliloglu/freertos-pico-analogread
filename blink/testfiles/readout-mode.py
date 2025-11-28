@@ -13,14 +13,16 @@ parser = argparse.ArgumentParser(description="A guide to show readout mode optio
 
 parser.add_argument("--serial-number", type=str, default="", help="Serial number. Should be 9 characters")
 parser.add_argument("--baud-rate", type=baud_rate_type, default="6", help="Baud rate. Should be a value between 0 and 6")
-parser.add_argument("-rm", "--readout-mode", action="store_true", help="Readout mode shows content of device")
+parser.add_argument("-rms", "--readout-mode-short", action="store_true", help="Readout mode shows content of device")
+parser.add_argument("-rml", "--readout-mode-long", action="store_true", help="Readout mode shows content of device")
 parser.add_argument("-dm", "--debug-mode", action="store_true", help="Debug mode shows content of sector, records and device info")
 
 args = parser.parse_args()
 
 print("serial number: ", args.serial_number)
 print("baud rate: ", args.baud_rate)
-print("readout mode arg: ", args.readout_mode)
+print("readout mode short arg: ", args.readout_mode_short)
+print("readout mode long arg: ", args.readout_mode_long)
 print("debug mode arg: ", args.debug_mode)
 
 # ------------------------------------------------------------------------------------------------------------
@@ -146,8 +148,10 @@ if(response_max_b_rate == -1):
     print("Invalid response message!")
     exit(1)
 
-if args.readout_mode:
+if args.readout_mode_short:
     information_message = bytearray(b"\x0606\r\n")
+elif args.readout_mode_long:
+    information_message = bytearray(b"\x0600\r\n")
 elif args.debug_mode:
     information_message = bytearray(b"\x0604\r\n")
 else:

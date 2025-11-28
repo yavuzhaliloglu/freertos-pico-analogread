@@ -191,7 +191,7 @@ void vUARTTask() {
 
                 if (requested_mode == REQUEST_MODE_LONG_READ || requested_mode == REQUEST_MODE_SHORT_READ) {
                     PRINTF("Request is readout\n");
-                    send_readout_message();
+                    send_readout_message(requested_mode);
                     set_init_baud_rate();
                     continue;
                 } else if (requested_mode == REQUEST_MODE_PROGRAMMING) {
@@ -267,12 +267,6 @@ void vUARTTask() {
 #if CONF_THRESHOLD_SET_ENABLED
                         case SetThreshold:
                             setThresholdValue(rx_buffer);
-                            break;
-#endif
-#if CONF_THRESHOLD_GET_ENABLED
-                        case GetThreshold:
-                            parseThresholdRequestDates(rx_buffer, reading_state_start_time, reading_state_end_time);
-                            getThresholdRecord(reading_state_start_time, reading_state_end_time, GetThreshold);
                             break;
 #endif
 #if CONF_THRESHOLD_PIN_ENABLED

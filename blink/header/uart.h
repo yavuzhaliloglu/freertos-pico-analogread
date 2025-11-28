@@ -41,7 +41,6 @@ void sendProductionInfo();
 // This function gets a password and controls the password, if password is true, device sends an ACK message, if not, device sends NACK message
 void passwordHandler(uint8_t *buffer);
 void __not_in_flash_func(setThresholdValue)(uint8_t *data);
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
 void resetThresholdPIN();
 void setThresholdPIN();
 void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
@@ -53,7 +52,7 @@ void sendThresholdObis();
 bool control_serial_number(uint8_t *identification_req_buf, size_t req_size);
 size_t create_identify_response_message(char *response_buf, size_t buf_size);
 uint8_t exract_baud_rate_and_mode_from_message(uint8_t *msg_buf, size_t msg_len, int8_t *requested_mode);
-void send_readout_message();
+void send_readout_message(uint8_t request_mode);
 void set_init_baud_rate();
 void send_programming_acknowledgement();
 uint8_t is_message_break_command(uint8_t *buf);

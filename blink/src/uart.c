@@ -107,7 +107,7 @@ void sendResetDates() {
     uart_putc(UART0_ID, xor_result);
 }
 
-uint8_t is_message_break_command(uint8_t *buf){
+uint8_t is_message_break_command(uint8_t *buf) {
     return (memcmp(buf, break_command, sizeof(break_command)) == 0);
 }
 
@@ -170,7 +170,7 @@ enum ListeningStates checkListeningData(uint8_t *data_buffer, uint8_t size) {
         return Password;
     }
 
-    if(memcmp(data_buffer, break_command, sizeof(break_command)) == 0) {
+    if (memcmp(data_buffer, break_command, sizeof(break_command)) == 0) {
         PRINTF("CHECKLISTENINGDATA: Break command received.\n");
         return BreakMessage;
     }
@@ -388,27 +388,27 @@ uint8_t getProgramBaudRate(uint16_t b_rate) {
     uint8_t baudrate = 0;
 
     switch (b_rate) {
-    case 300:
-        baudrate = 0;
-        break;
-    case 600:
-        baudrate = 1;
-        break;
-    case 1200:
-        baudrate = 2;
-        break;
-    case 2400:
-        baudrate = 3;
-        break;
-    case 4800:
-        baudrate = 4;
-        break;
-    case 9600:
-        baudrate = 5;
-        break;
-    case 19200:
-        baudrate = 6;
-        break;
+        case 300:
+            baudrate = 0;
+            break;
+        case 600:
+            baudrate = 1;
+            break;
+        case 1200:
+            baudrate = 2;
+            break;
+        case 2400:
+            baudrate = 3;
+            break;
+        case 4800:
+            baudrate = 4;
+            break;
+        case 9600:
+            baudrate = 5;
+            break;
+        case 19200:
+            baudrate = 6;
+            break;
     }
 
     return baudrate;
@@ -419,30 +419,30 @@ void set_device_baud_rate(uint8_t b_rate_hex) {
     uint set_baud_rate = 0;
 
     switch (b_rate_hex) {
-    case 0x30:
-        set_baud_rate = 300;
-        break;
-    case 0x31:
-        set_baud_rate = 600;
-        break;
-    case 0x32:
-        set_baud_rate = 1200;
-        break;
-    case 0x33:
-        set_baud_rate = 2400;
-        break;
-    case 0x34:
-        set_baud_rate = 4800;
-        break;
-    case 0x35:
-        set_baud_rate = 9600;
-        break;
-    case 0x36:
-        set_baud_rate = 19200;
-        break;
-    default:
-        set_baud_rate = 300;
-        break;
+        case 0x30:
+            set_baud_rate = 300;
+            break;
+        case 0x31:
+            set_baud_rate = 600;
+            break;
+        case 0x32:
+            set_baud_rate = 1200;
+            break;
+        case 0x33:
+            set_baud_rate = 2400;
+            break;
+        case 0x34:
+            set_baud_rate = 4800;
+            break;
+        case 0x35:
+            set_baud_rate = 9600;
+            break;
+        case 0x36:
+            set_baud_rate = 19200;
+            break;
+        default:
+            set_baud_rate = 300;
+            break;
     }
     uart_set_baudrate(UART0_ID, set_baud_rate);
 }
@@ -482,10 +482,9 @@ bool control_serial_number(uint8_t *identification_req_buf, size_t req_size) {
         }
     }
 
-    if(strncmp((char *)identification_req_buf, (char *)"/?!\r\n", req_size) == 0){
+    if (strncmp((char *)identification_req_buf, (char *)"/?!\r\n", req_size) == 0) {
         return true;
-    }
-    else if(strncmp((char *)identification_req_buf, (char *)serial_num_ptr, SERIAL_NUMBER_SIZE) != 0){
+    } else if (strncmp((char *)identification_req_buf, (char *)serial_num_ptr, SERIAL_NUMBER_SIZE) != 0) {
         return false;
     }
 
@@ -510,7 +509,83 @@ uint8_t exract_baud_rate_and_mode_from_message(uint8_t *msg_buf, size_t msg_len,
     return baud_rate;
 }
 
-void send_readout_message() {
+void send_threshold_records(uint8_t *xor_result) {
+    uint8_t threshold_records_raw[FLASH_RECORD_SIZE * THRESHOLD_RECORD_OBIS_COUNT];
+    // record area offset pointer
+    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
+    // buffer to format
+    uint8_t buffer[48] = {0};
+    // copy the flash content in struct
+    char year[3] = {0};
+    char month[3] = {0};
+    char day[3] = {0};
+    char hour[3] = {0};
+    char min[3] = {0};
+    char sec[3] = {0};
+    uint16_t vrms = 0;
+    uint16_t variance = 0;
+    int result;
+
+    memset(buffer, 0, sizeof(buffer));
+    memset(threshold_records_raw, 0, sizeof(threshold_records_raw));
+
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+        memcpy(threshold_records_raw, record_ptr, sizeof(threshold_records_raw));
+        xSemaphoreGive(xFlashMutex);
+    } else {
+        PRINTF("SEND THRESHOLD RECORDS: Could not take flash mutex!\n");
+        sendErrorMessage((char *)"FLASHMUTEXERR");
+        return;
+    }
+
+    for (size_t i = 0, idx = THRESHOLD_RECORD_OBIS_COUNT; i < THRESHOLD_RECORD_OBIS_COUNT; i++, idx--) {
+        size_t offset = i * FLASH_RECORD_SIZE;
+
+        if (threshold_records_raw[offset] == 0xFF || threshold_records_raw[offset] == 0x00) {
+            result = snprintf((char *)buffer, sizeof(buffer),"96.77.4*%d(00-00-00,00:00:00)(000,00000)\r\n",idx);
+        } else {
+            snprintf(year, sizeof(year), "%c%c", threshold_records_raw[offset], threshold_records_raw[offset + 1]);
+            snprintf(month, sizeof(month), "%c%c", threshold_records_raw[offset + 2], threshold_records_raw[offset + 3]);
+            snprintf(day, sizeof(day), "%c%c", threshold_records_raw[offset + 4], threshold_records_raw[offset + 5]);
+            snprintf(hour, sizeof(hour), "%c%c", threshold_records_raw[offset + 6], threshold_records_raw[offset + 7]);
+            snprintf(min, sizeof(min), "%c%c", threshold_records_raw[offset + 8], threshold_records_raw[offset + 9]);
+            snprintf(sec, sizeof(sec), "%c%c", threshold_records_raw[offset + 10], threshold_records_raw[offset + 11]);
+            vrms = threshold_records_raw[offset + 13];
+            vrms = (vrms << 8);
+            vrms += threshold_records_raw[offset + 12];
+            variance = threshold_records_raw[offset + 15];
+            variance = (variance << 8);
+            variance += threshold_records_raw[offset + 14];
+
+            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(%s-%s-%s,%s:%s:%s)(%03d,%05d)\r\n", idx, year, month, day, hour, min, sec, vrms, variance);
+        }
+
+        // xor all bytes of formatted array
+        bccGenerate(buffer, result, xor_result);
+
+        PRINTF("threshold record to send is: \n");
+        printBufferHex(buffer, result);
+        PRINTF("\n");
+
+        if (result >= (int)sizeof(buffer)) {
+            PRINTF("GETTHRESHOLDRECORD: Buffer Overflow! Sending NACK.\n");
+            sendErrorMessage((char *)"THBUFFEROVERFLOW");
+        } else {
+            // Send the readout data
+            uart_puts(UART0_ID, (char *)buffer);
+        }
+
+        vTaskDelay(pdMS_TO_TICKS(15));
+    }
+
+    uart_tx_wait_blocking(UART0_ID);
+}
+
+void send_reset_dates(uint8_t *xor_result) {
+    (void)(*xor_result);
+}
+
+void send_readout_message(uint8_t request_mode) {
     char readout_line_buffer[32];
     int result = 0;
     uint8_t readout_xor = 0x00;
@@ -546,6 +621,11 @@ void send_readout_message() {
     result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "96.3.12(%03d)\r\n", getVRMSThresholdValue());
     bccGenerate((uint8_t *)readout_line_buffer, result, &readout_xor);
     uart_puts(UART0_ID, readout_line_buffer);
+
+    if (request_mode == REQUEST_MODE_LONG_READ) {
+        send_threshold_records(&readout_xor);
+        send_reset_dates(&readout_xor);
+    }
 
     if (xSemaphoreTake(xVRMSLastValuesMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "32.7.0(%.2f)\r\n", vrms_max_last);
@@ -813,12 +893,12 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
 
     // get string threshold value
     size_t len = end_ptr - start_ptr;
-    
+
     // VALIDATION: Check length to prevent buffer overflow (buffer is size 4)
     if (len == 0 || len >= 4) {
-         PRINTF("SETTHRESHOLDVALUE: Invalid value length\n");
-         sendErrorMessage((char *)"VALUELENGTHERROR");
-         return;
+        PRINTF("SETTHRESHOLDVALUE: Invalid value length\n");
+        sendErrorMessage((char *)"VALUELENGTHERROR");
+        return;
     }
 
     // to keep string threshold value
@@ -858,7 +938,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
         taskEXIT_CRITICAL();
-        
+
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
@@ -876,109 +956,6 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
     password_correct_flag = false;
 }
 
-void getThresholdRecord(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state)
-{
-    datetime_t start = {0};
-    datetime_t end = {0};
-    int32_t start_index = -1;
-    int32_t end_index = -1;
-    // record area offset pointer
-    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
-    // buffer to format
-    uint8_t buffer[35] = {0};
-    // copy the flash content in struct
-    char year[3] = {0};
-    char month[3] = {0};
-    char day[3] = {0};
-    char hour[3] = {0};
-    char min[3] = {0};
-    char sec[3] = {0};
-    uint16_t vrms = 0;
-    uint16_t variance = 0;
-
-    PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-    getAllRecords(&start_index, &end_index, &start, &end, FLASH_THRESHOLD_RECORDS_ADDR, FLASH_THRESHOLD_RECORDS_SIZE, FLASH_RECORD_SIZE, state);
-
-    PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
-    PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
-
-    if (start_index >= 0 && end_index >= 0) {
-        // initialize the variables
-        uint8_t xor_result = 0x00;
-        uint32_t start_addr = start_index;
-        uint32_t end_addr = start_index <= end_index ? end_index : (int32_t)(FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE);
-        int result;
-
-        // send STX character
-        uart_putc(UART0_ID, STX);
-
-        for (; start_addr <= end_addr;) {
-            if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-                if (record_ptr[start_addr] == 0xFF || record_ptr[start_addr] == 0x00) {
-                    xSemaphoreGive(xFlashMutex);
-                    continue;
-                }
-                PRINTF("GETTHRESHOLDRECORD: set data mutex received\n");
-
-                // copy the flash content in struct
-                snprintf(year, sizeof(year), "%c%c", record_ptr[start_addr], record_ptr[start_addr + 1]);
-                snprintf(month, sizeof(month), "%c%c", record_ptr[start_addr + 2], record_ptr[start_addr + 3]);
-                snprintf(day, sizeof(day), "%c%c", record_ptr[start_addr + 4], record_ptr[start_addr + 5]);
-                snprintf(hour, sizeof(hour), "%c%c", record_ptr[start_addr + 6], record_ptr[start_addr + 7]);
-                snprintf(min, sizeof(min), "%c%c", record_ptr[start_addr + 8], record_ptr[start_addr + 9]);
-                snprintf(sec, sizeof(sec), "%c%c", record_ptr[start_addr + 10], record_ptr[start_addr + 11]);
-                vrms = record_ptr[start_addr + 13];
-                vrms = (vrms << 8);
-                vrms += record_ptr[start_addr + 12];
-                variance = record_ptr[start_addr + 15];
-                variance = (variance << 8);
-                variance += record_ptr[start_addr + 14];
-
-                xSemaphoreGive(xFlashMutex);
-            }
-
-            result = snprintf((char *)buffer, sizeof(buffer), "(%s-%s-%s,%s:%s:%s)(%03d,%05d)\r\n", year, month, day, hour, min, sec, vrms, variance);
-            // xor all bytes of formatted array
-            bccGenerate(buffer, result, &xor_result);
-
-            PRINTF("threshold record to send is: \n");
-            printBufferHex(buffer, result);
-            PRINTF("\n");
-
-            if (result >= (int)sizeof(buffer)) {
-                PRINTF("GETTHRESHOLDRECORD: Buffer Overflow! Sending NACK.\n");
-                sendErrorMessage((char *)"THBUFFEROVERFLOW");
-            } else {
-                // Send the readout data
-                uart_puts(UART0_ID, (char *)buffer);
-            }
-
-            if (start_addr == end_addr) {
-                // last sector and record control
-                if (start_index > end_index && start_addr == (FLASH_THRESHOLD_RECORDS_SIZE - FLASH_RECORD_SIZE)) {
-                    start_addr = 0;
-                    end_addr = end_index;
-                } else {
-                    result = snprintf((char *)buffer, sizeof(buffer), "\r%c", ETX);
-                    bccGenerate(buffer, result, &xor_result);
-
-                    uart_puts(UART0_ID, (char *)buffer);
-                    PRINTF("GETTHRESHOLDRECORD: lp data block xor is: %02X\n", xor_result);
-                    uart_putc(UART0_ID, xor_result);
-                }
-            }
-
-            vTaskDelay(pdMS_TO_TICKS(15));
-            start_addr += FLASH_RECORD_SIZE;
-        }
-    } else {
-        PRINTF("SEARCHDATAINFLASH: data not found.\n");
-        sendErrorMessage((char *)"NODATAFOUND");
-    }
-
-    memset(reading_state_start_time, 0, 10);
-    memset(reading_state_end_time, 0, 10);
-}
 void resetThresholdPIN() {
     if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
@@ -1160,21 +1137,21 @@ void sendLastVRMSXValue(enum ListeningStates vrmsState) {
     uint8_t xor_result = 0x02;
 
     switch (vrmsState) {
-    case ReadLastVRMSMax:
-        result = snprintf((char *)buffer, sizeof(buffer), "%c32.7.0(%.2f)%c", 0x02, vrms_max_last, 0x03);
-        break;
+        case ReadLastVRMSMax:
+            result = snprintf((char *)buffer, sizeof(buffer), "%c32.7.0(%.2f)%c", 0x02, vrms_max_last, 0x03);
+            break;
 
-    case ReadLastVRMSMin:
-        result = snprintf((char *)buffer, sizeof(buffer), "%c52.7.0(%.2f)%c", 0x02, vrms_min_last, 0x03);
-        break;
+        case ReadLastVRMSMin:
+            result = snprintf((char *)buffer, sizeof(buffer), "%c52.7.0(%.2f)%c", 0x02, vrms_min_last, 0x03);
+            break;
 
-    case ReadLastVRMSMean:
-        result = snprintf((char *)buffer, sizeof(buffer), "%c72.7.0(%.2f)%c", 0x02, vrms_mean_last, 0x03);
-        break;
+        case ReadLastVRMSMean:
+            result = snprintf((char *)buffer, sizeof(buffer), "%c72.7.0(%.2f)%c", 0x02, vrms_mean_last, 0x03);
+            break;
 
-    default:
-        PRINTF("SENDLASTVRMSXVALUE: Unknown state!\n");
-        break;
+        default:
+            PRINTF("SENDLASTVRMSXVALUE: Unknown state!\n");
+            break;
     }
 
     if (result == -1 || result >= (int)sizeof(buffer)) {
