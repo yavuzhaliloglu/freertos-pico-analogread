@@ -63,48 +63,6 @@ static const uint8_t writing_control_cmd[4] = {0x01, 0x57, 0x32, 0x02};
 static const uint8_t break_command[5] = {0x01, 0x42, 0x30, 0x03, 0x71};
 
 void sendResetDates() {
-    uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_DATES_ADDR);
-    char date_buffer[23] = {0};
-    uint16_t date_offset;
-    int result;
-    uint8_t xor_result = 0x00;
-
-    uart_putc(UART0_ID, STX);
-
-    for (date_offset = 0; date_offset < FLASH_SECTOR_SIZE; date_offset += 16) {
-        xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250));
-        PRINTF("SEND RESET DATES: set data mutex received\n");
-        if (reset_dates_flash[date_offset] == 0xFF || reset_dates_flash[date_offset] == 0x00) {
-            xSemaphoreGive(xFlashMutex);
-            break;
-        }
-
-        char year[3] = {reset_dates_flash[date_offset], reset_dates_flash[date_offset + 1], 0x00};
-        char month[3] = {reset_dates_flash[date_offset + 2], reset_dates_flash[date_offset + 3], 0x00};
-        char day[3] = {reset_dates_flash[date_offset + 4], reset_dates_flash[date_offset + 5], 0x00};
-        char hour[3] = {reset_dates_flash[date_offset + 6], reset_dates_flash[date_offset + 7], 0x00};
-        char min[3] = {reset_dates_flash[date_offset + 8], reset_dates_flash[date_offset + 9], 0x00};
-        char sec[3] = {reset_dates_flash[date_offset + 10], reset_dates_flash[date_offset + 11], 0x00};
-        xSemaphoreGive(xFlashMutex);
-
-        result = snprintf(date_buffer, sizeof(date_buffer), "(%s-%s-%s,%s:%s:%s)\r\n", year, month, day, hour, min, sec);
-
-        if (result >= (int)sizeof(date_buffer)) {
-            sendErrorMessage((char *)"DATEBUFFERSMALL");
-            continue;
-        }
-
-        bccGenerate((uint8_t *)date_buffer, result, &xor_result);
-        uart_puts(UART0_ID, date_buffer);
-    }
-
-    uart_putc(UART0_ID, '\r');
-    xor_result ^= '\r';
-
-    uart_putc(UART0_ID, ETX);
-    xor_result ^= ETX;
-
-    uart_putc(UART0_ID, xor_result);
 }
 
 uint8_t is_message_break_command(uint8_t *buf) {
@@ -542,7 +500,7 @@ void send_threshold_records(uint8_t *xor_result) {
         size_t offset = i * FLASH_RECORD_SIZE;
 
         if (threshold_records_raw[offset] == 0xFF || threshold_records_raw[offset] == 0x00) {
-            result = snprintf((char *)buffer, sizeof(buffer),"96.77.4*%d(00-00-00,00:00:00)(000,00000)\r\n",idx);
+            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(00-00-00,00:00:00)(000,00000)\r\n", idx);
         } else {
             snprintf(year, sizeof(year), "%c%c", threshold_records_raw[offset], threshold_records_raw[offset + 1]);
             snprintf(month, sizeof(month), "%c%c", threshold_records_raw[offset + 2], threshold_records_raw[offset + 3]);
@@ -582,7 +540,47 @@ void send_threshold_records(uint8_t *xor_result) {
 }
 
 void send_reset_dates(uint8_t *xor_result) {
-    (void)(*xor_result);
+    uint8_t *reset_dates_flash = (uint8_t *)(XIP_BASE + FLASH_RESET_DATES_ADDR);
+    uint8_t reset_dates_raw[RESET_DATES_OBIS_COUNT * FLASH_RECORD_SIZE];
+    char date_buffer[32];
+    int result;
+
+    memset(reset_dates_raw, 0, sizeof(reset_dates_raw));
+    memset(date_buffer, 0, sizeof(date_buffer));
+
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+        memcpy(reset_dates_raw, reset_dates_flash, sizeof(reset_dates_raw));
+        xSemaphoreGive(xFlashMutex);
+    } else {
+        PRINTF("SEND RESET DATES: Could not take flash mutex!\n");
+        sendErrorMessage((char *)"FLASHMUTEXERR");
+        return;
+    }
+
+    for (uint8_t i = 0,idx = RESET_DATES_OBIS_COUNT; i < RESET_DATES_OBIS_COUNT; i++,idx--) {
+        size_t offset = i * FLASH_RECORD_SIZE;
+        if (reset_dates_raw[offset] == 0xFF || reset_dates_raw[offset] == 0x00) {
+            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(00-00-00,00:00:00)\r\n",idx);
+        } else {
+            char year[3] = {reset_dates_raw[offset], reset_dates_raw[offset + 1], 0x00};
+            char month[3] = {reset_dates_raw[offset + 2], reset_dates_raw[offset + 3], 0x00};
+            char day[3] = {reset_dates_raw[offset + 4], reset_dates_raw[offset + 5], 0x00};
+            char hour[3] = {reset_dates_raw[offset + 6], reset_dates_raw[offset + 7], 0x00};
+            char min[3] = {reset_dates_raw[offset + 8], reset_dates_raw[offset + 9], 0x00};
+            char sec[3] = {reset_dates_raw[offset + 10], reset_dates_raw[offset + 11], 0x00};
+            xSemaphoreGive(xFlashMutex);
+
+            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(%s-%s-%s,%s:%s:%s)\r\n",idx, year, month, day, hour, min, sec);
+
+            if (result >= (int)sizeof(date_buffer)) {
+                sendErrorMessage((char *)"DATEBUFFERSMALL");
+                continue;
+            }
+        }
+
+        bccGenerate((uint8_t *)date_buffer, result, xor_result);
+        uart_puts(UART0_ID, date_buffer);
+    }
 }
 
 void send_readout_message(uint8_t request_mode) {

@@ -52,6 +52,7 @@
 
 // indexed obis configuration
 #define THRESHOLD_RECORD_OBIS_COUNT 10
+#define RESET_DATES_OBIS_COUNT 12
 
 // DEBUG MACRO
 #if DEBUG
