@@ -245,8 +245,8 @@ void vUARTTask() {
 
 #if CONF_LOAD_PROFILE_ENABLED
                         case Reading:
-                            parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
-                            searchDataInFlash(rx_buffer, reading_state_start_time, reading_state_end_time, Reading);
+                            // parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
+                            send_load_profile_records(rx_buffer, received_bytes);
                             break;
 #endif
 #if CONF_TIME_SET_ENABLED
@@ -336,8 +336,10 @@ void vUARTTask() {
 // ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask() {
     // Set the parameters for this task.
+#if CONF_SUDDEN_AMPLITUDE_CHANGE_ENABLED
     struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
     uint8_t amplitude_change_detect_flag = 0;
+#endif
     // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
     uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
     float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
@@ -502,10 +504,17 @@ int main() {
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
 
+#if CONF_THRESHOLD_PIN_ENABLED
     // THRESHOLD GPIO INIT
     gpio_init(THRESHOLD_PIN);
     gpio_set_dir(THRESHOLD_PIN, GPIO_OUT);
     gpio_put(THRESHOLD_PIN, 0);
+#else
+    // STATUS LED GPIO INIT
+    gpio_init(STATUS_LED_PIN);
+    gpio_set_dir(STATUS_LED_PIN, GPIO_OUT);
+    gpio_put(STATUS_LED_PIN, 0);
+#endif
 
     // ADC INIT
     adc_init();

@@ -41,8 +41,10 @@ void sendProductionInfo();
 // This function gets a password and controls the password, if password is true, device sends an ACK message, if not, device sends NACK message
 void passwordHandler(uint8_t *buffer);
 void __not_in_flash_func(setThresholdValue)(uint8_t *data);
+#if CONF_THRESHOLD_PIN_ENABLED
 void resetThresholdPIN();
 void setThresholdPIN();
+#endif
 void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state);
 void readTime();
 void readDate();

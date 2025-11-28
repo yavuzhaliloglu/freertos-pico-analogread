@@ -954,6 +954,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
     password_correct_flag = false;
 }
 
+#if CONF_THRESHOLD_PIN_ENABLED
 void resetThresholdPIN() {
     if (!password_correct_flag) {
         sendErrorMessage((char *)"NOPWENTERED");
@@ -988,6 +989,7 @@ void setThresholdPIN() {
         PRINTF("SETTHRESHOLDPIN: Threshold PIN set\n");
     }
 }
+#endif
 
 void getSuddenAmplitudeChangeRecords(uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, enum ListeningStates state) {
     datetime_t start = {0};
