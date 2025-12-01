@@ -129,10 +129,6 @@ void vUARTTask() {
     uint8_t message_retry_count = 0;
     uint8_t hex_baud_rate = 0;
     int8_t requested_mode = -1;
-    // this buffer stores start time for load profile data
-    uint8_t reading_state_start_time[14] = {0};
-    // this buffer stores end time for load profile data
-    uint8_t reading_state_end_time[14] = {0};
 
     while (1) {
         // wait for identification message
@@ -245,8 +241,7 @@ void vUARTTask() {
 
 #if CONF_LOAD_PROFILE_ENABLED
                         case Reading:
-                            // parseLoadProfileDates(rx_buffer, received_bytes, reading_state_start_time, reading_state_end_time);
-                            send_load_profile_records(rx_buffer, received_bytes);
+                            send_load_profile_records(rx_buffer);
                             break;
 #endif
 #if CONF_TIME_SET_ENABLED

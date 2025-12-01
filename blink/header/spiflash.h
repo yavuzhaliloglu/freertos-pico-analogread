@@ -35,10 +35,10 @@ void arrayToDatetimeWithSecond(datetime_t *dt, uint8_t *arr);
 int datetimeComp(datetime_t *dt1, datetime_t *dt2);
 // This function copies a datetime value to another datetime value
 void datetimeCopy(datetime_t *src, datetime_t *dst);
-void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state);
+// void getAllRecords(int64_t *st_idx, int64_t *end_idx, datetime_t *start, datetime_t *end);
 void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start, datetime_t *end, datetime_t *dt_start, datetime_t *dt_end, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time, size_t offset, size_t size, uint16_t record_size, enum ListeningStates state);
 // This function searches the requested data in flash by starting from flash record beginning offset, collects data from flash and sends it to UART to show load profile content
-void send_load_profile_records(uint8_t *buf, size_t buf_len);
+void send_load_profile_records(uint8_t *buf);
 // This function resets records and sector data and set sector data to 0 (UNUSUED FUNCTION)
 void __not_in_flash_func(resetFlashSettings)();
 void __not_in_flash_func(checkSectorContent)();

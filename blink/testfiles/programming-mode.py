@@ -176,25 +176,28 @@ def prepareLoadProfileRequestWithDate(args,header):
         raise ValueError("Too Many Arguments!")
 
 
-    if(len(args) == 1):
+    if(args[0] == "?"):
+        print("only 1 time value provided, this value is going to set as end value and end date will be current time.")
+        current_time_dict = getCurrentTime()
+
+        end_date = args[1]
+        date_range = ";" + end_date
+    elif(args[1] == "?"):
         print("only 1 time value provided, this value is going to set as start value and end date will be current time.")
         current_time_dict = getCurrentTime()
 
         start_date = args[0]
-        end_date = current_time_dict["year"] + "-" + current_time_dict["month"] + "-" + current_time_dict["day"] + ";" + current_time_dict["hour"] + ":" + current_time_dict["minute"] + ":" + current_time_dict["second"]
+        date_range = start_date + ";"
     else:
-        print("both time values are provided.")
         start_date = args[0]
         end_date = args[1]
+        date_range = start_date + ";" + end_date
 
-    date_range = start_date + ";" + end_date
     lp_request_message = header + date_range.encode() + lp_request_message_tail
 
     print("lp_request_message: ", lp_request_message)
 
     return lp_request_message
-
-
 # ---------------------------------------------------------------------------------------------------------------------
 def sendLoadProfileRequest(msg):
     # load profile request without date

@@ -373,47 +373,116 @@ void datetimeCopy(datetime_t *src, datetime_t *dst) {
     dst->sec = src->sec;
 }
 
-void getAllRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start,
-                   datetime_t *end, size_t offset, size_t size,
-                   uint16_t record_size, enum ListeningStates state) {
-    uint8_t *flash_data_ptr = (uint8_t *)(XIP_BASE + offset);
-
-    if (state == GetThreshold || state == GetSuddenAmplitudeChange ||
-        state == ReadResetDates) {
-        arrayToDatetimeWithSecond(start, &flash_data_ptr[0]);
-        arrayToDatetimeWithSecond(end, &flash_data_ptr[0]);
+uint8_t is_datetime_empty(datetime_t *dt) {
+    if (dt->year == 0 && dt->month == 0 && dt->day == 0 && dt->hour == 0 &&
+        dt->min == 0 && dt->sec == 0) {
+        return 1;
     } else {
-        arrayToDatetime(start, &flash_data_ptr[0]);
-        arrayToDatetime(end, &flash_data_ptr[0]);
+        return 0;
     }
+}
+
+// void getAllRecords(int64_t *st_idx, int64_t *end_idx, datetime_t *start,
+//                    datetime_t *end) {
+// }
+
+uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, datetime_t *dt_end) {
+    datetime_t start_dt_local = {0};
+    datetime_t end_dt_local = {0};
+    uint8_t start_dt_empty_flag = 0;
+    uint8_t end_dt_empty_flag = 0;
+
+    memcpy(&start_dt_local, dt_start, sizeof(datetime_t));
+    memcpy(&end_dt_local, dt_end, sizeof(datetime_t));
 
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        PRINTF("GETALLRECORDS: offset loop mutex received\n");
-        for (uint32_t i = 0; i < size; i += record_size) {
-            if (flash_data_ptr[i] == 0xFF || flash_data_ptr[i] == 0x00) {
+
+        uint8_t *flash_records_ptr = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
+
+        if (is_datetime_empty(dt_start)) {
+            PRINTF("GETRECORDINDEXES: start datetime is empty, setting to first record datetime\n");
+            arrayToDatetime(dt_start, &flash_records_ptr[0]);
+            start_dt_empty_flag = 1;
+            PRINTF("Datetime set to: %02d-%02d-%02d %02d:%02d\n",
+                   dt_start->year, dt_start->month, dt_start->day,
+                   dt_start->hour, dt_start->min);
+        }
+        if (is_datetime_empty(dt_end)) {
+            PRINTF("GETRECORDINDEXES: end datetime is empty, setting to first record datetime\n");
+            arrayToDatetime(dt_end, &flash_records_ptr[0]);
+            end_dt_empty_flag = 1;
+            PRINTF("Datetime set to: %02d-%02d-%02d %02d:%02d\n",
+                   dt_end->year, dt_end->month, dt_end->day,
+                   dt_end->hour, dt_end->min);
+        }
+
+        PRINTF("LOAD PROFILE CONTENT:\n");
+        for (uint32_t i = 0; i < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; i += FLASH_RECORD_SIZE) {
+            // if current index is empty, continue
+            if (flash_records_ptr[i] == 0xFF || flash_records_ptr[i] == 0x00) {
                 continue;
             }
 
-            datetime_t temp = {0};
-            if (state == GetThreshold || state == GetSuddenAmplitudeChange ||
-                state == ReadResetDates) {
-                arrayToDatetimeWithSecond(&temp, &flash_data_ptr[i]);
+            datetime_t temp_dt = {0};
+            arrayToDatetime(&temp_dt, &flash_records_ptr[i]);
+            PRINTF("Record at offset %ld: %02d-%02d-%02d %02d:%02d\n", i,
+                   temp_dt.year, temp_dt.month, temp_dt.day,
+                   temp_dt.hour, temp_dt.min);
+        }
+
+        for (uint32_t i = 0; i < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; i += FLASH_RECORD_SIZE) {
+
+            // if current index is empty, continue
+            if (flash_records_ptr[i] == 0xFF || flash_records_ptr[i] == 0x00) {
+                continue;
+            }
+
+            // if current index is not empty, set datetime to current index record
+            datetime_t recurrent_time = {0};
+            arrayToDatetime(&recurrent_time, &flash_records_ptr[i]);
+
+            if (start_dt_empty_flag) {
+                if (datetimeComp(&recurrent_time, dt_start) <= 0) {
+                    *start = i;
+                    datetimeCopy(&recurrent_time, &start_dt_local);
+                }
             } else {
-                arrayToDatetime(&temp, &flash_data_ptr[i]);
+                // if current record datetime  is bigger than start datetime and start index is not set, this is the start index
+                if (datetimeComp(&recurrent_time, dt_start) >= 0) {
+                    if (is_datetime_empty(&start_dt_local)) {
+                        *start = i;
+                        datetimeCopy(&recurrent_time, &start_dt_local);
+                    } else if (*start == -1 || (datetimeComp(&recurrent_time, &start_dt_local) < 0)) {
+                        *start = i;
+                        datetimeCopy(&recurrent_time, &start_dt_local);
+                    }
+                }
             }
 
-            if (datetimeComp(&temp, end) >= 0) {
-                datetimeCopy(&temp, end);
-                *end_idx = i;
-            }
-
-            if (datetimeComp(&temp, start) <= 0) {
-                datetimeCopy(&temp, start);
-                *st_idx = i;
+            if (end_dt_empty_flag) {
+                if (datetimeComp(&recurrent_time, dt_end) >= 0) {
+                    *end = i;
+                    datetimeCopy(&recurrent_time, &end_dt_local);
+                }
+            } else {
+                // if current record datetime is smaller than end datetime and end index is not set, this is the end index
+                if (datetimeComp(&recurrent_time, dt_end) <= 0) {
+                    if (is_datetime_empty(&end_dt_local)) {
+                        *end = i;
+                        datetimeCopy(&recurrent_time, &end_dt_local);
+                    } else if (*end == -1 || (datetimeComp(&recurrent_time, &end_dt_local) > 0)) {
+                        *end = i;
+                        datetimeCopy(&recurrent_time, &end_dt_local);
+                    }
+                }
             }
         }
 
         xSemaphoreGive(xFlashMutex);
+        return 1;
+    } else {
+        PRINTF("GETRECORDINDEXES: Could not take flash mutex!\n");
+        return 0;
     }
 }
 
@@ -486,24 +555,117 @@ void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start,
     }
 }
 
+bool check_datetime_format(datetime_t *dt) {
+    if (dt->year < 0 || dt->year > 99) {
+        return false;
+    }
+
+    if (dt->month < 0 || dt->month > 12) {
+        return false;
+    }
+
+    if (dt->day < 0 || dt->day > 31) {
+        return false;
+    }
+
+    if (dt->hour < 0 || dt->hour > 23) {
+        return false;
+    }
+
+    if (dt->min < 0 || dt->min > 59) {
+        return false;
+    }
+
+    return true;
+}
+
+void add_date_to_buffer(char *start_ptr, char *end_ptr, uint8_t *date_arr) {
+    size_t date_length = end_ptr - start_ptr - 1;
+    uint8_t date_idx = 0;
+
+    if (date_length < 10 && date_length > 14) {
+        PRINTF("Date length is wrong: %zu\n", date_length);
+        return;
+    }
+
+    start_ptr++;
+
+    PRINTF("Date length: %zu\n", date_length);
+    PRINTF("Date string: %.*s\n", (int)date_length, start_ptr);
+    PRINTF("\n");
+
+    for (uint8_t i = 0; i < date_length; i++) {
+        if (start_ptr[i] == '-' || start_ptr[i] == ',' || start_ptr[i] == ':') {
+            continue;
+        }
+        date_arr[date_idx++] = start_ptr[i];
+    }
+
+    date_arr[date_idx] = '\0';
+}
+
+uint8_t parse_load_profile_dates(uint8_t *buf, datetime_t *dt_start, datetime_t *dt_end) {
+    char *lp_start_ptr = NULL;
+    char *lp_end_ptr = NULL;
+    char *lp_date_seperator_ptr = NULL;
+    uint8_t start_date_arr[16];
+    uint8_t end_date_arr[16];
+
+    memset(start_date_arr, 0, sizeof(start_date_arr));
+    memset(end_date_arr, 0, sizeof(end_date_arr));
+
+    lp_start_ptr = strchr((char *)buf, '(');
+    lp_end_ptr = strchr((char *)buf, ')');
+    lp_date_seperator_ptr = strchr((char *)buf, ';');
+
+    if (lp_start_ptr == NULL || lp_end_ptr == NULL || lp_date_seperator_ptr == NULL || lp_end_ptr <= lp_start_ptr) {
+        return 0;
+    } else if (lp_start_ptr + 1 == lp_date_seperator_ptr && lp_date_seperator_ptr + 1 == lp_end_ptr) {
+        return 1;
+    } else if (lp_start_ptr + 1 == lp_date_seperator_ptr && lp_date_seperator_ptr + 1 != lp_end_ptr) {
+        add_date_to_buffer(lp_date_seperator_ptr, lp_end_ptr, end_date_arr);
+        arrayToDatetime(dt_end, end_date_arr);
+        return 2;
+    } else if (lp_start_ptr + 1 != lp_date_seperator_ptr && lp_date_seperator_ptr + 1 == lp_end_ptr) {
+        add_date_to_buffer(lp_start_ptr, lp_date_seperator_ptr, start_date_arr);
+        arrayToDatetime(dt_start, start_date_arr);
+
+        return 3;
+    }
+
+    add_date_to_buffer(lp_start_ptr, lp_date_seperator_ptr, start_date_arr);
+    add_date_to_buffer(lp_date_seperator_ptr, lp_end_ptr, end_date_arr);
+
+    arrayToDatetime(dt_start, start_date_arr);
+    arrayToDatetime(dt_end, end_date_arr);
+
+    PRINTF("Parsed Start Date: %s\n", start_date_arr);
+    PRINTF("Parsed End Date: %s\n", end_date_arr);
+
+    PRINTF("DATE START DATETIME:\n");
+    PRINTF("Year: %d, Month: %d, Day: %d, Hour: %d, Min: %d\n",
+           dt_start->year, dt_start->month, dt_start->day, dt_start->hour,
+           dt_start->min);
+    PRINTF("\n");
+    PRINTF("DATE END DATETIME:\n");
+    PRINTF("Year: %d, Month: %d, Day: %d, Hour: %d, Min: %d\n",
+           dt_end->year, dt_end->month, dt_end->day, dt_end->hour, dt_end->min);
+    PRINTF("\n");
+
+    return 4;
+}
+
 // This function searches the requested data in flash by starting from flash
 // record beginning offset, collects data from flash and sends it to UART to
 // show load profile content
-void searchDataInFlash(uint8_t *buf, uint8_t *reading_state_start_time,
-                       uint8_t *reading_state_end_time,
-                       enum ListeningStates state) {
-    // initialize the variables
-    datetime_t start = {0};
-    datetime_t end = {0};
-    datetime_t dt_start = {0};
-    datetime_t dt_end = {0};
-    int32_t start_index = -1;
-    int32_t end_index = -1;
-    char load_profile_line[41] = {0};
-    uint8_t *flash_start_content =
-        (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
-    uint8_t *date_start = (uint8_t *)strchr((char *)buf, '(');
-    uint8_t *date_end = (uint8_t *)strchr((char *)buf, ')');
+void send_load_profile_records(uint8_t *buf) {
+    datetime_t dt_start;
+    datetime_t dt_end;
+    int64_t start_index = -1;
+    int64_t end_index = -1;
+    char load_profile_line[48] = {0};
+    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
+
     char year[3] = {0};
     char month[3] = {0};
     char day[3] = {0};
@@ -516,26 +678,26 @@ void searchDataInFlash(uint8_t *buf, uint8_t *reading_state_start_time,
     uint8_t mean = 0;
     uint8_t mean_dec = 0;
 
-    // if there are just ; character between parentheses and this function
-    // executes, it means load profile request got without dates so it means all
-    // records will be showed in load profile request
-    if (date_end - date_start == 2) {
-        PRINTF("SEARCHDATAINFLASH: all records are going to send\n");
-        getAllRecords(&start_index, &end_index, &start, &end,
-                      FLASH_LOAD_PROFILE_RECORD_ADDR,
-                      FLASH_LOAD_PROFILE_RECORD_AREA_SIZE, FLASH_RECORD_SIZE,
-                      state);
-    } else {
-        PRINTF("SEARCHDATAINFLASH: selected records are going to send\n");
-        getSelectedRecords(
-            &start_index, &end_index, &start, &end, &dt_start, &dt_end,
-            reading_state_start_time, reading_state_end_time,
-            FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE,
-            FLASH_RECORD_SIZE, state);
+    memset(&dt_start, 0, sizeof(datetime_t));
+    memset(&dt_end, 0, sizeof(datetime_t));
+
+    uint8_t parse_result = parse_load_profile_dates(buf, &dt_start, &dt_end);
+
+    if (!check_datetime_format(&dt_start) || !check_datetime_format(&dt_end) || parse_result == 0) {
+        PRINTF("SEARCHDATAINFLASH: Date format is wrong.\n");
+        sendErrorMessage((char *)"LPDATEFORMAT");
+        return;
     }
 
-    PRINTF("SEARCHDATAINFLASH: Start index is: %ld\n", start_index);
-    PRINTF("SEARCHDATAINFLASH: End index is: %ld\n", end_index);
+    uint8_t result = get_record_indexes(&start_index, &end_index, &dt_start, &dt_end);
+
+    if (result == 0 || (start_index == -1 && end_index == -1)) {
+        PRINTF("SEARCHDATAINFLASH: Error occurred while getting record indexes.\n");
+        sendErrorMessage((char *)"LPGETRECIDXERR");
+        return;
+    }
+    PRINTF("SEARCHDATAINFLASH: Start index is: %lld\n", start_index);
+    PRINTF("SEARCHDATAINFLASH: End index is: %lld\n", end_index);
 
     // if there start and end index are set, there are records between these
     // times so send them to UART
@@ -555,10 +717,11 @@ void searchDataInFlash(uint8_t *buf, uint8_t *reading_state_start_time,
         // send STX character
         uart_putc(UART0_ID, STX);
 
-        for (; start_addr <= end_addr;) {
+        while (start_addr <= end_addr) {
             if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
                 if (flash_start_content[start_addr] == 0xFF ||
                     flash_start_content[start_addr] == 0x00) {
+                    start_addr += FLASH_RECORD_SIZE;
                     xSemaphoreGive(xFlashMutex);
                     continue;
                 }
@@ -634,18 +797,12 @@ void searchDataInFlash(uint8_t *buf, uint8_t *reading_state_start_time,
             vTaskDelay(pdMS_TO_TICKS(15));
             start_addr += FLASH_RECORD_SIZE;
         }
-    }
-    // if start record or end record does not exist, send NACK message
-    else {
-        PRINTF("SEARCHDATAINFLASH: data not found.\n");
-        sendErrorMessage((char *)"NODATAFOUND");
+
+        return;
     }
 
-    // reset time buffers
-    memset(reading_state_start_time, 0, 10);
-    memset(reading_state_end_time, 0, 10);
-
-    PRINTF("SEARCHDATAINFLASH: time values are deleted.\n");
+    PRINTF("SEARCHDATAINFLASH: data not found.\n");
+    sendErrorMessage((char *)"NODATAFOUND");
 }
 
 void __not_in_flash_func(checkSectorContent)() {
