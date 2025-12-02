@@ -28,13 +28,13 @@ struct ThresholdData th_flash_buf[FLASH_SECTOR_SIZE / sizeof(struct ThresholdDat
 char datetime_buffer[64];
 char *datetime_str = &datetime_buffer[0];
 datetime_t current_time = {
-    .year = 2023,
-    .month = 06,
-    .day = 05,
-    .dotw = 5, // 0 is Sunday, so 5 is Friday
-    .hour = 15,
-    .min = 46,
-    .sec = 50
+    .year = 2026,
+    .month = 01,
+    .day = 01,
+    .dotw = 4, // 0 is Sunday, so 5 is Friday
+    .hour = 0,
+    .min = 0,
+    .sec = 0
 };
 
 // FreeRTOS HANDLES
@@ -43,6 +43,7 @@ TaskHandle_t xADCSampleHandle;
 TaskHandle_t xUARTHandle;
 TaskHandle_t xResetHandle;
 TaskHandle_t xGetRTCHandle;
+TaskHandle_t xStatusLedHandle;
 
 SemaphoreHandle_t xFlashMutex;
 SemaphoreHandle_t xFIFOMutex;

@@ -29,6 +29,93 @@ static uint8_t temp_rx_buf[RX_BUFFER_SIZE];
 static volatile size_t rx_index = 0;
 static volatile bool waiting_for_bcc = false;
 
+#if !CONF_THRESHOLD_PIN_ENABLED
+
+// LED Pattern Definitions
+typedef struct {
+    const uint16_t *sequence; // Array of durations in 2ms units (ON, OFF, ON, OFF...)
+    uint16_t length;          // Number of steps in the sequence
+} LedPattern;
+
+// Define patterns (durations in 2ms units. e.g., 50 = 100ms)
+// Pattern 0: Idle (Off)
+const uint16_t pattern_idle[] = {0, 1000};
+
+// Error Patterns
+const uint16_t led_pattern_uart_not_readable[] = {50, 950};
+const uint16_t led_pattern_message_timeout[] = {50, 100, 50, 800};
+const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 100, 50, 650};
+const uint16_t led_pattern_invalid_serial_number[] = {50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+
+const LedPattern patterns[] = {
+    {pattern_idle, 2},                      // 0
+    {led_pattern_uart_not_readable, 2},     // 1: UART Not Readable
+    {led_pattern_message_timeout, 4},       // 2: Message Timeout
+    {led_pattern_invalid_request_mode, 6},  // 3: Invalid Request Mode
+    {led_pattern_invalid_serial_number, 8}, // 4: Invalid Serial Number
+    {led_pattern_fifo_mutex_not_taken, 10}  // 5: FIFO Mutex Not Taken
+};
+
+volatile int current_pattern_id = 0;
+
+void led_blink_pattern(int pattern_id) {
+    if (pattern_id >= 0 && pattern_id < (int)(sizeof(patterns) / sizeof(LedPattern))) {
+        current_pattern_id = pattern_id;
+    }
+}
+
+void vStatusLedTask() {
+    uint16_t step_index = 0;
+    uint16_t tick_count = 0;
+    int last_pattern_id = -1;
+    const TickType_t xFrequency = pdMS_TO_TICKS(2); // 2ms period
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+
+    // Timeout tracking
+    uint32_t pattern_active_ticks = 0;
+    const uint32_t TIMEOUT_TICKS = 60000; // 2 minutes / 2ms = 60000 ticks
+
+    while (1) {
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
+        // Handle pattern change
+        if (current_pattern_id != last_pattern_id) {
+            last_pattern_id = current_pattern_id;
+            step_index = 0;
+            tick_count = 0;
+            pattern_active_ticks = 0;
+            // Set initial state for new pattern (Even = ON)
+            gpio_put(STATUS_LED_PIN, 1);
+        }
+
+        // Check for timeout if not in idle mode (0)
+        if (current_pattern_id != 0) {
+            pattern_active_ticks++;
+            if (pattern_active_ticks >= TIMEOUT_TICKS) {
+                led_blink_pattern(0); // Revert to idle
+            }
+        }
+
+        const LedPattern *p = &patterns[current_pattern_id];
+
+        // Check if we need to switch to the next step
+        if (tick_count >= p->sequence[step_index]) {
+            tick_count = 0;
+            step_index++;
+            if (step_index >= p->length) {
+                step_index = 0;
+            }
+
+            // Toggle LED based on step index (Even index = ON, Odd index = OFF)
+            gpio_put(STATUS_LED_PIN, (step_index % 2) == 0 ? 1 : 0);
+        }
+
+        tick_count++;
+    }
+}
+#endif
+
 // Bu fonksiyonu ekle: Yazılım bufferını temizler
 void reset_uart_software_buffer() {
     rx_index = 0;
@@ -55,6 +142,10 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
         rx_index = 0; // Reset software buffer
         waiting_for_bcc = false;
         return;
+    }
+
+    if (!uart_is_readable(UART0_ID)) {
+        led_blink_pattern(LED_ERROR_CODE_UART_NOT_READABLE);
     }
 
     while (uart_is_readable(UART0_ID)) {
@@ -103,6 +194,9 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
 
 // UART Initialization
 uint8_t initUART() {
+    gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
+
     uint set_brate = 0;
     set_brate = uart_init(UART0_ID, BAUD_RATE);
     if (set_brate == 0) {
@@ -176,6 +270,7 @@ void vUARTTask() {
                 if (message_retry_count >= MAX_MESSAGE_RETRY_COUNT) {
                     PRINTF("Max message retry count reached. Aborting identification process.\n");
                     message_retry_count = 0;
+                    led_blink_pattern(LED_ERROR_CODE_MESSAGE_TIMEOUT);
                     continue;
                 }
 
@@ -196,6 +291,7 @@ void vUARTTask() {
                 } else {
                     PRINTF("Request mode is invalid, ignoring message.\n");
                     set_init_baud_rate();
+                    led_blink_pattern(LED_ERROR_CODE_INVALID_REQUEST_MODE);
                     continue;
                 }
 
@@ -259,7 +355,7 @@ void vUARTTask() {
                             sendProductionInfo();
                             break;
 #endif
-#if CONF_THRESHOLD_SET_ENABLED
+#if CONF_THRESHOLD_ENABLED
                         case SetThreshold:
                             setThresholdValue(rx_buffer);
                             break;
@@ -320,10 +416,12 @@ void vUARTTask() {
                             break;
                     }
                 }
+            } else {
+                PRINTF("SN is invalid, ignoring message.\n");
+                led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER);
             }
         } else {
-            PRINTF("SN is invalid, ignoring message.\n");
-            continue;
+            PRINTF("UART TASK: No data received from Message Buffer.\r\n");
         }
     }
 }
@@ -349,24 +447,27 @@ void vADCReadTask() {
         if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
             getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
             xSemaphoreGive(xFIFOMutex);
+        } else {
+            PRINTF("ADC READ TASK: FIFO MUTEX CANNOT BE TAKEN!\r\n");
+            led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+            continue;
         }
 
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
         PRINTF("vrms is: %lf\r\n", vrms);
 
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-        // PRINTF("variance is: %d\n", variance);
 
         calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
 
-#if CONF_THRESHOLD_PIN_ENABLED || CONF_THRESHOLD_GET_ENABLED
+#if CONF_THRESHOLD_PIN_ENABLED || CONF_THRESHOLD_ENABLED
         if (vrms >= (float)getVRMSThresholdValue()) {
 #if CONF_THRESHOLD_PIN_ENABLED
             setThresholdPIN();
 #endif
-#if CONF_THRESHOLD_GET_ENABLED
+#if CONF_THRESHOLD_ENABLED
             writeThresholdRecord(vrms, variance);
 #endif
         }
@@ -475,30 +576,18 @@ void vResetTask() {
         gpio_put(RESET_PULSE_PIN, 1);
         vTaskDelay(pdMS_TO_TICKS(10));
         gpio_put(RESET_PULSE_PIN, 0);
-        vTaskDelay(INTERVAL_MS);
+        vTaskDelay(pdMS_TO_TICKS(INTERVAL_MS));
     }
 }
 
-int main() {
+void init_power_led() {
     // POWER LED INIT
     gpio_init(POWER_LED_PIN);
     gpio_set_dir(18, GPIO_OUT);
     gpio_put(POWER_LED_PIN, 1);
+}
 
-    stdio_init_all();
-    sleep_ms(2000);
-
-    gpio_set_function(UART0_TX_PIN, GPIO_FUNC_UART);
-    gpio_set_function(UART0_RX_PIN, GPIO_FUNC_UART);
-    // UART INIT
-    if (!initUART()) {
-        watchdog_reboot(0, 0, 0);
-    }
-
-    // RESET INIT
-    gpio_init(RESET_PULSE_PIN);
-    gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
-
+void init_status_led_or_threshold_pin() {
 #if CONF_THRESHOLD_PIN_ENABLED
     // THRESHOLD GPIO INIT
     gpio_init(THRESHOLD_PIN);
@@ -508,14 +597,44 @@ int main() {
     // STATUS LED GPIO INIT
     gpio_init(STATUS_LED_PIN);
     gpio_set_dir(STATUS_LED_PIN, GPIO_OUT);
-    gpio_put(STATUS_LED_PIN, 0);
+    gpio_put(STATUS_LED_PIN, 1);
 #endif
+}
 
+void init_reset_pin() {
+    // RESET INIT
+    gpio_init(RESET_PULSE_PIN);
+    gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
+    gpio_put(RESET_PULSE_PIN, 0);
+}
+
+void init_adc() {
     // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
     adc_set_round_robin(0x03);
+}
+
+int main() {
+    init_power_led();
+    init_status_led_or_threshold_pin();
+
+    watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
+
+    if (!stdio_init_all()) {
+        watchdog_reboot(0, 0, 0);
+    }
+    sleep_ms(2000);
+
+    // UART INIT
+    if (!initUART()) {
+        PRINTF("UART Init fail! Restarting...\n");
+        watchdog_reboot(0, 0, 0);
+    }
+
+    init_reset_pin();
+    init_adc();
 
     // I2C Init
     if (!initI2C()) {
@@ -565,6 +684,7 @@ int main() {
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
     } else {
         PRINTF("Time is not GET. Please check the time setting.\n");
+        watchdog_reboot(0, 0, 0);
     }
 
     initADCFIFO(&adc_fifo);
@@ -576,8 +696,6 @@ int main() {
         PRINTF("Failed to set mutexes!\n");
         watchdog_reboot(0, 0, 0);
     }
-
-    watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
 
     xUARTMessageBuffer = xMessageBufferCreate(RX_BUFFER_SIZE);
     // if time is set correctly, start the processes.
@@ -592,13 +710,18 @@ int main() {
 
         xTaskCreate(vResetTask, "ResetTask", RESET_TASK_STACK_SIZE, NULL, 7, &xResetHandle);
         xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", POWER_BLINK_STACK_SIZE, NULL, 1, NULL);
-
+#if !CONF_THRESHOLD_PIN_ENABLED
+        xTaskCreate(vStatusLedTask, "StatusLedTask", configMINIMAL_STACK_SIZE, NULL, 1, &xStatusLedHandle);
+#endif
         vTaskCoreAffinitySet(xADCHandle, 1 << 1);
         vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
 
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
         vTaskCoreAffinitySet(xGetRTCHandle, 1 << 0);
         vTaskCoreAffinitySet(xResetHandle, 1 << 0);
+#if !CONF_THRESHOLD_PIN_ENABLED
+        vTaskCoreAffinitySet(xStatusLedHandle, 1 << 0);
+#endif
 
         vTaskStartScheduler();
     } else {
