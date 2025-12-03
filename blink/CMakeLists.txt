@@ -18,7 +18,6 @@
         src/adc.c
         src/bcc.c
         src/fifo.c
-        src/md5.c
         src/print.c
         src/rtc.c
         src/spiflash.c

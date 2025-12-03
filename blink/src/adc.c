@@ -11,23 +11,8 @@
 #include "header/project_globals.h"
 #include "header/print.h"
 #include "header/spiflash.h"
-
 #include "header/adc.h"
-
-void adcCapture(uint16_t *buf, size_t count)
-{
-    // Set ADC FIFO and get the samples with adc_run()
-    adc_fifo_setup(true, false, 0, false, false);
-    adc_run(true);
-
-    // Get FIFO contents and copy them to buffer
-    for (size_t i = 0; i < count; i++)
-        buf[i] = adc_fifo_get_blocking();
-
-    // End sampling and drain the FIFO
-    adc_run(false);
-    adc_fifo_drain();
-}
+#include "header/bcc.h"
 
 uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
 {
@@ -105,6 +90,8 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("WRITETHRESHOLDRECORD: memcpy mutex error\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 
     // set struct data parameters
@@ -147,6 +134,8 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("WRITETHRESHOLDRECORD: offset loop mutex error\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
@@ -188,6 +177,8 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("MUTEX CANNOT RECEIVED!\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 }
 
@@ -225,37 +216,4 @@ void setAmplitudeChangeParameters(struct AmplitudeChangeTimerCallbackParameters 
     ac_data->vrms_values_buffer_size_bytes = vrms_values_buffer_size_bytes;
     ac_data->variance = variance;
     ac_data->adc_fifo_size = adc_fifo_size;
-}
-
-uint16_t getMeanOfSamples(uint16_t *buffer, uint16_t size)
-{
-    uint32_t sum = 0;
-
-    for (uint16_t i = 0; i < size; i++)
-    {
-        sum += buffer[i];
-    }
-
-    return (uint16_t)(sum / size);
-}
-
-float detectFrequency(uint16_t *adc_samples_buffer, float bias_voltage, size_t adc_samples_size)
-{
-    uint16_t bias_threshold = (uint16_t)bias_voltage;
-
-    int crossings = 0;
-    for (size_t i = 0; i < adc_samples_size; i += MEAN_CALCULATION_SHIFT_SIZE)
-    {
-        if (i + MEAN_CALCULATION_WINDOW_SIZE >= adc_samples_size)
-            break;
-
-        if ((getMeanOfSamples(adc_samples_buffer + i, MEAN_CALCULATION_WINDOW_SIZE) < bias_threshold && getMeanOfSamples(adc_samples_buffer + i + MEAN_CALCULATION_SHIFT_SIZE, MEAN_CALCULATION_WINDOW_SIZE) >= bias_threshold) ||
-            (getMeanOfSamples(adc_samples_buffer + i, MEAN_CALCULATION_WINDOW_SIZE) > bias_threshold && getMeanOfSamples(adc_samples_buffer + i + MEAN_CALCULATION_SHIFT_SIZE, MEAN_CALCULATION_WINDOW_SIZE) <= bias_threshold))
-        {
-            crossings++;
-        }
-    }
-
-    float frequency = (crossings / 2.0);
-    return frequency;
 }

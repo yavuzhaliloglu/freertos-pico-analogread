@@ -62,60 +62,8 @@ static const uint8_t reading_control_alt_cmd[4] = {0x01, 0x52, 0x35, 0x02};
 static const uint8_t writing_control_cmd[4] = {0x01, 0x57, 0x32, 0x02};
 static const uint8_t break_command[5] = {0x01, 0x42, 0x30, 0x03, 0x71};
 
-void sendResetDates() {
-}
-
 uint8_t is_message_break_command(uint8_t *buf) {
     return (memcmp(buf, break_command, sizeof(break_command)) == 0);
-}
-
-void sendDeviceInfo() {
-    uint8_t *flash_records = (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR);
-    uint32_t offset = 0;
-    uint16_t record_count = 0;
-
-    char debug_uart_buffer[45] = {0};
-    sprintf(debug_uart_buffer, "sector count is: %d\r\n", sector_data);
-    uart_puts(UART0_ID, debug_uart_buffer);
-
-    uart_puts(UART0_ID, "System Time is: ");
-    uart_puts(UART0_ID, datetime_str);
-    uart_puts(UART0_ID, "\r\n");
-
-    sprintf(debug_uart_buffer, "serial number of this device is: %s\r\n", serial_number);
-    uart_puts(UART0_ID, debug_uart_buffer);
-
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        PRINTF("SEND DEVICE INFO: set data mutex received\n");
-        for (offset = 0; offset < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; offset += FLASH_RECORD_SIZE) {
-            if (flash_records[offset] == 0xFF || flash_records[offset] == 0x00) {
-                continue;
-            }
-
-            char year[3] = {flash_records[offset], flash_records[offset + 1], 0x00};
-            char month[3] = {flash_records[offset + 2], flash_records[offset + 3], 0x00};
-            char day[3] = {flash_records[offset + 4], flash_records[offset + 5], 0x00};
-            char hour[3] = {flash_records[offset + 6], flash_records[offset + 7], 0x00};
-            char minute[3] = {flash_records[offset + 8], flash_records[offset + 9], 0x00};
-            uint8_t max = flash_records[offset + 10];
-            uint8_t max_dec = flash_records[offset + 11];
-            uint8_t min = flash_records[offset + 12];
-            uint8_t min_dec = flash_records[offset + 13];
-            uint8_t mean = flash_records[offset + 14];
-            uint8_t mean_dec = flash_records[offset + 15];
-
-            sprintf(debug_uart_buffer, "%s-%s-%s;%s:%s;%d.%d,%d.%d,%d.%d\r\n", year, month, day, hour, minute, max, max_dec, min, min_dec, mean, mean_dec);
-            uart_puts(UART0_ID, debug_uart_buffer);
-            record_count++;
-        }
-
-        xSemaphoreGive(xFlashMutex);
-    }
-
-    sprintf(debug_uart_buffer, "usage of flash is: %d/%d bytes\n", record_count * 16, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
-    uart_puts(UART0_ID, debug_uart_buffer);
-
-    sendResetDates();
 }
 
 // This function check the data which comes when State is Listening, and compares the message to defined strings, and returns a ListeningState value to process the request
@@ -171,99 +119,6 @@ void deleteChar(uint8_t *str, uint8_t len, char chr) {
     str[j] = '\0';
 }
 
-// This function gets the load profile data and finds the date characters and add them to time arrays
-void parseLoadProfileDates(uint8_t *buffer, uint8_t len, uint8_t *reading_state_start_time, uint8_t *reading_state_end_time) {
-    uint8_t date_start[14] = {0};
-    uint8_t date_end[14] = {0};
-
-    for (uint8_t i = 0; i < len; i++) {
-        if (buffer[i] == 0x28) {
-            uint8_t k;
-
-            for (k = i + 1; buffer[k] != 0x3B; k++) {
-                if (k == len) {
-                    break;
-                }
-
-                date_start[k - (i + 1)] = buffer[k];
-            }
-
-            // Delete the characters from start date array
-            if (len == 41) {
-                deleteChar(date_start, strlen((char *)date_start), '-');
-                deleteChar(date_start, strlen((char *)date_start), ',');
-                deleteChar(date_start, strlen((char *)date_start), ':');
-            }
-
-            // add end time to array
-            for (uint8_t l = k + 1; buffer[l] != 0x29; l++) {
-                if (l == len) {
-                    break;
-                }
-
-                date_end[l - (k + 1)] = buffer[l];
-            }
-
-            if (len == 41) {
-                // Delete the characters from end date array
-                deleteChar(date_end, strlen((char *)date_end), '-');
-                deleteChar(date_end, strlen((char *)date_end), ',');
-                deleteChar(date_end, strlen((char *)date_end), ':');
-            }
-
-            break;
-        }
-    }
-
-    memcpy(reading_state_start_time, date_start, 10);
-    memcpy(reading_state_end_time, date_end, 10);
-
-    PRINTF("DATE START:\n");
-    printBufferHex(reading_state_start_time, 10);
-    PRINTF("\n");
-    PRINTF("DATE END:\n");
-    printBufferHex(reading_state_end_time, 10);
-    PRINTF("\n");
-}
-
-void parseThresholdRequestDates(uint8_t *buffer, uint8_t *start_date_inc, uint8_t *end_date_inc) {
-    char *date_start_ptr = strchr((char *)buffer, '(');
-    char *date_end_ptr = strchr((char *)buffer, ')');
-    char *date_division_ptr = strchr((char *)buffer, ';');
-
-    uint8_t sd_temp[20] = {0};
-    uint8_t ed_temp[20] = {0};
-
-    memcpy(sd_temp, date_start_ptr + 1, date_division_ptr - date_start_ptr - 1);
-    memcpy(ed_temp, date_division_ptr + 1, date_end_ptr - date_division_ptr - 1);
-
-    PRINTF("SD_TEMP:\n");
-    printBufferHex(sd_temp, 20);
-    PRINTF("\n");
-    PRINTF("ED_TEMP:\n");
-    printBufferHex(ed_temp, 20);
-    PRINTF("\n");
-
-    deleteChar(sd_temp, strlen((char *)sd_temp), '-');
-    deleteChar(sd_temp, strlen((char *)sd_temp), ',');
-    deleteChar(sd_temp, strlen((char *)sd_temp), ':');
-
-    deleteChar(ed_temp, strlen((char *)ed_temp), '-');
-    deleteChar(ed_temp, strlen((char *)ed_temp), ',');
-    deleteChar(ed_temp, strlen((char *)ed_temp), ':');
-
-    memcpy(start_date_inc, sd_temp, 12);
-    memcpy(end_date_inc, ed_temp, 12);
-
-    PRINTF("START DATE :\n");
-    printBufferHex(start_date_inc, 12);
-    PRINTF("\n");
-
-    PRINTF("END DATE :\n");
-    printBufferHex(end_date_inc, 12);
-    PRINTF("\n");
-}
-
 void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date) {
     char *date_start_ptr = strchr((char *)buffer, '(');
     char *date_end_ptr = strchr((char *)buffer, ')');
@@ -303,75 +158,6 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     PRINTF("\n");
 }
 
-uint8_t is_message_reset_factory_settings_message(uint8_t *msg_buf, uint8_t msg_len) {
-    uint8_t rst_msg[] = "/?RSTFS?\r\n";
-    return msg_len == 10 && strncmp((char *)msg_buf, (char *)rst_msg, 10) == 0;
-}
-
-uint8_t is_message_reboot_device_message(uint8_t *msg_buf, uint8_t msg_len) {
-    uint8_t rbt_msg[] = "/?RBTDVC?\r\n";
-    return msg_len == 11 && strncmp((char *)msg_buf, (char *)rbt_msg, 11) == 0;
-}
-
-void reboot_device() {
-    PRINTF("Rebooting Device...\n");
-    watchdog_reboot(0, 0, 0);
-}
-
-void reset_to_factory_settings() {
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR, FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_SIZE);
-        flash_range_erase(FLASH_LOAD_PROFILE_RECORD_ADDR, FLASH_LOAD_PROFILE_RECORD_AREA_SIZE);
-        flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
-        flash_range_erase(FLASH_THRESHOLD_RECORDS_ADDR, FLASH_THRESHOLD_RECORDS_SIZE);
-        flash_range_erase(FLASH_RESET_DATES_ADDR, FLASH_RESET_DATES_AREA_SIZE);
-        flash_range_erase(FLASH_AMPLITUDE_CHANGE_OFFSET, (FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR * FLASH_SECTOR_SIZE));
-        restore_interrupts(ints);
-        xSemaphoreGive(xFlashMutex);
-    }
-
-    sleep_ms(1000);
-    watchdog_reboot(0, 0, 0);
-}
-
-uint8_t is_end_connection_message(uint8_t *msg_buf) {
-    uint8_t end_connection_str[5] = {0x01, 0x42, 0x30, 0x03, 0x71}; // [SOH]B0[ETX]q
-
-    return (strncmp((char *)msg_buf, (char *)end_connection_str, 5) == 0) ? 1 : 0;
-}
-
-// This function gets the baud rate number like 1-6
-uint8_t getProgramBaudRate(uint16_t b_rate) {
-    uint8_t baudrate = 0;
-
-    switch (b_rate) {
-        case 300:
-            baudrate = 0;
-            break;
-        case 600:
-            baudrate = 1;
-            break;
-        case 1200:
-            baudrate = 2;
-            break;
-        case 2400:
-            baudrate = 3;
-            break;
-        case 4800:
-            baudrate = 4;
-            break;
-        case 9600:
-            baudrate = 5;
-            break;
-        case 19200:
-            baudrate = 6;
-            break;
-    }
-
-    return baudrate;
-}
-
 // This function sets the device's baud rate according to given number like 0,1,2,3,4,5,6
 void set_device_baud_rate(uint8_t b_rate_hex) {
     uint set_baud_rate = 0;
@@ -403,12 +189,6 @@ void set_device_baud_rate(uint8_t b_rate_hex) {
             break;
     }
     uart_set_baudrate(UART0_ID, set_baud_rate);
-}
-
-// This function sets state to Greeting and resets rx_buffer and it's len. Also it sets the baud rate to 300, which is initial baud rate.
-void reset_uart() {
-    PRINTF("Reset State Timer Trigger!\n");
-    set_init_baud_rate();
 }
 
 uint8_t *get_serial_number_ptr() {
@@ -492,6 +272,7 @@ void send_threshold_records(uint8_t *xor_result) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SEND THRESHOLD RECORDS: Could not take flash mutex!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
         sendErrorMessage((char *)"FLASHMUTEXERR");
         return;
     }
@@ -553,6 +334,7 @@ void send_reset_dates(uint8_t *xor_result) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SEND RESET DATES: Could not take flash mutex!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
         sendErrorMessage((char *)"FLASHMUTEXERR");
         return;
     }
@@ -639,6 +421,10 @@ void send_readout_message(uint8_t request_mode) {
         uart_puts(UART0_ID, readout_line_buffer);
 
         xSemaphoreGive(xVRMSLastValuesMutex);
+    }
+    else{
+        PRINTF("SEND READOUT MESSAGE: Could not take VRMS last values mutex!\n");
+        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN);
     }
 
     result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "!\r\n%c", ETX);
@@ -765,6 +551,7 @@ void setTimeFromUART(uint8_t *buffer) {
 
     password_correct_flag = false;
 }
+
 
 // This function sets date via UART
 void setDateFromUART(uint8_t *buffer) {
@@ -940,6 +727,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
         sendErrorMessage((char *)"FLASHBUSY");
         return;
     }

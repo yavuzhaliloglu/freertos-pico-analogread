@@ -120,6 +120,7 @@ void __not_in_flash_func(setSectorData)(uint16_t sector_value) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
     }
 }
 
@@ -235,6 +236,11 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values) {
                                                  vrms_values->vrms_mean_dec);
 
         xSemaphoreGive(xVRMSLastValuesMutex);
+    } else {
+        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN);
+        vrms_max_last = 0.0;
+        vrms_min_last = 0.0;
+        vrms_mean_last = 0.0;
     }
 
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
@@ -263,6 +269,9 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values) {
         }
 
         xSemaphoreGive(xFlashMutex);
+    } else {
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 
     // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes)
@@ -311,6 +320,7 @@ void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
     }
 }
 
@@ -321,16 +331,6 @@ void arrayToDatetime(datetime_t *dt, uint8_t *arr) {
     dt->day = (arr[4] - '0') * 10 + (arr[5] - '0');
     dt->hour = (arr[6] - '0') * 10 + (arr[7] - '0');
     dt->min = (arr[8] - '0') * 10 + (arr[9] - '0');
-}
-
-// this function converts an array to datetime value
-void arrayToDatetimeWithSecond(datetime_t *dt, uint8_t *arr) {
-    dt->year = (arr[0] - '0') * 10 + (arr[1] - '0');
-    dt->month = (arr[2] - '0') * 10 + (arr[3] - '0');
-    dt->day = (arr[4] - '0') * 10 + (arr[5] - '0');
-    dt->hour = (arr[6] - '0') * 10 + (arr[7] - '0');
-    dt->min = (arr[8] - '0') * 10 + (arr[9] - '0');
-    dt->sec = (arr[10] - '0') * 10 + (arr[11] - '0');
 }
 
 // This functon compares two datetime values and return an int value
@@ -381,10 +381,6 @@ uint8_t is_datetime_empty(datetime_t *dt) {
         return 0;
     }
 }
-
-// void getAllRecords(int64_t *st_idx, int64_t *end_idx, datetime_t *start,
-//                    datetime_t *end) {
-// }
 
 uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, datetime_t *dt_end) {
     datetime_t start_dt_local = {0};
@@ -482,76 +478,8 @@ uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, d
         return 1;
     } else {
         PRINTF("GETRECORDINDEXES: Could not take flash mutex!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
         return 0;
-    }
-}
-
-void getSelectedRecords(int32_t *st_idx, int32_t *end_idx, datetime_t *start,
-                        datetime_t *end, datetime_t *dt_start,
-                        datetime_t *dt_end, uint8_t *reading_state_start_time,
-                        uint8_t *reading_state_end_time, size_t offset,
-                        size_t size, uint16_t record_size,
-                        enum ListeningStates state) {
-    uint8_t *flash_start_content = (uint8_t *)(XIP_BASE + offset);
-
-    // convert date and time values to datetime value
-    if (state == GetThreshold || state == GetSuddenAmplitudeChange) {
-        arrayToDatetimeWithSecond(start, reading_state_start_time);
-        arrayToDatetimeWithSecond(end, reading_state_end_time);
-    } else {
-        arrayToDatetime(start, reading_state_start_time);
-        arrayToDatetime(end, reading_state_end_time);
-    }
-
-    // if start date is bigger than end date, it means dates are wrong so
-    // function returns
-    if (datetimeComp(start, end) > 0) {
-        return;
-    }
-
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        for (uint32_t i = 0; i < size; i += record_size) {
-            // initialize the current datetime
-            datetime_t recurrent_time = {0};
-
-            // PRINTF("GETSELECTEDRECORDS: offset loop mutex received\n");
-            // if current index is empty, continue
-            if (flash_start_content[i] == 0xFF ||
-                flash_start_content[i] == 0x00) {
-                continue;
-            }
-
-            // if current index is not empty, set datetime to current index
-            // record
-            if (state == GetThreshold || state == GetSuddenAmplitudeChange) {
-                arrayToDatetimeWithSecond(&recurrent_time,
-                                          &flash_start_content[i]);
-            } else {
-                arrayToDatetime(&recurrent_time, &flash_start_content[i]);
-            }
-
-            // if current record datetime  is bigger than start datetime and
-            // start index is not set, this is the start index
-            if (datetimeComp(&recurrent_time, start) >= 0) {
-                if (*st_idx == -1 ||
-                    (datetimeComp(&recurrent_time, dt_start) < 0)) {
-                    *st_idx = i;
-                    datetimeCopy(&recurrent_time, dt_start);
-                }
-            }
-
-            // if current record datetime is smaller than end datetime and end
-            // index is not set, this is the end index
-            if (datetimeComp(&recurrent_time, end) <= 0) {
-                if (*end_idx == -1 ||
-                    datetimeComp(&recurrent_time, dt_end) > 0) {
-                    *end_idx = i;
-                    datetimeCopy(&recurrent_time, dt_end);
-                }
-            }
-        }
-
-        xSemaphoreGive(xFlashMutex);
     }
 }
 
@@ -751,6 +679,9 @@ void send_load_profile_records(uint8_t *buf) {
                 mean_dec = flash_start_content[start_addr + 15];
 
                 xSemaphoreGive(xFlashMutex);
+            } else {
+                led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+                continue;
             }
 
             result = snprintf(load_profile_line, sizeof(load_profile_line),
@@ -876,6 +807,7 @@ void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
     }
 }
 
@@ -976,6 +908,10 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(
         }
 
         xSemaphoreGive(xFlashMutex);
+    } else {
+        PRINTF("MUTEX CANNOT RECEIVED!\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 
     if (sector_index == FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR) {
@@ -1029,6 +965,8 @@ void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        return;
     }
 
     PRINTF("Written ac sector: %d\r\n", sector_index);

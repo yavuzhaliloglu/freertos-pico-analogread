@@ -2,7 +2,8 @@
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
-#include "header/project_globals.h" // Global değişkenlerin bildirimleri için
+#include "header/project_globals.h"
+#include "header/bcc.h"
 
 uint16_t getVRMSThresholdValue()
 {
@@ -11,6 +12,9 @@ uint16_t getVRMSThresholdValue()
     {
         vrms_th_val = vrms_threshold;
         xSemaphoreGive(xVRMSThresholdMutex);
+    }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN);
     }
 
     return vrms_th_val;
@@ -23,6 +27,9 @@ void setVRMSThresholdValue(uint16_t value)
         vrms_threshold = value;
         xSemaphoreGive(xVRMSThresholdMutex);
     }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN);
+    }
 }
 
 uint8_t getThresholdSetBeforeFlag()
@@ -32,6 +39,9 @@ uint8_t getThresholdSetBeforeFlag()
     {
         th_set_flag = threshold_set_before;
         xSemaphoreGive(xThresholdSetFlagMutex);
+    }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN);
     }
 
     return th_set_flag;
@@ -43,6 +53,9 @@ void setThresholdSetBeforeFlag(uint8_t value)
     {
         threshold_set_before = value;
         xSemaphoreGive(xThresholdSetFlagMutex);
+    }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN);
     }
 }
 

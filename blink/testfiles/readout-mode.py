@@ -149,7 +149,7 @@ if(response_max_b_rate == -1):
     exit(1)
 
 if args.readout_mode_short:
-    information_message = bytearray(b"\x0604\r\n")
+    information_message = bytearray(b"\x0606\r\n")
 elif args.readout_mode_long:
     information_message = bytearray(b"\x0600\r\n")
 elif args.debug_mode:

@@ -1,14 +1,14 @@
 #ifndef PROJECT_GLOBALS_H
 #define PROJECT_GLOBALS_H
 
-#include <stdint.h>
+#include "FreeRTOS.h"
+#include "hardware/flash.h"
+#include "pico/util/datetime.h"
+#include "semphr.h"
+#include "task.h"
 #include <stdbool.h>
 #include <stddef.h>
-#include "pico/util/datetime.h"
-#include "hardware/flash.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "semphr.h"
+#include <stdint.h>
 
 #include "defines.h"
 #include "project_conf.h"
@@ -31,8 +31,7 @@ typedef struct
     uint8_t vrms_mean_dec;
 } VRMS_VALUES_RECORD;
 
-enum ListeningStates
-{
+enum ListeningStates {
     BCCError = 0,
     DataError,
     Password,
@@ -55,8 +54,7 @@ enum ListeningStates
     BreakMessage
 };
 
-struct FlashData
-{
+struct FlashData {
     char year[2];
     char month[2];
     char day[2];
@@ -70,8 +68,7 @@ struct FlashData
     uint8_t mean_volt_dec;
 };
 
-struct ThresholdData
-{
+struct ThresholdData {
     char year[2];
     char month[2];
     char day[2];
@@ -82,8 +79,7 @@ struct ThresholdData
     uint16_t variance;
 };
 
-struct AmplitudeChangeData
-{
+struct AmplitudeChangeData {
     char year[2];
     char month[2];
     char day[2];
@@ -96,13 +92,17 @@ struct AmplitudeChangeData
     uint8_t padding[42];
 };
 
-struct AmplitudeChangeTimerCallbackParameters
-{
+struct AmplitudeChangeTimerCallbackParameters {
     float vrms_values_buffer[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t variance;
     size_t adc_fifo_size;
     size_t vrms_values_buffer_size_bytes;
 };
+
+typedef struct {
+    const uint16_t *sequence;
+    uint16_t length;
+} LedPattern;
 
 // ADC VARIABLES
 extern ADC_FIFO adc_fifo;
@@ -143,5 +143,15 @@ extern SemaphoreHandle_t xVRMSLastValuesMutex;
 extern SemaphoreHandle_t xVRMSThresholdMutex;
 extern SemaphoreHandle_t xThresholdSetFlagMutex;
 
+extern const uint16_t pattern_idle[];
+
+// Error Patterns
+extern const uint16_t led_pattern_uart_not_readable[];
+extern const uint16_t led_pattern_message_timeout[];
+extern const uint16_t led_pattern_invalid_request_mode[];
+extern const uint16_t led_pattern_invalid_serial_number[];
+extern const uint16_t led_pattern_fifo_mutex_not_taken[];
+extern const LedPattern patterns[];
+extern volatile int current_pattern_id;
 
 #endif

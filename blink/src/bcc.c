@@ -28,17 +28,6 @@ bool bccControl(uint8_t *buffer, uint8_t size)
     return xor_result == buffer[size - 1];
 }
 
-// Generate a BCC and add it to end of a buffer. Buffer size should be 1 byte more than the buffer size.
-void setBCC(uint8_t *buffer, uint8_t size, uint8_t xor)
-{
-    for (int i = 0; i < size; i++)
-        xor ^= buffer[i];
-
-    PRINTF("SETBCC: generated xor result is: %02X\n", xor);
-
-    buffer[size] = xor;
-}
-
 // This function sends error message
 void sendErrorMessage(char *error_text)
 {
@@ -62,4 +51,10 @@ void sendErrorMessage(char *error_text)
 
     uart_puts(UART0_ID, error_message);
     uart_putc(UART0_ID, error_message_xor);
+}
+
+void led_blink_pattern(int pattern_id) {
+    if (pattern_id >= 0 && pattern_id < 6) {
+        current_pattern_id = pattern_id;
+    }
 }

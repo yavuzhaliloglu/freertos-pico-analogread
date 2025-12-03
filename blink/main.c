@@ -20,86 +20,43 @@
 #include "header/spiflash.h"
 #include "header/uart.h"
 
-#define LINE_FEED '\n' // The delimiter
-#define ETX_CHAR 0x03  // The delimiter
-MessageBufferHandle_t xUARTMessageBuffer;
-
-// ISR içindeki static tanımları buraya global static olarak alıyoruz
 static uint8_t temp_rx_buf[RX_BUFFER_SIZE];
 static volatile size_t rx_index = 0;
 static volatile bool waiting_for_bcc = false;
+MessageBufferHandle_t xUARTMessageBuffer;
 
 #if !CONF_THRESHOLD_PIN_ENABLED
-
-// LED Pattern Definitions
-typedef struct {
-    const uint16_t *sequence; // Array of durations in 2ms units (ON, OFF, ON, OFF...)
-    uint16_t length;          // Number of steps in the sequence
-} LedPattern;
-
-// Define patterns (durations in 2ms units. e.g., 50 = 100ms)
-// Pattern 0: Idle (Off)
-const uint16_t pattern_idle[] = {0, 1000};
-
-// Error Patterns
-const uint16_t led_pattern_uart_not_readable[] = {50, 950};
-const uint16_t led_pattern_message_timeout[] = {50, 100, 50, 800};
-const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 100, 50, 650};
-const uint16_t led_pattern_invalid_serial_number[] = {50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-
-const LedPattern patterns[] = {
-    {pattern_idle, 2},                      // 0
-    {led_pattern_uart_not_readable, 2},     // 1: UART Not Readable
-    {led_pattern_message_timeout, 4},       // 2: Message Timeout
-    {led_pattern_invalid_request_mode, 6},  // 3: Invalid Request Mode
-    {led_pattern_invalid_serial_number, 8}, // 4: Invalid Serial Number
-    {led_pattern_fifo_mutex_not_taken, 10}  // 5: FIFO Mutex Not Taken
-};
-
-volatile int current_pattern_id = 0;
-
-void led_blink_pattern(int pattern_id) {
-    if (pattern_id >= 0 && pattern_id < (int)(sizeof(patterns) / sizeof(LedPattern))) {
-        current_pattern_id = pattern_id;
-    }
-}
 
 void vStatusLedTask() {
     uint16_t step_index = 0;
     uint16_t tick_count = 0;
     int last_pattern_id = -1;
-    const TickType_t xFrequency = pdMS_TO_TICKS(2); // 2ms period
+    const TickType_t xFrequency = pdMS_TO_TICKS(2);
     TickType_t xLastWakeTime = xTaskGetTickCount();
 
-    // Timeout tracking
     uint32_t pattern_active_ticks = 0;
-    const uint32_t TIMEOUT_TICKS = 60000; // 2 minutes / 2ms = 60000 ticks
+    const uint32_t TIMEOUT_TICKS = 60000;
 
     while (1) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
-        // Handle pattern change
         if (current_pattern_id != last_pattern_id) {
             last_pattern_id = current_pattern_id;
             step_index = 0;
             tick_count = 0;
             pattern_active_ticks = 0;
-            // Set initial state for new pattern (Even = ON)
             gpio_put(STATUS_LED_PIN, 1);
         }
 
-        // Check for timeout if not in idle mode (0)
         if (current_pattern_id != 0) {
             pattern_active_ticks++;
             if (pattern_active_ticks >= TIMEOUT_TICKS) {
-                led_blink_pattern(0); // Revert to idle
+                led_blink_pattern(0);
             }
         }
 
         const LedPattern *p = &patterns[current_pattern_id];
 
-        // Check if we need to switch to the next step
         if (tick_count >= p->sequence[step_index]) {
             tick_count = 0;
             step_index++;
@@ -107,7 +64,6 @@ void vStatusLedTask() {
                 step_index = 0;
             }
 
-            // Toggle LED based on step index (Even index = ON, Odd index = OFF)
             gpio_put(STATUS_LED_PIN, (step_index % 2) == 0 ? 1 : 0);
         }
 
@@ -116,7 +72,6 @@ void vStatusLedTask() {
 }
 #endif
 
-// Bu fonksiyonu ekle: Yazılım bufferını temizler
 void reset_uart_software_buffer() {
     rx_index = 0;
     waiting_for_bcc = false;
@@ -126,20 +81,15 @@ void reset_uart_software_buffer() {
 void __not_in_flash_func(uart_receive_interrupt_handler)() {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-    // check for uart is readable, if uart is full, empty the fifo
     uart_hw_t *uart_hw = uart_get_hw(UART0_ID);
 
-    // Check for UART errors (Overrun, Break, Parity, Framing)
     if (uart_hw->rsr & (UART_UARTRSR_OE_BITS | UART_UARTRSR_BE_BITS | UART_UARTRSR_PE_BITS | UART_UARTRSR_FE_BITS)) {
-        // Clear all errors by writing to the Error Clear Register (which shares the same offset as RSR)
         uart_hw->rsr = (UART_UARTRSR_OE_BITS | UART_UARTRSR_BE_BITS | UART_UARTRSR_PE_BITS | UART_UARTRSR_FE_BITS);
 
-        // If Overrun Error (OE) occurred, the FIFO was full and we lost data.
-        // We should flush the FIFO to start fresh and avoid processing corrupted/partial data.
         while (uart_is_readable(UART0_ID)) {
             (void)uart_getc(UART0_ID);
         }
-        rx_index = 0; // Reset software buffer
+        rx_index = 0;
         waiting_for_bcc = false;
         return;
     }
@@ -153,16 +103,19 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
 
         PRINTF("CHR: %02X\n", ch);
 
-        // 1. Store character
         if (rx_index < RX_BUFFER_SIZE - 1) {
             temp_rx_buf[rx_index++] = ch;
+        } else {
+            PRINTF("RX Buffer too much characters!\n");
+            led_blink_pattern(LED_ERROR_CODE_RX_BUFFER_OVERFLOW_ISR);
+            rx_index = 0;
+            waiting_for_bcc = false;
+            return;
         }
 
-        // 2. Handle BCC if we were waiting for it
         if (waiting_for_bcc) {
             waiting_for_bcc = false;
-            // Message complete with BCC
-            temp_rx_buf[rx_index] = '\0'; // Null terminate
+            temp_rx_buf[rx_index] = '\0';
             xMessageBufferSendFromISR(
                 xUARTMessageBuffer,
                 temp_rx_buf,
@@ -172,10 +125,8 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
             continue;
         }
 
-        // 3. Check for End of Message
         if (ch == LINE_FEED) {
-            // Message complete with LF
-            temp_rx_buf[rx_index] = '\0'; // Null terminate
+            temp_rx_buf[rx_index] = '\0';
             xMessageBufferSendFromISR(
                 xUARTMessageBuffer,
                 temp_rx_buf,
@@ -183,12 +134,10 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
                 &xHigherPriorityTaskWoken);
             rx_index = 0;
         } else if (ch == ETX_CHAR) {
-            // Next char is BCC, wait for it in next interrupt or loop iteration
             waiting_for_bcc = true;
         }
     }
 
-    // 4. Perform the context switch if the Message Buffer woke the task
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 }
 
@@ -225,7 +174,6 @@ void vUARTTask() {
     int8_t requested_mode = -1;
 
     while (1) {
-        // wait for identification message
         received_bytes = xMessageBufferReceive(
             xUARTMessageBuffer,
             rx_buffer,
@@ -233,7 +181,6 @@ void vUARTTask() {
             portMAX_DELAY);
 
         if (received_bytes > 0) {
-            // got identification message, control serial number and answer it
             PRINTF("---> %.*s\n", received_bytes, rx_buffer);
 
             vTaskDelay(pdMS_TO_TICKS(250));
@@ -246,7 +193,6 @@ void vUARTTask() {
                     continue;
                 }
 
-                // send message three times, waiting for response each time
                 while (message_retry_count < MAX_MESSAGE_RETRY_COUNT) {
                     uart_puts(UART0_ID, identify_response_buf);
                     PRINTF("<--- %s", identify_response_buf);
@@ -274,7 +220,6 @@ void vUARTTask() {
                     continue;
                 }
 
-                // do operations
                 vTaskDelay(pdMS_TO_TICKS(250));
                 message_retry_count = 0;
                 hex_baud_rate = exract_baud_rate_and_mode_from_message(rx_buffer, received_bytes, &requested_mode);
@@ -296,7 +241,6 @@ void vUARTTask() {
                 }
 
                 while (1) {
-                    // wait for next message
                     received_bytes = xMessageBufferReceive(
                         xUARTMessageBuffer,
                         rx_buffer,
@@ -365,12 +309,6 @@ void vUARTTask() {
                             resetThresholdPIN();
                             break;
 #endif
-#if CONF_SUDDEN_AMPLITUDE_CHANGE_ENABLED
-                        case GetSuddenAmplitudeChange:
-                            parseACRequestDate(rx_buffer, reading_state_start_time, reading_state_end_time);
-                            getSuddenAmplitudeChangeRecords(reading_state_start_time, reading_state_end_time, GetSuddenAmplitudeChange);
-                            break;
-#endif
 #if CONF_TIME_READ_ENABLED
                         case ReadTime:
                             readTime();
@@ -401,11 +339,6 @@ void vUARTTask() {
                             sendLastVRMSXValue(ReadLastVRMSMean);
                             break;
 #endif
-#if CONF_RESET_DATES_READ_ENABLED
-                        case ReadResetDates:
-                            sendResetDates();
-                            break;
-#endif
 #if CONF_THRESHOLD_OBIS_ENABLED
                         case GetThresholdObis:
                             sendThresholdObis();
@@ -426,22 +359,17 @@ void vUARTTask() {
     }
 }
 
-// ADC CONVERTER TASK: This task read ADC PIN to calculate VRMS value and writes a record to flash memory according to current time.
 void vADCReadTask() {
-    // Set the parameters for this task.
 #if CONF_SUDDEN_AMPLITUDE_CHANGE_ENABLED
     struct AmplitudeChangeTimerCallbackParameters ac_data = {0};
     uint8_t amplitude_change_detect_flag = 0;
 #endif
-    // this is a buffer that keeps samples in ADC FIFO in ADC Input 1 to calculate VRMS value
     uint16_t adc_samples_buffer[VRMS_SAMPLE_SIZE];
     float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t vrms_buffer_count = 0;
-    // vrms buffer values
     float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
     while (1) {
-        // delay until next cycle
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
 
         if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
@@ -450,6 +378,11 @@ void vADCReadTask() {
         } else {
             PRINTF("ADC READ TASK: FIFO MUTEX CANNOT BE TAKEN!\r\n");
             led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+            if (current_time.sec == 0 && current_time.min % load_profile_record_period == 0) {
+                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
+                vrms_buffer_count = 0;
+                PRINTF("ADC READ TASK: buffer content is deleted\r\n");
+            }
             continue;
         }
 
@@ -480,7 +413,6 @@ void vADCReadTask() {
                 writeSuddenAmplitudeChangeRecordToFlash(&ac_data);
                 amplitude_change_detect_flag = 0;
             } else {
-                // setAmplitudeChangeParameters(&ac_data, vrms_values_per_second, variance, ADC_FIFO_SIZE, sizeof(vrms_values_per_second));
                 amplitude_change_detect_flag = 1;
             }
         }
@@ -510,7 +442,6 @@ void vADCReadTask() {
     }
 }
 
-// DEBUG TASK
 void vGetRTCTask() {
     TickType_t startTime;
     const TickType_t xFrequency = pdMS_TO_TICKS(1000);
@@ -568,7 +499,6 @@ void vADCSampleTask() {
     }
 }
 
-// RESET TASK: This task sends a pulse to reset PIN.
 void vResetTask() {
     while (1) {
         getTimePt7c4338(&current_time);
@@ -581,7 +511,6 @@ void vResetTask() {
 }
 
 void init_power_led() {
-    // POWER LED INIT
     gpio_init(POWER_LED_PIN);
     gpio_set_dir(18, GPIO_OUT);
     gpio_put(POWER_LED_PIN, 1);
@@ -589,12 +518,10 @@ void init_power_led() {
 
 void init_status_led_or_threshold_pin() {
 #if CONF_THRESHOLD_PIN_ENABLED
-    // THRESHOLD GPIO INIT
     gpio_init(THRESHOLD_PIN);
     gpio_set_dir(THRESHOLD_PIN, GPIO_OUT);
     gpio_put(THRESHOLD_PIN, 0);
 #else
-    // STATUS LED GPIO INIT
     gpio_init(STATUS_LED_PIN);
     gpio_set_dir(STATUS_LED_PIN, GPIO_OUT);
     gpio_put(STATUS_LED_PIN, 1);
@@ -602,14 +529,12 @@ void init_status_led_or_threshold_pin() {
 }
 
 void init_reset_pin() {
-    // RESET INIT
     gpio_init(RESET_PULSE_PIN);
     gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
     gpio_put(RESET_PULSE_PIN, 0);
 }
 
 void init_adc() {
-    // ADC INIT
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
@@ -627,7 +552,6 @@ int main() {
     }
     sleep_ms(2000);
 
-    // UART INIT
     if (!initUART()) {
         PRINTF("UART Init fail! Restarting...\n");
         watchdog_reboot(0, 0, 0);
@@ -636,7 +560,6 @@ int main() {
     init_reset_pin();
     init_adc();
 
-    // I2C Init
     if (!initI2C()) {
         watchdog_reboot(0, 0, 0);
     }
@@ -647,39 +570,31 @@ int main() {
     addSerialNumber();
 #endif
 
-    // sector content control
     checkSectorContent();
     checkThresholdContent();
 
-    // FLASH CONTENTS
     getFlashContents();
 
-    // RTC Init
     rtc_init();
 
-    // Enable Write Protection for this device's firmware (first 256KB of flash memory)
     read_flash_status_registers();
     send_write_enable_command();
     sleep_ms(10);
     send_write_protect_command();
     sleep_ms(10);
 
-    // Get PT7C4338's Time information and set RP2040's RTC module
     if (!getTimePt7c4338(&current_time)) {
         watchdog_reboot(0, 0, 0);
     }
 
-    // If current time which is get from Chip has invalid value, adjust the value.
     if (current_time.dotw < 0 || current_time.dotw > 6) {
         current_time.dotw = 2;
     }
 
-    // set and get datetimes from RP2040 RTC's
     bool is_time_set = rtc_set_datetime(&current_time);
     sleep_ms(100);
     bool is_time_get = rtc_get_datetime(&current_time);
 
-    // if time is get correctly, set string datetime.
     if (is_time_get) {
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
     } else {
@@ -689,7 +604,6 @@ int main() {
 
     initADCFIFO(&adc_fifo);
 
-    // set when program started
     setProgramStartDate(&current_time);
 
     if (!setMutexes()) {
@@ -698,7 +612,6 @@ int main() {
     }
 
     xUARTMessageBuffer = xMessageBufferCreate(RX_BUFFER_SIZE);
-    // if time is set correctly, start the processes.
     if (is_time_set) {
         PRINTF("Time is set. Starting tasks...\n");
 

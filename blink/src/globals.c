@@ -34,8 +34,7 @@ datetime_t current_time = {
     .dotw = 4, // 0 is Sunday, so 5 is Friday
     .hour = 0,
     .min = 0,
-    .sec = 0
-};
+    .sec = 0};
 
 // FreeRTOS HANDLES
 TaskHandle_t xADCHandle;
@@ -50,3 +49,22 @@ SemaphoreHandle_t xFIFOMutex;
 SemaphoreHandle_t xVRMSLastValuesMutex;
 SemaphoreHandle_t xVRMSThresholdMutex;
 SemaphoreHandle_t xThresholdSetFlagMutex;
+
+const uint16_t pattern_idle[] = {0, 1000};
+
+// Error Patterns
+const uint16_t led_pattern_uart_not_readable[] = {50, 950};
+const uint16_t led_pattern_message_timeout[] = {50, 100, 50, 800};
+const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 100, 50, 650};
+const uint16_t led_pattern_invalid_serial_number[] = {50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+
+const LedPattern patterns[] = {
+    {pattern_idle, 2},
+    {led_pattern_uart_not_readable, 2},
+    {led_pattern_message_timeout, 4},
+    {led_pattern_invalid_request_mode, 6},
+    {led_pattern_invalid_serial_number, 8},
+    {led_pattern_fifo_mutex_not_taken, 10}};
+
+volatile int current_pattern_id = 0;

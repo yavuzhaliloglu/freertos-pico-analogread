@@ -10,7 +10,6 @@ bool isFIFOFull(ADC_FIFO *f);
 bool isFIFOEmpty(ADC_FIFO *f);
 bool addToFIFO(ADC_FIFO *f, uint16_t data);
 bool removeFromFIFO(ADC_FIFO *f);
-void displayFIFO(ADC_FIFO *f);
 bool removeFirstElementAddNewElement(ADC_FIFO *f, uint16_t data);
 void getLastNElementsToBuffer(ADC_FIFO *f, uint16_t *buffer, uint16_t count);
 #endif

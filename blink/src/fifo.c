@@ -3,6 +3,7 @@
 #include "pico/stdlib.h"
 #include "FreeRTOS.h"
 #include "semphr.h"
+#include "header/bcc.h"
 
 void initADCFIFO(ADC_FIFO *f)
 {
@@ -38,6 +39,9 @@ bool addToFIFO(ADC_FIFO *f, uint16_t data)
 
         xSemaphoreGive(xFIFOMutex);
     }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+    }
 
     return result;
 }
@@ -58,28 +62,11 @@ bool removeFromFIFO(ADC_FIFO *f)
 
         xSemaphoreGive(xFIFOMutex);
     }
+    else{
+        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+    }
 
     return result;
-}
-
-void displayFIFO(ADC_FIFO *f)
-{
-    PRINTF("ADCFIFO: head = %u, tail = %u, count = %u. Content of FIFO is:", f->head, f->tail, f->count);
-    for (int fifo_idx = 0; fifo_idx < f->count; fifo_idx++)
-    {
-        if (fifo_idx % 10 == 0)
-        {
-            PRINTF("\n");
-        }
-
-        if (fifo_idx % 100 == 0)
-        {
-            PRINTF("\n");
-        }
-
-        PRINTF("%u ", f->data[(f->head + fifo_idx) % ADC_FIFO_SIZE]);
-    }
-    PRINTF("\n");
 }
 
 bool removeFirstElementAddNewElement(ADC_FIFO *f, uint16_t data)

@@ -102,7 +102,7 @@
 // UART Task priority for the FreeRTOS Kernel
 #define UART_TASK_PRIORITY 3
 // Stack sizes for tasks
-#define ADC_READ_TASK_STACK_SIZE (5 * 1024)
+#define ADC_READ_TASK_STACK_SIZE (6 * 1024)
 #define UART_TASK_STACK_SIZE (2 * 1024)
 #define WRITE_DEBUG_TASK_STACK_SIZE (3 * 256)
 #define RESET_TASK_STACK_SIZE (3 * 256)
@@ -167,5 +167,7 @@
 #define ETX 0x03
 #define ACK 0x06
 #define NACK 0x15
+#define LINE_FEED '\n'
+#define ETX_CHAR 0x03
 
 #endif
