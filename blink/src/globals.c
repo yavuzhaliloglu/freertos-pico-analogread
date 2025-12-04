@@ -6,7 +6,7 @@
 
 // ADC VARIABLES
 ADC_FIFO adc_fifo;
-uint8_t load_profile_record_period = 2;
+uint8_t load_profile_record_period = 15;
 volatile float vrms_max_last = 0.0;
 volatile float vrms_min_last = 0.0;
 volatile float vrms_mean_last = 0.0;
