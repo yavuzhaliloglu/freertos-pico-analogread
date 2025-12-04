@@ -150,7 +150,12 @@ extern const uint16_t led_pattern_uart_not_readable[];
 extern const uint16_t led_pattern_message_timeout[];
 extern const uint16_t led_pattern_invalid_request_mode[];
 extern const uint16_t led_pattern_invalid_serial_number[];
+extern const uint16_t led_pattern_flash_mutex_not_taken[];
 extern const uint16_t led_pattern_fifo_mutex_not_taken[];
+extern const uint16_t led_pattern_vrms_values_mutex_not_taken[];
+extern const uint16_t led_pattern_vrms_threshold_mutex_not_taken[];
+extern const uint16_t led_pattern_threshold_set_mutex_not_taken[];
+extern const uint16_t led_pattern_rx_buffer_overflow_isr[];
 extern const LedPattern patterns[];
 extern volatile int current_pattern_id;
 

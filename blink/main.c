@@ -34,9 +34,6 @@ void vStatusLedTask() {
     const TickType_t xFrequency = pdMS_TO_TICKS(2);
     TickType_t xLastWakeTime = xTaskGetTickCount();
 
-    uint32_t pattern_active_ticks = 0;
-    const uint32_t TIMEOUT_TICKS = 60000;
-
     while (1) {
         vTaskDelayUntil(&xLastWakeTime, xFrequency);
 
@@ -44,15 +41,7 @@ void vStatusLedTask() {
             last_pattern_id = current_pattern_id;
             step_index = 0;
             tick_count = 0;
-            pattern_active_ticks = 0;
             gpio_put(STATUS_LED_PIN, 1);
-        }
-
-        if (current_pattern_id != 0) {
-            pattern_active_ticks++;
-            if (pattern_active_ticks >= TIMEOUT_TICKS) {
-                led_blink_pattern(0);
-            }
         }
 
         const LedPattern *p = &patterns[current_pattern_id];

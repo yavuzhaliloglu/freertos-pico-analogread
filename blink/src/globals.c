@@ -6,7 +6,7 @@
 
 // ADC VARIABLES
 ADC_FIFO adc_fifo;
-uint8_t load_profile_record_period = 15;
+uint8_t load_profile_record_period = 2;
 volatile float vrms_max_last = 0.0;
 volatile float vrms_min_last = 0.0;
 volatile float vrms_mean_last = 0.0;
@@ -57,7 +57,12 @@ const uint16_t led_pattern_uart_not_readable[] = {50, 950};
 const uint16_t led_pattern_message_timeout[] = {50, 100, 50, 800};
 const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 100, 50, 650};
 const uint16_t led_pattern_invalid_serial_number[] = {50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_flash_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_vrms_values_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_vrms_threshold_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_threshold_set_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_rx_buffer_overflow_isr[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
 
 const LedPattern patterns[] = {
     {pattern_idle, 2},
@@ -65,6 +70,11 @@ const LedPattern patterns[] = {
     {led_pattern_message_timeout, 4},
     {led_pattern_invalid_request_mode, 6},
     {led_pattern_invalid_serial_number, 8},
-    {led_pattern_fifo_mutex_not_taken, 10}};
+    {led_pattern_flash_mutex_not_taken, 10},
+    {led_pattern_fifo_mutex_not_taken, 12},
+    {led_pattern_vrms_values_mutex_not_taken, 14},
+    {led_pattern_vrms_threshold_mutex_not_taken, 16},
+    {led_pattern_threshold_set_mutex_not_taken, 18},
+    {led_pattern_rx_buffer_overflow_isr, 20}};
 
 volatile int current_pattern_id = 0;

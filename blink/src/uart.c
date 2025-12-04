@@ -339,10 +339,10 @@ void send_reset_dates(uint8_t *xor_result) {
         return;
     }
 
-    for (uint8_t i = 0,idx = RESET_DATES_OBIS_COUNT; i < RESET_DATES_OBIS_COUNT; i++,idx--) {
+    for (uint8_t i = 0, idx = RESET_DATES_OBIS_COUNT; i < RESET_DATES_OBIS_COUNT; i++, idx--) {
         size_t offset = i * FLASH_RECORD_SIZE;
         if (reset_dates_raw[offset] == 0xFF || reset_dates_raw[offset] == 0x00) {
-            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(00-00-00,00:00:00)\r\n",idx);
+            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(00-00-00,00:00:00)\r\n", idx);
         } else {
             char year[3] = {reset_dates_raw[offset], reset_dates_raw[offset + 1], 0x00};
             char month[3] = {reset_dates_raw[offset + 2], reset_dates_raw[offset + 3], 0x00};
@@ -352,7 +352,7 @@ void send_reset_dates(uint8_t *xor_result) {
             char sec[3] = {reset_dates_raw[offset + 10], reset_dates_raw[offset + 11], 0x00};
             xSemaphoreGive(xFlashMutex);
 
-            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(%s-%s-%s,%s:%s:%s)\r\n",idx, year, month, day, hour, min, sec);
+            result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(%s-%s-%s,%s:%s:%s)\r\n", idx, year, month, day, hour, min, sec);
 
             if (result >= (int)sizeof(date_buffer)) {
                 sendErrorMessage((char *)"DATEBUFFERSMALL");
@@ -421,8 +421,7 @@ void send_readout_message(uint8_t request_mode) {
         uart_puts(UART0_ID, readout_line_buffer);
 
         xSemaphoreGive(xVRMSLastValuesMutex);
-    }
-    else{
+    } else {
         PRINTF("SEND READOUT MESSAGE: Could not take VRMS last values mutex!\n");
         led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN);
     }
@@ -551,7 +550,6 @@ void setTimeFromUART(uint8_t *buffer) {
 
     password_correct_flag = false;
 }
-
 
 // This function sets date via UART
 void setDateFromUART(uint8_t *buffer) {
@@ -718,11 +716,10 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
         // Read existing value safely before erasing
         th_arr[1] = th_ptr[1];
 
-        // CRITICAL SECTION: Disable interrupts on this core to prevent context switch during flash op
-        taskENTER_CRITICAL();
+        uint32_t ints = save_and_disable_interrupts();
         flash_range_erase(FLASH_THRESHOLD_PARAMETERS_ADDR, FLASH_THRESHOLD_PARAMETERS_SIZE);
         flash_range_program(FLASH_THRESHOLD_PARAMETERS_ADDR, (uint8_t *)th_arr, FLASH_PAGE_SIZE);
-        taskEXIT_CRITICAL();
+        restore_interrupts(ints);
 
         xSemaphoreGive(xFlashMutex);
     } else {
