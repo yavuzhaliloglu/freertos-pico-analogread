@@ -446,15 +446,6 @@ void vGetRTCTask() {
     }
 }
 
-void vPowerLedBlinkTask() {
-    while (1) {
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        gpio_put(POWER_LED_PIN, 0);
-        vTaskDelay(pdMS_TO_TICKS(1000));
-        gpio_put(POWER_LED_PIN, 1);
-    }
-}
-
 void vADCSampleTask() {
     TickType_t startTime;
     const TickType_t xFrequency = 1;
@@ -499,12 +490,6 @@ void vResetTask() {
     }
 }
 
-void init_power_led() {
-    gpio_init(POWER_LED_PIN);
-    gpio_set_dir(18, GPIO_OUT);
-    gpio_put(POWER_LED_PIN, 1);
-}
-
 void init_status_led_or_threshold_pin() {
 #if CONF_THRESHOLD_PIN_ENABLED
     gpio_init(THRESHOLD_PIN);
@@ -531,7 +516,6 @@ void init_adc() {
 }
 
 int main() {
-    init_power_led();
     init_status_led_or_threshold_pin();
 
     watchdog_enable(WATCHDOG_TIMEOUT_MS, 0);
@@ -611,7 +595,6 @@ int main() {
         xTaskCreate(vGetRTCTask, "WriteDebugTask", WRITE_DEBUG_TASK_STACK_SIZE, NULL, 5, &xGetRTCHandle);
 
         xTaskCreate(vResetTask, "ResetTask", RESET_TASK_STACK_SIZE, NULL, 7, &xResetHandle);
-        xTaskCreate(vPowerLedBlinkTask, "PowerLedBlinkTask", POWER_BLINK_STACK_SIZE, NULL, 1, NULL);
 #if !CONF_THRESHOLD_PIN_ENABLED
         xTaskCreate(vStatusLedTask, "StatusLedTask", configMINIMAL_STACK_SIZE, NULL, 1, &xStatusLedHandle);
 #endif

@@ -1,5 +1,6 @@
 #ifndef DEFINES_H
 #define DEFINES_H
+#include "header/project_conf.h"
 
 //                                         512kB    528kB              588kB                   656kB            672kB
 // |---------------------------------------------------------------------------------------------------------------------------------------------   ---------------------------------------------------------------|
@@ -108,22 +109,23 @@
 #define RESET_TASK_STACK_SIZE (3 * 256)
 #define ADC_SAMPLE_TASK_STACK_SIZE (4 * 1024)
 #define POWER_BLINK_STACK_SIZE (3 * 256)
-// POWER LED
-#define POWER_LED_PIN 18
 
 // RESET DEFINES
-
 // Reset Pin Select
 #define RESET_PULSE_PIN 2
 // Standby Time for the Task
 #define INTERVAL_MS 60000
 
-// THRESHOLD PIN DEFINE
 #if CONF_THRESHOLD_PIN_ENABLED
 #define THRESHOLD_PIN 17
 #else
+#if HARDWARE_VERSION >= 3
+#define STATUS_LED_PIN 18
+#else
 #define STATUS_LED_PIN 17
 #endif
+#endif
+
 // ADC DEFINES
 
 #define ADC_FIFO_SIZE 4000

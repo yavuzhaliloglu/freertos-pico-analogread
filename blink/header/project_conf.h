@@ -3,6 +3,9 @@
 
 #include <stdio.h>
 
+// version
+#define HARDWARE_VERSION 2
+
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
@@ -48,6 +51,11 @@
 #define CONF_VRMS_MEAN_READ_ENABLED 1
 #define CONF_RESET_DATES_READ_ENABLED 1
 #define CONF_THRESHOLD_OBIS_ENABLED 1
+
+#if HARDWARE_VERSION >= 3
+#undef CONF_THRESHOLD_PIN_ENABLED
+#define CONF_THRESHOLD_PIN_ENABLED 0
+#endif
 
 // LED PIN Error Codes
 #define LED_ERROR_CODE_UART_NOT_READABLE 1
