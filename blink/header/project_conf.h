@@ -16,7 +16,7 @@
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
 // watchdog timeout ms to reset device
-#define WATCHDOG_TIMEOUT_MS 5000
+#define WATCHDOG_TIMEOUT_MS 7000
 // RX Buffer Size
 #define RX_BUFFER_SIZE 256
 // identification response buffer size

@@ -53,28 +53,28 @@ SemaphoreHandle_t xThresholdSetFlagMutex;
 const uint16_t pattern_idle[] = {0, 1000};
 
 // Error Patterns
-const uint16_t led_pattern_uart_not_readable[] = {50, 950};
-const uint16_t led_pattern_message_timeout[] = {50, 100, 50, 800};
-const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 100, 50, 650};
-const uint16_t led_pattern_invalid_serial_number[] = {50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_flash_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_fifo_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_vrms_values_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_vrms_threshold_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_threshold_set_mutex_not_taken[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
-const uint16_t led_pattern_rx_buffer_overflow_isr[] = {50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 100, 50, 500};
+const uint16_t led_pattern_uart_not_readable[] = {50, 950}; // 1 Short
+const uint16_t led_pattern_message_timeout[] = {250, 750}; // 1 Long
+const uint16_t led_pattern_invalid_request_mode[] = {50, 100, 50, 800}; // 2 Short
+const uint16_t led_pattern_invalid_serial_number[] = {250, 100, 250, 400}; // 2 Long
+const uint16_t led_pattern_flash_mutex_not_taken[] = {50, 100, 50, 100, 50, 650}; // 3 Short
+const uint16_t led_pattern_fifo_mutex_not_taken[] = {25, 50, 25, 900}; // Heartbeat (2 Fast)
+const uint16_t led_pattern_vrms_values_mutex_not_taken[] = {50, 100, 250, 600}; // Short-Long
+const uint16_t led_pattern_vrms_threshold_mutex_not_taken[] = {250, 100, 50, 600}; // Long-Short
+const uint16_t led_pattern_threshold_set_mutex_not_taken[] = {25, 25, 25, 25, 25, 25, 25, 25, 25, 775}; // 5 Fast
+const uint16_t led_pattern_rx_buffer_overflow_isr[] = {50, 50, 50, 50, 50, 50, 250, 450}; // 3 Fast, 1 Long
 
 const LedPattern patterns[] = {
     {pattern_idle, 2},
     {led_pattern_uart_not_readable, 2},
-    {led_pattern_message_timeout, 4},
-    {led_pattern_invalid_request_mode, 6},
-    {led_pattern_invalid_serial_number, 8},
-    {led_pattern_flash_mutex_not_taken, 10},
-    {led_pattern_fifo_mutex_not_taken, 12},
-    {led_pattern_vrms_values_mutex_not_taken, 14},
-    {led_pattern_vrms_threshold_mutex_not_taken, 16},
-    {led_pattern_threshold_set_mutex_not_taken, 18},
-    {led_pattern_rx_buffer_overflow_isr, 20}};
+    {led_pattern_message_timeout, 2},
+    {led_pattern_invalid_request_mode, 4},
+    {led_pattern_invalid_serial_number, 4},
+    {led_pattern_flash_mutex_not_taken, 6},
+    {led_pattern_fifo_mutex_not_taken, 4},
+    {led_pattern_vrms_values_mutex_not_taken, 4},
+    {led_pattern_vrms_threshold_mutex_not_taken, 4},
+    {led_pattern_threshold_set_mutex_not_taken, 10},
+    {led_pattern_rx_buffer_overflow_isr, 8}};
 
 volatile int current_pattern_id = 0;

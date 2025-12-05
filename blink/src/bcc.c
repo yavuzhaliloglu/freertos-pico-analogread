@@ -54,7 +54,7 @@ void sendErrorMessage(char *error_text)
 }
 
 void led_blink_pattern(int pattern_id) {
-    if (pattern_id >= 0 && pattern_id < 6) {
+    if (pattern_id >= 0 && pattern_id <= 10) {
         current_pattern_id = pattern_id;
     }
 }
