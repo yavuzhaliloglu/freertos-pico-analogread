@@ -413,6 +413,7 @@ uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, d
                    dt_end->hour, dt_end->min);
         }
 
+#if DEBUG
         PRINTF("LOAD PROFILE CONTENT:\n");
         for (uint32_t i = 0; i < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; i += FLASH_RECORD_SIZE) {
             // if current index is empty, continue
@@ -426,6 +427,7 @@ uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, d
                    temp_dt.year, temp_dt.month, temp_dt.day,
                    temp_dt.hour, temp_dt.min);
         }
+#endif
 
         for (uint32_t i = 0; i < FLASH_LOAD_PROFILE_RECORD_AREA_SIZE; i += FLASH_RECORD_SIZE) {
 
@@ -665,7 +667,7 @@ void send_load_profile_records(uint8_t *buf) {
             if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
                 if (flash_start_content[start_addr] == 0xFF ||
                     flash_start_content[start_addr] == 0x00 ||
-                    is_record_between_date_values(&flash_start_content[start_addr], &dt_start, &dt_end) == false) {
+                    (is_record_between_date_values(&flash_start_content[start_addr], &dt_start, &dt_end) == false && parse_result == 4)) {
                     start_addr += FLASH_RECORD_SIZE;
                     xSemaphoreGive(xFlashMutex);
                     continue;
