@@ -12,6 +12,7 @@
 #include "task.h"
 #include "timers.h"
 #include <math.h>
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -583,6 +584,21 @@ uint8_t parse_load_profile_dates(uint8_t *buf, datetime_t *dt_start, datetime_t 
     return 4;
 }
 
+bool is_record_between_date_values(uint8_t *record_ptr, datetime_t *dt_start, datetime_t *dt_end) {
+    datetime_t record_dt = {0};
+    arrayToDatetime(&record_dt, record_ptr);
+
+    if (datetimeComp(&record_dt, dt_start) < 0) {
+        return false;
+    }
+
+    if (datetimeComp(&record_dt, dt_end) > 0) {
+        return false;
+    }
+
+    return true;
+}
+
 // This function searches the requested data in flash by starting from flash
 // record beginning offset, collects data from flash and sends it to UART to
 // show load profile content
@@ -648,7 +664,8 @@ void send_load_profile_records(uint8_t *buf) {
         while (start_addr <= end_addr) {
             if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
                 if (flash_start_content[start_addr] == 0xFF ||
-                    flash_start_content[start_addr] == 0x00) {
+                    flash_start_content[start_addr] == 0x00 ||
+                    is_record_between_date_values(&flash_start_content[start_addr], &dt_start, &dt_end) == false) {
                     start_addr += FLASH_RECORD_SIZE;
                     xSemaphoreGive(xFlashMutex);
                     continue;
@@ -706,28 +723,22 @@ void send_load_profile_records(uint8_t *buf) {
 
             // if start address equals to end address, it means there is just
             // one record to send or this record is the last record to send
-            if (start_addr == end_addr) {
-                if (start_index > end_index &&
-                    start_addr == FLASH_LOAD_PROFILE_RECORD_AREA_SIZE -
-                                      FLASH_RECORD_SIZE) {
-                    start_addr = 0;
-                    end_addr = end_index;
-                } else {
-                    result = snprintf(load_profile_line,
-                                      sizeof(load_profile_line), "\r%c", ETX);
-                    bccGenerate((uint8_t *)load_profile_line, result,
-                                &xor_result);
-
-                    uart_puts(UART0_ID, load_profile_line);
-                    PRINTF("SEARCHDATAINFLASH: lp data block xor is: %02X\n",
-                           xor_result);
-                    uart_putc(UART0_ID, xor_result);
-                }
+            if (start_addr == end_addr && start_index > end_index && start_addr == FLASH_LOAD_PROFILE_RECORD_AREA_SIZE - FLASH_RECORD_SIZE) {
+                start_addr = 0;
+                end_addr = end_index;
             }
 
             vTaskDelay(pdMS_TO_TICKS(15));
             start_addr += FLASH_RECORD_SIZE;
         }
+
+        uart_putc(UART0_ID, '\r');
+        xor_result ^= '\r';
+
+        uart_putc(UART0_ID, ETX);
+        xor_result ^= ETX;
+
+        uart_putc(UART0_ID, xor_result);
 
         return;
     }
