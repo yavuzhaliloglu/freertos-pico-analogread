@@ -81,7 +81,7 @@
 #endif
 
 #if WITHOUT_BOOTLOADER
-static const char s_number[256] = "612400073";
+static const char s_number[256] = "612400080";
 #endif
 
 #endif

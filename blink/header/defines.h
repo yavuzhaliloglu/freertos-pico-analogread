@@ -84,6 +84,7 @@
 #define FLASH_RECORD_SIZE (16)
 // serial number size
 #define SERIAL_NUMBER_SIZE 9
+#define SERIAL_NUMBER_FLAG_SIZE 3
 
 // UART DEFINES
 

@@ -207,26 +207,41 @@ void set_init_baud_rate() {
 bool control_serial_number(uint8_t *identification_req_buf, size_t req_size) {
     uint8_t i;
     uint8_t *serial_num_ptr = get_serial_number_ptr();
+    uint8_t identification_serial_number_buf_without_flag[SERIAL_NUMBER_SIZE + 1];
+    uint8_t identification_serial_number_buf_with_flag[SERIAL_NUMBER_SIZE + 1 + SERIAL_NUMBER_FLAG_SIZE];
+
+    memset(identification_serial_number_buf_without_flag, 0, sizeof(identification_serial_number_buf_without_flag));
+    memset(identification_serial_number_buf_with_flag, 0, sizeof(identification_serial_number_buf_with_flag));
+
+    memcpy(identification_serial_number_buf_without_flag, serial_num_ptr, SERIAL_NUMBER_SIZE);
+
+    memcpy(identification_serial_number_buf_with_flag, (uint8_t *)"ALP", SERIAL_NUMBER_FLAG_SIZE);
+    memcpy(identification_serial_number_buf_with_flag + SERIAL_NUMBER_FLAG_SIZE, serial_num_ptr, SERIAL_NUMBER_SIZE);
 
     if (serial_num_ptr == NULL || identification_req_buf == NULL) {
         PRINTF("Serial number pointer is NULL!\n");
         return false;
     }
 
-    for (i = 0; *identification_req_buf != '/'; identification_req_buf++, i++) {
+    if (strncmp((char *)identification_req_buf, (char *)"/?!\r\n", req_size) == 0) {
+        return true;
+    }
+
+    for (i = 0; *identification_req_buf != '?'; identification_req_buf++, i++) {
         if (i == req_size) {
             PRINTF("Identification is wrong!\n");
             return false;
         }
     }
 
-    if (strncmp((char *)identification_req_buf, (char *)"/?!\r\n", req_size) == 0) {
+    identification_req_buf++;
+
+    if (strncmp((char *)identification_req_buf, (char *)identification_serial_number_buf_without_flag, SERIAL_NUMBER_SIZE) == 0 || strncmp((char *)identification_req_buf, (char *)identification_serial_number_buf_with_flag, SERIAL_NUMBER_SIZE + SERIAL_NUMBER_FLAG_SIZE) == 0) {
+        PRINTF("Serial number is correct.\n");
         return true;
-    } else if (strncmp((char *)identification_req_buf, (char *)serial_num_ptr, SERIAL_NUMBER_SIZE) != 0) {
-        return false;
     }
 
-    return true;
+    return false;
 }
 
 size_t create_identify_response_message(char *response_buf, size_t buf_size) {
