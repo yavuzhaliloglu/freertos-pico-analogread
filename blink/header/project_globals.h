@@ -136,6 +136,7 @@ extern TaskHandle_t xUARTHandle;
 extern TaskHandle_t xResetHandle;
 extern TaskHandle_t xGetRTCHandle;
 extern TaskHandle_t xStatusLedHandle;
+extern TaskHandle_t xWatchdogHandle;
 
 extern SemaphoreHandle_t xFlashMutex;
 extern SemaphoreHandle_t xFIFOMutex;

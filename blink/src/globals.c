@@ -43,6 +43,7 @@ TaskHandle_t xUARTHandle;
 TaskHandle_t xResetHandle;
 TaskHandle_t xGetRTCHandle;
 TaskHandle_t xStatusLedHandle;
+TaskHandle_t xWatchdogHandle;
 
 SemaphoreHandle_t xFlashMutex;
 SemaphoreHandle_t xFIFOMutex;
@@ -78,3 +79,6 @@ const LedPattern patterns[] = {
     {led_pattern_rx_buffer_overflow_isr, 8}};
 
 volatile int current_pattern_id = 0;
+
+// Watchdog Variables
+volatile uint32_t task_health_flags = 0;

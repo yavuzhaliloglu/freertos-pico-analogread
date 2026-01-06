@@ -13,7 +13,7 @@
 // production date of device (yy-mm-dd)
 #define PRODUCTION_DATE "25-08-20"
 // Debugs
-#define DEBUG 1
+#define DEBUG 0
 // bootloader select
 #define WITHOUT_BOOTLOADER 1
 // vrms multiplier value
@@ -72,6 +72,14 @@
 // indexed obis configuration
 #define THRESHOLD_RECORD_OBIS_COUNT 10
 #define RESET_DATES_OBIS_COUNT 12
+
+// Watchdog Bits
+#define WDT_FLAG_ADC_SAMPLE    (1 << 0)
+#define WDT_FLAG_ADC_READ      (1 << 1)
+#define WDT_FLAG_UART          (1 << 2)
+
+#define WDT_ALL_TASKS_OK       (WDT_FLAG_ADC_SAMPLE | WDT_FLAG_ADC_READ | WDT_FLAG_UART)
+extern volatile uint32_t task_health_flags;
 
 // DEBUG MACRO
 #if DEBUG

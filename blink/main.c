@@ -24,42 +24,7 @@ static uint8_t temp_rx_buf[RX_BUFFER_SIZE];
 static volatile size_t rx_index = 0;
 static volatile bool waiting_for_bcc = false;
 MessageBufferHandle_t xUARTMessageBuffer;
-
-#if !CONF_THRESHOLD_PIN_ENABLED
-
-void vStatusLedTask() {
-    uint16_t step_index = 0;
-    uint16_t tick_count = 0;
-    int last_pattern_id = -1;
-    const TickType_t xFrequency = pdMS_TO_TICKS(2);
-    TickType_t xLastWakeTime = xTaskGetTickCount();
-
-    while (1) {
-        vTaskDelayUntil(&xLastWakeTime, xFrequency);
-
-        if (current_pattern_id != last_pattern_id) {
-            last_pattern_id = current_pattern_id;
-            step_index = 0;
-            tick_count = 0;
-            gpio_put(STATUS_LED_PIN, 1);
-        }
-
-        const LedPattern *p = &patterns[current_pattern_id];
-
-        if (tick_count >= p->sequence[step_index]) {
-            tick_count = 0;
-            step_index++;
-            if (step_index >= p->length) {
-                step_index = 0;
-            }
-
-            gpio_put(STATUS_LED_PIN, (step_index % 2) == 0 ? 1 : 0);
-        }
-
-        tick_count++;
-    }
-}
-#endif
+volatile uint8_t task_flags = 0;
 
 void reset_uart_software_buffer() {
     rx_index = 0;
@@ -90,12 +55,9 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
     while (uart_is_readable(UART0_ID)) {
         uint8_t ch = uart_getc(UART0_ID);
 
-        PRINTF("CHR: %02X\n", ch);
-
         if (rx_index < RX_BUFFER_SIZE - 1) {
             temp_rx_buf[rx_index++] = ch;
         } else {
-            PRINTF("RX Buffer too much characters!\n");
             led_blink_pattern(LED_ERROR_CODE_RX_BUFFER_OVERFLOW_ISR);
             rx_index = 0;
             waiting_for_bcc = false;
@@ -153,6 +115,41 @@ uint8_t initUART() {
     return 1;
 }
 
+#if !CONF_THRESHOLD_PIN_ENABLED
+void vStatusLedTask() {
+    uint16_t step_index = 0;
+    uint16_t tick_count = 0;
+    int last_pattern_id = -1;
+    const TickType_t xFrequency = pdMS_TO_TICKS(2);
+    TickType_t xLastWakeTime = xTaskGetTickCount();
+
+    while (1) {
+        vTaskDelayUntil(&xLastWakeTime, xFrequency);
+
+        if (current_pattern_id != last_pattern_id) {
+            last_pattern_id = current_pattern_id;
+            step_index = 0;
+            tick_count = 0;
+            gpio_put(STATUS_LED_PIN, 1);
+        }
+
+        const LedPattern *p = &patterns[current_pattern_id];
+
+        if (tick_count >= p->sequence[step_index]) {
+            tick_count = 0;
+            step_index++;
+            if (step_index >= p->length) {
+                step_index = 0;
+            }
+
+            gpio_put(STATUS_LED_PIN, (step_index % 2) == 0 ? 1 : 0);
+        }
+
+        tick_count++;
+    }
+}
+#endif
+
 void vUARTTask() {
     uint8_t rx_buffer[RX_BUFFER_SIZE];
     size_t received_bytes;
@@ -167,7 +164,12 @@ void vUARTTask() {
             xUARTMessageBuffer,
             rx_buffer,
             sizeof(rx_buffer),
-            portMAX_DELAY);
+            pdMS_TO_TICKS(1500));
+
+        // Task hayatta, bayrağı set et
+        taskENTER_CRITICAL();
+        task_health_flags |= WDT_FLAG_UART;
+        taskEXIT_CRITICAL();
 
         if (received_bytes > 0) {
             PRINTF("---> %.*s\n", received_bytes, rx_buffer);
@@ -340,7 +342,7 @@ void vUARTTask() {
                 }
             } else {
                 PRINTF("SN is invalid, ignoring message.\n");
-                led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER);
+                // led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER);
             }
         } else {
             PRINTF("UART TASK: No data received from Message Buffer.\r\n");
@@ -359,7 +361,17 @@ void vADCReadTask() {
     float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
 
     while (1) {
-        ulTaskNotifyTake(pdTRUE, portMAX_DELAY);
+        uint32_t ulNotificationValue = ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(2000));
+
+        // Task çalışıyor, bayrağı kaldır
+        taskENTER_CRITICAL();
+        task_health_flags |= WDT_FLAG_ADC_READ;
+        taskEXIT_CRITICAL();
+
+        if (ulNotificationValue == 0) {
+            PRINTF("ADC READ TASK: No notification received from ADC SAMPLE TASK within timeout.\r\n");
+            continue;
+        }
 
         if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
             getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
@@ -378,8 +390,9 @@ void vADCReadTask() {
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
         PRINTF("vrms is: %lf\r\n", vrms);
 
+#if CONF_THRESHOLD_ENABLED || CONF_THRESHOLD_PIN_ENABLED
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
-
+#endif
         calculateVRMSValuesPerSecond(vrms_values_per_second, adc_samples_buffer, VRMS_SAMPLE_SIZE, SAMPLE_SIZE_PER_VRMS_CALC, bias_voltage);
 
         vrms_buffer[(vrms_buffer_count++) % VRMS_BUFFER_SIZE] = vrms;
@@ -426,8 +439,6 @@ void vADCReadTask() {
                 PRINTF("ADC READ TASK: buffer content is deleted\r\n");
             }
         }
-
-        watchdog_update();
     }
 }
 
@@ -457,6 +468,10 @@ void vADCSampleTask() {
 
     startTime = xTaskGetTickCount();
     while (1) {
+        taskENTER_CRITICAL();
+        task_health_flags |= WDT_FLAG_ADC_SAMPLE;
+        taskEXIT_CRITICAL();
+
         adc_sample = adc_read();
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
@@ -487,6 +502,25 @@ void vResetTask() {
         vTaskDelay(pdMS_TO_TICKS(10));
         gpio_put(RESET_PULSE_PIN, 0);
         vTaskDelay(pdMS_TO_TICKS(INTERVAL_MS));
+    }
+}
+
+void vWatchdogTask() {
+    const TickType_t xCheckInterval = pdMS_TO_TICKS(2000); // 2 saniyede bir kontrol et
+    vTaskDelay(pdMS_TO_TICKS(3000));
+
+    while (1) {
+        if ((task_health_flags & WDT_ALL_TASKS_OK) == WDT_ALL_TASKS_OK) {
+            watchdog_update();
+
+            taskENTER_CRITICAL();
+            task_health_flags = 0;
+            taskEXIT_CRITICAL();
+        } else {
+            PRINTF("WDT: System UNHEALTHY! Flags: %02lX (Expected: %02X)\n", task_health_flags, WDT_ALL_TASKS_OK);
+        }
+
+        vTaskDelay(xCheckInterval);
     }
 }
 
@@ -598,6 +632,8 @@ int main() {
 #if !CONF_THRESHOLD_PIN_ENABLED
         xTaskCreate(vStatusLedTask, "StatusLedTask", configMINIMAL_STACK_SIZE, NULL, 1, &xStatusLedHandle);
 #endif
+        xTaskCreate(vWatchdogTask, "WatchdogTask", configMINIMAL_STACK_SIZE, NULL, configMAX_PRIORITIES - 1, &xWatchdogHandle);
+
         vTaskCoreAffinitySet(xADCHandle, 1 << 1);
         vTaskCoreAffinitySet(xADCSampleHandle, 1 << 1);
 

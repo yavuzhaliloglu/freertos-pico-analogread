@@ -124,6 +124,11 @@ void parseACRequestDate(uint8_t *buffer, uint8_t *start_date, uint8_t *end_date)
     char *date_end_ptr = strchr((char *)buffer, ')');
     char *date_division_ptr = strchr((char *)buffer, ';');
 
+    if(date_start_ptr == NULL || date_end_ptr == NULL || date_division_ptr == NULL) {
+        PRINTF("PARSEACREQUESTDATE: Date format is invalid!\n");
+        return;
+    }
+
     uint8_t sd_temp[20] = {0};
     uint8_t ed_temp[20] = {0};
 
