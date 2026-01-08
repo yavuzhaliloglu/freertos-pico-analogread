@@ -13,6 +13,9 @@
 #include "defines.h"
 #include "project_conf.h"
 
+extern volatile int current_pattern_id;
+extern volatile bool play_once;
+
 typedef struct
 {
     uint16_t data[ADC_FIFO_SIZE];
@@ -158,6 +161,5 @@ extern const uint16_t led_pattern_vrms_threshold_mutex_not_taken[];
 extern const uint16_t led_pattern_threshold_set_mutex_not_taken[];
 extern const uint16_t led_pattern_rx_buffer_overflow_isr[];
 extern const LedPattern patterns[];
-extern volatile int current_pattern_id;
 
 #endif

@@ -90,7 +90,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("WRITETHRESHOLDRECORD: memcpy mutex error\r\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         return;
     }
 
@@ -134,7 +134,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("WRITETHRESHOLDRECORD: offset loop mutex error\r\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         return;
     }
 
@@ -177,7 +177,7 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
     else
     {
         PRINTF("MUTEX CANNOT RECEIVED!\r\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         return;
     }
 }

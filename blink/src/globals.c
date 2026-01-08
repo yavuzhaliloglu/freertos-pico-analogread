@@ -78,7 +78,5 @@ const LedPattern patterns[] = {
     {led_pattern_threshold_set_mutex_not_taken, 10},
     {led_pattern_rx_buffer_overflow_isr, 8}};
 
-volatile int current_pattern_id = 0;
-
 // Watchdog Variables
 volatile uint32_t task_health_flags = 0;

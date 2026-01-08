@@ -40,7 +40,7 @@ bool addToFIFO(ADC_FIFO *f, uint16_t data)
         xSemaphoreGive(xFIFOMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN, false);
     }
 
     return result;
@@ -63,7 +63,7 @@ bool removeFromFIFO(ADC_FIFO *f)
         xSemaphoreGive(xFIFOMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN, false);
     }
 
     return result;

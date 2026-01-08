@@ -14,7 +14,7 @@ uint16_t getVRMSThresholdValue()
         xSemaphoreGive(xVRMSThresholdMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN,false);
     }
 
     return vrms_th_val;
@@ -28,7 +28,7 @@ void setVRMSThresholdValue(uint16_t value)
         xSemaphoreGive(xVRMSThresholdMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_VRMS_THRESHOLD_MUTEX_NOT_TAKEN,false);
     }
 }
 
@@ -41,7 +41,7 @@ uint8_t getThresholdSetBeforeFlag()
         xSemaphoreGive(xThresholdSetFlagMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN,false);
     }
 
     return th_set_flag;
@@ -55,7 +55,7 @@ void setThresholdSetBeforeFlag(uint8_t value)
         xSemaphoreGive(xThresholdSetFlagMutex);
     }
     else{
-        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_THRESHOLD_SET_MUTEX_NOT_TAKEN,false);
     }
 }
 

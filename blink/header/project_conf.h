@@ -19,7 +19,8 @@
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
 // watchdog timeout ms to reset device
-#define WATCHDOG_TIMEOUT_MS 7000
+#define WATCHDOG_TIMEOUT_MS 30000
+#define WATCHDOG_CHECK_PERIOD_MS 5000
 // RX Buffer Size
 #define RX_BUFFER_SIZE 256
 // identification response buffer size
@@ -76,9 +77,8 @@
 // Watchdog Bits
 #define WDT_FLAG_ADC_SAMPLE    (1 << 0)
 #define WDT_FLAG_ADC_READ      (1 << 1)
-#define WDT_FLAG_UART          (1 << 2)
 
-#define WDT_ALL_TASKS_OK       (WDT_FLAG_ADC_SAMPLE | WDT_FLAG_ADC_READ | WDT_FLAG_UART)
+#define WDT_ALL_TASKS_OK       (WDT_FLAG_ADC_SAMPLE | WDT_FLAG_ADC_READ)
 extern volatile uint32_t task_health_flags;
 
 // DEBUG MACRO

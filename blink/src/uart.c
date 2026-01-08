@@ -292,7 +292,7 @@ void send_threshold_records(uint8_t *xor_result) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SEND THRESHOLD RECORDS: Could not take flash mutex!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         sendErrorMessage((char *)"FLASHMUTEXERR");
         return;
     }
@@ -354,7 +354,7 @@ void send_reset_dates(uint8_t *xor_result) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SEND RESET DATES: Could not take flash mutex!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         sendErrorMessage((char *)"FLASHMUTEXERR");
         return;
     }
@@ -443,7 +443,7 @@ void send_readout_message(uint8_t request_mode) {
         xSemaphoreGive(xVRMSLastValuesMutex);
     } else {
         PRINTF("SEND READOUT MESSAGE: Could not take VRMS last values mutex!\n");
-        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN, false);
     }
 
     result = snprintf(readout_line_buffer, sizeof(readout_line_buffer), "!\r\n%c", ETX);
@@ -744,7 +744,7 @@ void __not_in_flash_func(setThresholdValue)(uint8_t *data) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SETTHRESHOLDVALUE: MUTEX CANNOT RECEIVED!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         sendErrorMessage((char *)"FLASHBUSY");
         return;
     }

@@ -6,6 +6,9 @@
 #include <string.h>
 #include "header/project_globals.h"
 
+volatile int current_pattern_id = 0;
+volatile bool play_once = false;
+
 void bccGenerate(uint8_t *data_buffer, uint8_t size, uint8_t *xor)
 {
     for (uint8_t i = 0; i < size; i++)
@@ -53,8 +56,9 @@ void sendErrorMessage(char *error_text)
     uart_putc(UART0_ID, error_message_xor);
 }
 
-void led_blink_pattern(int pattern_id) {
+void led_blink_pattern(int pattern_id, bool once) {
     if (pattern_id >= 0 && pattern_id <= 10) {
         current_pattern_id = pattern_id;
+        play_once = once;
     }
 }

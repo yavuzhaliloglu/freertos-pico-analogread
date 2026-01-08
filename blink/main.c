@@ -49,7 +49,7 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
     }
 
     if (!uart_is_readable(UART0_ID)) {
-        led_blink_pattern(LED_ERROR_CODE_UART_NOT_READABLE);
+        led_blink_pattern(LED_ERROR_CODE_UART_NOT_READABLE, false);
     }
 
     while (uart_is_readable(UART0_ID)) {
@@ -58,7 +58,7 @@ void __not_in_flash_func(uart_receive_interrupt_handler)() {
         if (rx_index < RX_BUFFER_SIZE - 1) {
             temp_rx_buf[rx_index++] = ch;
         } else {
-            led_blink_pattern(LED_ERROR_CODE_RX_BUFFER_OVERFLOW_ISR);
+            led_blink_pattern(LED_ERROR_CODE_RX_BUFFER_OVERFLOW_ISR, false);
             rx_index = 0;
             waiting_for_bcc = false;
             return;
@@ -139,6 +139,10 @@ void vStatusLedTask() {
             tick_count = 0;
             step_index++;
             if (step_index >= p->length) {
+                if (play_once) {
+                    play_once = false;
+                    current_pattern_id = 0;
+                }
                 step_index = 0;
             }
 
@@ -164,12 +168,7 @@ void vUARTTask() {
             xUARTMessageBuffer,
             rx_buffer,
             sizeof(rx_buffer),
-            pdMS_TO_TICKS(1500));
-
-        // Task hayatta, bayrağı set et
-        taskENTER_CRITICAL();
-        task_health_flags |= WDT_FLAG_UART;
-        taskEXIT_CRITICAL();
+            portMAX_DELAY);
 
         if (received_bytes > 0) {
             PRINTF("---> %.*s\n", received_bytes, rx_buffer);
@@ -207,7 +206,7 @@ void vUARTTask() {
                 if (message_retry_count >= MAX_MESSAGE_RETRY_COUNT) {
                     PRINTF("Max message retry count reached. Aborting identification process.\n");
                     message_retry_count = 0;
-                    led_blink_pattern(LED_ERROR_CODE_MESSAGE_TIMEOUT);
+                    led_blink_pattern(LED_ERROR_CODE_MESSAGE_TIMEOUT, false);
                     continue;
                 }
 
@@ -227,7 +226,7 @@ void vUARTTask() {
                 } else {
                     PRINTF("Request mode is invalid, ignoring message.\n");
                     set_init_baud_rate();
-                    led_blink_pattern(LED_ERROR_CODE_INVALID_REQUEST_MODE);
+                    led_blink_pattern(LED_ERROR_CODE_INVALID_REQUEST_MODE, false);
                     continue;
                 }
 
@@ -342,7 +341,7 @@ void vUARTTask() {
                 }
             } else {
                 PRINTF("SN is invalid, ignoring message.\n");
-                // led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER);
+                led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER, true);
             }
         } else {
             PRINTF("UART TASK: No data received from Message Buffer.\r\n");
@@ -378,7 +377,7 @@ void vADCReadTask() {
             xSemaphoreGive(xFIFOMutex);
         } else {
             PRINTF("ADC READ TASK: FIFO MUTEX CANNOT BE TAKEN!\r\n");
-            led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN);
+            led_blink_pattern(LED_ERROR_CODE_FIFO_MUTEX_NOT_TAKEN, false);
             if (current_time.sec == 0 && current_time.min % load_profile_record_period == 0) {
                 memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
                 vrms_buffer_count = 0;
@@ -506,10 +505,11 @@ void vResetTask() {
 }
 
 void vWatchdogTask() {
-    const TickType_t xCheckInterval = pdMS_TO_TICKS(2000); // 2 saniyede bir kontrol et
-    vTaskDelay(pdMS_TO_TICKS(3000));
+    const TickType_t xCheckInterval = pdMS_TO_TICKS(WATCHDOG_CHECK_PERIOD_MS); // 2 saniyede bir kontrol et
 
     while (1) {
+        vTaskDelay(xCheckInterval);
+
         if ((task_health_flags & WDT_ALL_TASKS_OK) == WDT_ALL_TASKS_OK) {
             watchdog_update();
 
@@ -519,8 +519,6 @@ void vWatchdogTask() {
         } else {
             PRINTF("WDT: System UNHEALTHY! Flags: %02lX (Expected: %02X)\n", task_health_flags, WDT_ALL_TASKS_OK);
         }
-
-        vTaskDelay(xCheckInterval);
     }
 }
 

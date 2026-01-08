@@ -121,7 +121,7 @@ void __not_in_flash_func(setSectorData)(uint16_t sector_value) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
     }
 }
 
@@ -238,7 +238,7 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values) {
 
         xSemaphoreGive(xVRMSLastValuesMutex);
     } else {
-        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_VRMS_VALUES_MUTEX_NOT_TAKEN, false);
         vrms_max_last = 0.0;
         vrms_min_last = 0.0;
         vrms_mean_last = 0.0;
@@ -271,7 +271,7 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values) {
 
         xSemaphoreGive(xFlashMutex);
     } else {
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         return;
     }
 
@@ -321,7 +321,7 @@ void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
     }
 }
 
@@ -481,7 +481,7 @@ uint8_t get_record_indexes(int64_t *start, int64_t *end, datetime_t *dt_start, d
         return 1;
     } else {
         PRINTF("GETRECORDINDEXES: Could not take flash mutex!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
         return 0;
     }
 }
@@ -699,7 +699,7 @@ void send_load_profile_records(uint8_t *buf) {
 
                 xSemaphoreGive(xFlashMutex);
             } else {
-                led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+                led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
                 continue;
             }
 
@@ -820,7 +820,7 @@ void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val) {
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("MUTEX CANNOT RECEIVED!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
     }
 }
 
