@@ -64,6 +64,7 @@ const uint16_t led_pattern_vrms_values_mutex_not_taken[] = {50, 100, 250, 600}; 
 const uint16_t led_pattern_vrms_threshold_mutex_not_taken[] = {250, 100, 50, 600}; // Long-Short
 const uint16_t led_pattern_threshold_set_mutex_not_taken[] = {25, 25, 25, 25, 25, 25, 25, 25, 25, 775}; // 5 Fast
 const uint16_t led_pattern_rx_buffer_overflow_isr[] = {50, 50, 50, 50, 50, 50, 250, 450}; // 3 Fast, 1 Long
+const uint16_t led_pattern_stackoverflow[] = {500, 200, 100, 700};
 
 const LedPattern patterns[] = {
     {pattern_idle, 2},
@@ -76,7 +77,8 @@ const LedPattern patterns[] = {
     {led_pattern_vrms_values_mutex_not_taken, 4},
     {led_pattern_vrms_threshold_mutex_not_taken, 4},
     {led_pattern_threshold_set_mutex_not_taken, 10},
-    {led_pattern_rx_buffer_overflow_isr, 8}};
+    {led_pattern_rx_buffer_overflow_isr, 8},
+    {led_pattern_stackoverflow, 4}};
 
 // Watchdog Variables
 volatile uint32_t task_health_flags = 0;

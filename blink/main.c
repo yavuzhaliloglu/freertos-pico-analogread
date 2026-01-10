@@ -362,15 +362,14 @@ void vADCReadTask() {
     while (1) {
         uint32_t ulNotificationValue = ulTaskNotifyTake(pdTRUE, pdMS_TO_TICKS(2000));
 
-        // Task çalışıyor, bayrağı kaldır
-        taskENTER_CRITICAL();
-        task_health_flags |= WDT_FLAG_ADC_READ;
-        taskEXIT_CRITICAL();
-
         if (ulNotificationValue == 0) {
             PRINTF("ADC READ TASK: No notification received from ADC SAMPLE TASK within timeout.\r\n");
             continue;
         }
+
+        taskENTER_CRITICAL();
+        task_health_flags |= WDT_FLAG_ADC_READ;
+        taskEXIT_CRITICAL();
 
         if (xSemaphoreTake(xFIFOMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
             getLastNElementsToBuffer(&adc_fifo, adc_samples_buffer, VRMS_SAMPLE_SIZE);
@@ -467,10 +466,6 @@ void vADCSampleTask() {
 
     startTime = xTaskGetTickCount();
     while (1) {
-        taskENTER_CRITICAL();
-        task_health_flags |= WDT_FLAG_ADC_SAMPLE;
-        taskEXIT_CRITICAL();
-
         adc_sample = adc_read();
 
         bool is_added = addToFIFO(&adc_fifo, adc_sample);
@@ -483,6 +478,10 @@ void vADCSampleTask() {
         bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE_SIZE] = bias_sample;
 
         if (bias_buffer_count == BIAS_SAMPLE_SIZE) {
+            taskENTER_CRITICAL();
+            task_health_flags |= WDT_FLAG_ADC_SAMPLE;
+            taskEXIT_CRITICAL();
+
             bias_voltage = getMean(bias_buffer, BIAS_SAMPLE_SIZE);
             PRINTF("bias voltage is: %lf\r\n", bias_voltage);
             bias_buffer_count = 0;
@@ -650,4 +649,11 @@ int main() {
 
     while (true)
         ;
+}
+
+void vApplicationStackOverflowHook(TaskHandle_t xTask, char *pcTaskName) {
+    (void) pcTaskName;
+    (void) xTask;
+    led_blink_pattern(LED_ERROR_CODE_STACK_OVERFLOW, true);
+    watchdog_reboot(0, 0, 5000);
 }
