@@ -16,9 +16,9 @@
 
 uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
 {
-    uint32_t total = 0;
-    uint32_t mean;
-    uint32_t variance_total = 0;
+    uint64_t total = 0;
+    uint64_t mean;
+    uint64_t variance_total = 0;
 
     for (uint16_t i = 0; i < size; i++)
     {
