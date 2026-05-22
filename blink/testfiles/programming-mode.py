@@ -3,7 +3,7 @@ import time
 import argparse
 from datetime import datetime, timedelta
 from serial.serialutil import SerialException
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import struct
 
 # --------------------------------------------------------------- BAUD RATE CHECK FUNCTION
