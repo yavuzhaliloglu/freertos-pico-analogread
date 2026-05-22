@@ -349,27 +349,55 @@ void send_reset_dates(uint8_t *xor_result) {
     memset(reset_dates_raw, 0, sizeof(reset_dates_raw));
     memset(date_buffer, 0, sizeof(date_buffer));
 
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        memcpy(reset_dates_raw, reset_dates_flash, sizeof(reset_dates_raw));
-        xSemaphoreGive(xFlashMutex);
-    } else {
-        PRINTF("SEND RESET DATES: Could not take flash mutex!\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
-        sendErrorMessage((char *)"FLASHMUTEXERR");
-        return;
+    // if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
+    //     memcpy(reset_dates_raw, reset_dates_flash, sizeof(reset_dates_raw));
+    //     xSemaphoreGive(xFlashMutex);
+    // } else {
+    //     PRINTF("SEND RESET DATES: Could not take flash mutex!\n");
+    //     led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
+    //     sendErrorMessage((char *)"FLASHMUTEXERR");
+    //     return;
+    // }
+
+
+    uint16_t idx = 0;
+    uint8_t obis_idx = 0;
+    while(idx < FLASH_RESET_DATES_AREA_SIZE){
+        if(reset_dates_flash[idx] == 0x00 || reset_dates_flash[idx] == 0xFF){
+            break;
+        }
+        idx += FLASH_RECORD_SIZE;
+        obis_idx++;
     }
 
-    for (uint8_t i = 0, idx = RESET_DATES_OBIS_COUNT; i < RESET_DATES_OBIS_COUNT; i++, idx--) {
-        size_t offset = i * FLASH_RECORD_SIZE;
-        if (reset_dates_raw[offset] == 0xFF || reset_dates_raw[offset] == 0x00) {
+    uint8_t *start_idx = NULL;
+    uint8_t *end_idx = reset_dates_flash + idx;
+
+    if(end_idx - reset_dates_flash > FLASH_RECORD_SIZE * RESET_DATES_OBIS_COUNT){
+        start_idx = end_idx - (FLASH_RECORD_SIZE * RESET_DATES_OBIS_COUNT);
+    }
+    else{
+        start_idx = reset_dates_flash;
+    }
+
+    memcpy(reset_dates_raw, start_idx, end_idx - start_idx);
+
+
+    PRINTF("Reset dates:\n");
+    printBufferHex(reset_dates_flash, FLASH_RESET_DATES_AREA_SIZE);
+    PRINTF("Reset dates raw:\n");
+    printBufferHex(reset_dates_raw, sizeof(reset_dates_raw));
+
+    for (uint8_t i = 0, idx = 1; i < sizeof(reset_dates_raw); i+=FLASH_RECORD_SIZE, idx++) {
+        if (reset_dates_raw[i] == 0xFF || reset_dates_raw[i] == 0x00) {
             result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(00-00-00,00:00:00)\r\n", idx);
         } else {
-            char year[3] = {reset_dates_raw[offset], reset_dates_raw[offset + 1], 0x00};
-            char month[3] = {reset_dates_raw[offset + 2], reset_dates_raw[offset + 3], 0x00};
-            char day[3] = {reset_dates_raw[offset + 4], reset_dates_raw[offset + 5], 0x00};
-            char hour[3] = {reset_dates_raw[offset + 6], reset_dates_raw[offset + 7], 0x00};
-            char min[3] = {reset_dates_raw[offset + 8], reset_dates_raw[offset + 9], 0x00};
-            char sec[3] = {reset_dates_raw[offset + 10], reset_dates_raw[offset + 11], 0x00};
+            char year[3] = {reset_dates_raw[i], reset_dates_raw[i + 1], 0x00};
+            char month[3] = {reset_dates_raw[i + 2], reset_dates_raw[i + 3], 0x00};
+            char day[3] = {reset_dates_raw[i + 4], reset_dates_raw[i + 5], 0x00};
+            char hour[3] = {reset_dates_raw[i + 6], reset_dates_raw[i + 7], 0x00};
+            char min[3] = {reset_dates_raw[i + 8], reset_dates_raw[i + 9], 0x00};
+            char sec[3] = {reset_dates_raw[i + 10], reset_dates_raw[i + 11], 0x00};
             xSemaphoreGive(xFlashMutex);
 
             result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(%s-%s-%s,%s:%s:%s)\r\n", idx, year, month, day, hour, min, sec);
