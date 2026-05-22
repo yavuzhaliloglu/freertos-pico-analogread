@@ -19,7 +19,9 @@
 // vrms multiplier value
 #define VRMS_MULTIPLICATION_VALUE 150
 // watchdog timeout ms to reset device
-#define WATCHDOG_TIMEOUT_MS 30000
+// RP2040 HW watchdog is clamped to ~8388ms (24-bit counter at 2 ticks/us).
+// We stay safely below this hard limit; longer task blocks must chunk + heartbeat.
+#define WATCHDOG_TIMEOUT_MS 8000
 #define WATCHDOG_CHECK_PERIOD_MS 5000
 // RX Buffer Size
 #define RX_BUFFER_SIZE 256
@@ -78,8 +80,9 @@
 // Watchdog Bits
 #define WDT_FLAG_ADC_SAMPLE    (1 << 0)
 #define WDT_FLAG_ADC_READ      (1 << 1)
+#define WDT_FLAG_UART          (1 << 2)
 
-#define WDT_ALL_TASKS_OK       (WDT_FLAG_ADC_SAMPLE | WDT_FLAG_ADC_READ)
+#define WDT_ALL_TASKS_OK       (WDT_FLAG_ADC_SAMPLE | WDT_FLAG_ADC_READ | WDT_FLAG_UART)
 extern volatile uint32_t task_health_flags;
 
 // DEBUG MACRO

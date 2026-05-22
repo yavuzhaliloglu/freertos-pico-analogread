@@ -164,11 +164,20 @@ void vUARTTask() {
     int8_t requested_mode = -1;
 
     while (1) {
+        // 2s receive timeout (intentionally < watchdog 5s check period)
+        // avoids resonance race where both tasks wake on the same tick.
         received_bytes = xMessageBufferReceive(
             xUARTMessageBuffer,
             rx_buffer,
             sizeof(rx_buffer),
-            portMAX_DELAY);
+            pdMS_TO_TICKS(2000));
+
+        // Task is alive AND UART IRQ is enabled — both required for healthy UART pipeline
+        if (irq_is_enabled(UART_IRQ_NUM(UART0_ID))) {
+            taskENTER_CRITICAL();
+            task_health_flags |= WDT_FLAG_UART;
+            taskEXIT_CRITICAL();
+        }
 
         if (received_bytes > 0) {
             PRINTF("---> %.*s\n", received_bytes, rx_buffer);
@@ -230,12 +239,35 @@ void vUARTTask() {
                     continue;
                 }
 
+                // IEC62056-21: total 30s silence ends programming mode.
+                // Implemented as 3s receive chunks + cumulative tracking, so
+                // the watchdog flag stays fresh under the 8s HW WDT limit.
+                TickType_t inner_idle_start = xTaskGetTickCount();
                 while (1) {
                     received_bytes = xMessageBufferReceive(
                         xUARTMessageBuffer,
                         rx_buffer,
                         sizeof(rx_buffer),
-                        pdMS_TO_TICKS(30000));
+                        pdMS_TO_TICKS(3000));
+
+                    // Heartbeat: task alive AND UART IRQ functional
+                    if (irq_is_enabled(UART_IRQ_NUM(UART0_ID))) {
+                        taskENTER_CRITICAL();
+                        task_health_flags |= WDT_FLAG_UART;
+                        taskEXIT_CRITICAL();
+                    }
+
+                    if (received_bytes == 0) {
+                        // No message in this 3s chunk — keep waiting unless
+                        // 30s cumulative silence elapsed (IEC end-of-session).
+                        if ((xTaskGetTickCount() - inner_idle_start) < pdMS_TO_TICKS(30000)) {
+                            continue;
+                        }
+                        // 30s silence → fall through to exit logic
+                    } else {
+                        // Activity → reset cumulative idle timer
+                        inner_idle_start = xTaskGetTickCount();
+                    }
 
                     if (received_bytes <= 0 || is_message_break_command(rx_buffer)) {
                         PRINTF("No message received within timeout, ending programming mode.\n");
@@ -343,9 +375,8 @@ void vUARTTask() {
                 PRINTF("SN is invalid, ignoring message.\n");
                 led_blink_pattern(LED_ERROR_CODE_INVALID_SERIAL_NUMBER, true);
             }
-        } else {
-            PRINTF("UART TASK: No data received from Message Buffer.\r\n");
         }
+        // 2s timeout in idle is the normal heartbeat tick — no log here.
     }
 }
 
