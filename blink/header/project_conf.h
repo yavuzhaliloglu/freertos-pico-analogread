@@ -9,9 +9,9 @@
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
 // Device software version number
-#define SOFTWARE_VERSION "V1.4.0"
+#define SOFTWARE_VERSION "V1.5.0"
 // production date of device (yy-mm-dd)
-#define PRODUCTION_DATE "26-05-22"
+#define PRODUCTION_DATE "26-06-12"
 // Debugs
 #define DEBUG 1
 // bootloader select

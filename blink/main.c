@@ -460,8 +460,15 @@ void vADCReadTask() {
                 VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
                 PRINTF("ADC READ TASK: calculated VRMS values.\r\n");
 
-                SPIWriteToFlash(&vrms_values);
-                PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
+                uint32_t uptime_ms = to_ms_since_boot(get_absolute_time());
+                uint32_t guard_ms = (uint32_t)load_profile_record_period * 60u * 1000u;
+
+                if (uptime_ms + guard_ms < ESTIMATE_RESET_MS) {
+                    SPIWriteToFlash(&vrms_values);
+                    PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
+                } else {
+                    PRINTF("ADC READ TASK: reset window is close (uptime=%lu ms), load profile skipped.\r\n", uptime_ms);
+                }
 
                 memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
                 vrms_buffer_count = 0;
@@ -523,16 +530,6 @@ void vADCSampleTask() {
     }
 }
 
-void vResetTask() {
-    while (1) {
-        getTimePt7c4338(&current_time);
-        rtc_set_datetime(&current_time);
-        gpio_put(RESET_PULSE_PIN, 1);
-        vTaskDelay(pdMS_TO_TICKS(10));
-        gpio_put(RESET_PULSE_PIN, 0);
-        vTaskDelay(pdMS_TO_TICKS(INTERVAL_MS));
-    }
-}
 
 void vWatchdogTask() {
     const TickType_t xCheckInterval = pdMS_TO_TICKS(WATCHDOG_CHECK_PERIOD_MS); // 2 saniyede bir kontrol et
@@ -656,7 +653,6 @@ int main() {
         xTaskCreate(vUARTTask, "UARTTask", UART_TASK_STACK_SIZE, NULL, 4, &xUARTHandle);
         xTaskCreate(vGetRTCTask, "WriteDebugTask", WRITE_DEBUG_TASK_STACK_SIZE, NULL, 5, &xGetRTCHandle);
 
-        xTaskCreate(vResetTask, "ResetTask", RESET_TASK_STACK_SIZE, NULL, 7, &xResetHandle);
 #if !CONF_THRESHOLD_PIN_ENABLED
         xTaskCreate(vStatusLedTask, "StatusLedTask", configMINIMAL_STACK_SIZE, NULL, 1, &xStatusLedHandle);
 #endif
@@ -667,7 +663,6 @@ int main() {
 
         vTaskCoreAffinitySet(xUARTHandle, 1 << 0);
         vTaskCoreAffinitySet(xGetRTCHandle, 1 << 0);
-        vTaskCoreAffinitySet(xResetHandle, 1 << 0);
 #if !CONF_THRESHOLD_PIN_ENABLED
         vTaskCoreAffinitySet(xStatusLedHandle, 1 << 0);
 #endif
