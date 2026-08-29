@@ -419,15 +419,15 @@ void vADCReadTask() {
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
         PRINTF("vrms is: %lf\r\n", vrms);
 
-        // TESHIS: sifir cizgisi artik pencerenin kendi ortalamasi. BIAS kanali sadece
-        // donanim sagligi icin okunuyor. Bu fark isinmayla buyuyebilir, artik olcume
-        // karismaz; birden firlarsa kartta bir sey bozulmus demektir. "V hat" sutunu
-        // eski (hatali) yontemin bostayken ne okuyacagini gosterir.
         float main_mean = getMean(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+#if CONF_BIAS_SAMPLING_ENABLED
         float ch_diff = main_mean - bias_voltage;
         PRINTF("TESHIS: CH0_ort=%.1f BIAS_ort=%.1f fark=%.1f sayim (%.3f V hat)\r\n",
                main_mean, bias_voltage, ch_diff,
                ch_diff * (3.28f / (1 << 12)) * VRMS_MULTIPLICATION_VALUE);
+#else
+        PRINTF("TESHIS: CH0_ort=%.1f (bias ornekleme kapali)\r\n", main_mean);
+#endif
 
 #if CONF_THRESHOLD_ENABLED || CONF_THRESHOLD_PIN_ENABLED
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
@@ -507,10 +507,13 @@ void vADCSampleTask() {
     TickType_t startTime;
     const TickType_t xFrequency = 1;
     uint16_t adc_sample;
-    uint16_t bias_sample;
+    uint16_t sample_count = 0;
 
+#if CONF_BIAS_SAMPLING_ENABLED
+    uint16_t bias_sample;
     uint16_t bias_buffer[BIAS_SAMPLE_SIZE] = {0};
     uint16_t bias_buffer_count = 0;
+#endif
 
     startTime = xTaskGetTickCount();
     while (1) {
@@ -522,17 +525,27 @@ void vADCSampleTask() {
             removeFirstElementAddNewElement(&adc_fifo, adc_sample);
         }
 
+#if CONF_BIAS_SAMPLING_ENABLED
+        // Round-robin acik oldugu icin bu ikinci donusum CH1'e (bias) denk gelir.
         bias_sample = adc_read();
         bias_buffer[(bias_buffer_count++) % BIAS_SAMPLE_SIZE] = bias_sample;
 
         if (bias_buffer_count == BIAS_SAMPLE_SIZE) {
+            bias_voltage = getMean(bias_buffer, BIAS_SAMPLE_SIZE);
+            PRINTF("bias voltage is: %lf\r\n", bias_voltage);
+            bias_buffer_count = 0;
+        }
+#endif
+
+        // Pencere sayaci: bias ornekleme kapaliyken de okuma gorevi ayni ritimde
+        // (VRMS_SAMPLE_SIZE ornek = 1 s) tetiklenmeli.
+        if (++sample_count >= VRMS_SAMPLE_SIZE) {
+            sample_count = 0;
+
             taskENTER_CRITICAL();
             task_health_flags |= WDT_FLAG_ADC_SAMPLE;
             taskEXIT_CRITICAL();
 
-            bias_voltage = getMean(bias_buffer, BIAS_SAMPLE_SIZE);
-            PRINTF("bias voltage is: %lf\r\n", bias_voltage);
-            bias_buffer_count = 0;
             xTaskNotifyGive(xADCHandle);
         }
 
@@ -581,7 +594,15 @@ void init_adc() {
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
     adc_gpio_init(ADC_BIAS_PIN);
-    adc_set_round_robin(0x03);
+
+#if CONF_BIAS_SAMPLING_ENABLED
+    adc_set_round_robin((1u << ADC_VRMS_SAMPLE_INPUT) | (1u << ADC_BIAS_INPUT));
+#else
+    // Rotasyonda tek kanal: her donusum CH0. Ornek-tut kondansatoru bias
+    // gerilimine hic ugramadigi icin kanallar arasi tasima ortadan kalkar.
+    adc_select_input(ADC_VRMS_SAMPLE_INPUT);
+    adc_set_round_robin(1u << ADC_VRMS_SAMPLE_INPUT);
+#endif
 }
 
 int main() {
