@@ -419,6 +419,16 @@ void vADCReadTask() {
         float vrms = calculateVRMS(adc_samples_buffer, VRMS_SAMPLE_SIZE, bias_voltage);
         PRINTF("vrms is: %lf\r\n", vrms);
 
+        // TESHIS: sifir cizgisi artik pencerenin kendi ortalamasi. BIAS kanali sadece
+        // donanim sagligi icin okunuyor. Bu fark isinmayla buyuyebilir, artik olcume
+        // karismaz; birden firlarsa kartta bir sey bozulmus demektir. "V hat" sutunu
+        // eski (hatali) yontemin bostayken ne okuyacagini gosterir.
+        float main_mean = getMean(adc_samples_buffer, VRMS_SAMPLE_SIZE);
+        float ch_diff = main_mean - bias_voltage;
+        PRINTF("TESHIS: CH0_ort=%.1f BIAS_ort=%.1f fark=%.1f sayim (%.3f V hat)\r\n",
+               main_mean, bias_voltage, ch_diff,
+               ch_diff * (3.28f / (1 << 12)) * VRMS_MULTIPLICATION_VALUE);
+
 #if CONF_THRESHOLD_ENABLED || CONF_THRESHOLD_PIN_ENABLED
         uint16_t variance = calculateVariance(adc_samples_buffer, VRMS_SAMPLE_SIZE);
 #endif

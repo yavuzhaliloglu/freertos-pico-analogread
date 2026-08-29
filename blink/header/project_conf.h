@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // version
-#define HARDWARE_VERSION 2
+#define HARDWARE_VERSION 3
 
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
@@ -16,8 +16,16 @@
 #define DEBUG 1
 // bootloader select
 #define WITHOUT_BOOTLOADER 1
-// vrms multiplier value
-#define VRMS_MULTIPLICATION_VALUE 150
+// vrms multiplier value -- trafo ile olculmus gercek bolucu orani, donanim
+// surumune bagli. Ikisi de tek nokta (32.5 V multimetre) uzerinden cikarildi:
+//   v2: cihaz 33.86 V (carpan 150 ile) -> 150 * 32.5/33.86 = 144.0
+//   v3: cihaz 32.92 V (carpan 150 ile) -> 150 * 32.5/32.92 = 148.1
+// Ikinci bir trafo kademesiyle dogrusallik henuz dogrulanmadi.
+#if HARDWARE_VERSION >= 3
+#define VRMS_MULTIPLICATION_VALUE 148.1f
+#else
+#define VRMS_MULTIPLICATION_VALUE 144.0f
+#endif
 // watchdog timeout ms to reset device
 // RP2040 HW watchdog is clamped to ~8388ms (24-bit counter at 2 ticks/us).
 // We stay safely below this hard limit; longer task blocks must chunk + heartbeat.

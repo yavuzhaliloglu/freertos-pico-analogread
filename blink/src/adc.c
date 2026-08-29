@@ -36,22 +36,41 @@ uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
     return (uint16_t)(variance_total / (size - 1));
 }
 
+// Sifir cizgisi olarak BIAS kanali DEGIL, pencerenin kendi ortalamasi kullanilir.
+// BIAS (ADC girisi 1) ile sinyal (ADC girisi 0) fiziksel olarak farkli iki kanal;
+// aralarindaki her DC farki VRMS_MULTIPLICATION_VALUE ile carpilip sahte gerilim
+// olarak okumaya giriyordu. Kendi ortalamasini cikarinca DC nereden gelirse gelsin
+// denklemden dusuyor. bias_voltage parametresi sadece geriye donuk uyumluluk icin
+// duruyor, hesaba karismiyor (teshis amacli loglanir).
 float calculateVRMS(uint16_t *buffer, size_t size, float bias_voltage)
 {
-    float total = 0.0;
-    float vrms = 0.0;
+    (void)bias_voltage;
+
     float conversion_factor = (3.28f / (1 << 12));
+    double sum = 0.0;
+    double acc = 0.0;
 
-    bias_voltage = bias_voltage * conversion_factor;
-
-    for (size_t i = 0; i < size; i++)
+    if (size == 0)
     {
-        float adjusted_sample = (float)((buffer[i] * conversion_factor) - bias_voltage);
-        total += adjusted_sample * adjusted_sample;
+        return 0.0f;
     }
 
-    vrms = sqrt(total / size);
-    return vrms * VRMS_MULTIPLICATION_VALUE;
+    // 1. gecis: bu pencerenin ortalamasi (sifir cizgisi)
+    for (size_t i = 0; i < size; i++)
+    {
+        sum += (double)buffer[i];
+    }
+    double mean = sum / (double)size;
+
+    // 2. gecis: ayni orneklerin o ortalamadan sapmasi -> saf AC
+    for (size_t i = 0; i < size; i++)
+    {
+        double diff = (double)buffer[i] - mean;
+        acc += diff * diff;
+    }
+
+    float vrms = (float)sqrt(acc / (double)size);
+    return vrms * conversion_factor * VRMS_MULTIPLICATION_VALUE;
 }
 
 float getMean(uint16_t *buffer, size_t size)
