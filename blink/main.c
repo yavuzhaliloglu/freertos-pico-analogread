@@ -716,12 +716,6 @@ void init_status_led_or_threshold_pin() {
 #endif
 }
 
-void init_reset_pin() {
-    gpio_init(RESET_PULSE_PIN);
-    gpio_set_dir(RESET_PULSE_PIN, GPIO_OUT);
-    gpio_put(RESET_PULSE_PIN, 0);
-}
-
 void init_adc() {
     adc_init();
     adc_gpio_init(ADC_READ_PIN);
@@ -752,7 +746,6 @@ int main() {
         watchdog_reboot(0, 0, 0);
     }
 
-    init_reset_pin();
     init_adc();
 
     if (!initI2C()) {

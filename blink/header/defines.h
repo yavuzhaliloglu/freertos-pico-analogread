@@ -114,13 +114,6 @@
 #define POWER_BLINK_STACK_SIZE (3 * 256)
 
 // RESET DEFINES
-// Reset Pin Select
-#define RESET_PULSE_PIN 2
-// Standby Time for the Task
-#define INTERVAL_MS 60000
-// Harici TPL5010 watchdog'un cihazi resetlemesi beklenen, boot'tan itibaren gecen sure.
-// TPL5010 direnci ~2 saate ayarli. Bu degerin biraz altinda kalmak guvenlidir cunku
-// TPL5010 zamanlama toleransi nedeniyle reset nominal sureden bir miktar erken gelebilir.
 #define ESTIMATE_RESET_MS (90u * 60u * 1000u) // ~1.5 saat (boot referansli, monotonik saatle olculur)
 
 #if CONF_THRESHOLD_PIN_ENABLED
