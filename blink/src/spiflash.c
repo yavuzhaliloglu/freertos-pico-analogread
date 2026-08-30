@@ -82,6 +82,17 @@ void getFlashContents() {
         (uint16_t *)(XIP_BASE + FLASH_LOAD_PROFILE_LAST_SECTOR_DATA_ADDR);
     sector_data = flash_sector_content[0];
 
+    // Bu deger dogrudan flash adresi carpani oluyor. Yazilirken gelen bir reset
+    // (donanim reseti 90 dk'da bir garantili) bozarsa, sinirsiz bir sektor
+    // numarasi kendi alanimizin disini -- en kotu ihtimalle PROGRAM ALANINI --
+    // siler ve cihaz bir daha acilmaz. Kullanmadan once dogrula.
+    if (sector_data >= FLASH_LOAD_PROFILE_AREA_TOTAL_SECTOR_COUNT) {
+        PRINTF("GETFLASHCONTENTS: load profile sektoru gecersiz (%d), 0'a "
+               "cekildi.\n", sector_data);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_METADATA_CORRUPT, false);
+        sector_data = 0;
+    }
+
     // get record data
     uint8_t *flash_data_contents =
         (uint8_t *)(XIP_BASE + FLASH_LOAD_PROFILE_RECORD_ADDR +
@@ -92,6 +103,23 @@ void getFlashContents() {
     uint16_t *th_ptr = (uint16_t *)(XIP_BASE + FLASH_THRESHOLD_PARAMETERS_ADDR);
     vrms_threshold = th_ptr[0];
     th_sector_data = th_ptr[1];
+
+    if (th_sector_data >= TH_RECORD_SECTOR_COUNT) {
+        PRINTF("GETFLASHCONTENTS: esik kayit sektoru gecersiz (%d), 0'a "
+               "cekildi.\n", th_sector_data);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_METADATA_CORRUPT, false);
+        th_sector_data = 0;
+    }
+
+    // Esik degeri de bozulabilir. 0 olursa her pencere esigi asar ve surekli
+    // sahte olay uretilir; cok buyuk olursa hicbir ariza kaydedilmez. Ikisi de
+    // sessiz ariza; protokolun izin verdigi araligin (1-999) disindaysa
+    // varsayilana don.
+    if (vrms_threshold == 0 || vrms_threshold > VRMS_THRESHOLD_MAX) {
+        PRINTF("GETFLASHCONTENTS: esik degeri gecersiz (%d), varsayilan %d "
+               "kullaniliyor.\n", vrms_threshold, VRMS_THRESHOLD_DEFAULT);
+        vrms_threshold = VRMS_THRESHOLD_DEFAULT;
+    }
 
     // set serial number -- dogrudan derlenmis sabitten, flash'a hic dokunulmaz
     memcpy(serial_number, s_number, SERIAL_NUMBER_SIZE);
@@ -306,6 +334,15 @@ void setFlashData(VRMS_VALUES_RECORD *vrms_values) {
 void __not_in_flash_func(SPIWriteToFlash)(VRMS_VALUES_RECORD *vrms_values) {
     PRINTF("SPIWRITETOFLASH: Setting flash data...\n");
     setFlashData(vrms_values);
+
+    // Son savunma hatti: asagida flash SILINIYOR. sector_data bozulursa silme
+    // kendi alanimizin disina duser. Yazmaktansa yazmamak yeglenir.
+    if (sector_data >= FLASH_LOAD_PROFILE_AREA_TOTAL_SECTOR_COUNT) {
+        PRINTF("SPIWRITETOFLASH: sektor numarasi araligin disinda (%d), yazma "
+               "iptal.\n", sector_data);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_METADATA_CORRUPT, false);
+        return;
+    }
 
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
         PRINTF("SPIWRITETOFLASH: write flash mutex received\n");

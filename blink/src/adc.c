@@ -152,6 +152,16 @@ void __not_in_flash_func(writeThresholdRecord)(const struct ThresholdData *recor
         return;
     }
 
+    // Son savunma hatti: bu fonksiyon flash SILIYOR. th_sector_data bir sekilde
+    // bozulursa silme kendi alanimizin disina, en kotu ihtimalle program
+    // alanina duser ve cihaz kurtarilamaz. Yazmaktansa yazmamak yeglenir.
+    if (th_sector_data >= TH_RECORD_SECTOR_COUNT)
+    {
+        PRINTF("WRITETHRESHOLDRECORD: sektor numarasi araligin disinda (%d), kayit iptal\r\n", th_sector_data);
+        led_blink_pattern(LED_ERROR_CODE_FLASH_METADATA_CORRUPT, false);
+        return;
+    }
+
     // initialize the variables
     const uint8_t *flash_threshold_recs = (const uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
 

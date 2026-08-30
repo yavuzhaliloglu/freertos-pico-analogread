@@ -84,6 +84,11 @@
 #define TH_RECORD_SECTOR_COUNT (FLASH_THRESHOLD_RECORDS_SIZE / FLASH_SECTOR_SIZE)
 #define TH_RECORDS_PER_SECTOR (FLASH_SECTOR_SIZE / FLASH_RECORD_SIZE)
 #define TH_RECORD_SLOT_COUNT (TH_RECORD_SECTOR_COUNT * TH_RECORDS_PER_SECTOR)
+// Esik degerinin gecerli araligi. Protokol 3 haneli yaziyor (96.3.12 -> %03d),
+// bu yuzden ust sinir 999. Flash'tan bu araligin disinda bir deger okunursa
+// varsayilana donulur.
+#define VRMS_THRESHOLD_DEFAULT 5
+#define VRMS_THRESHOLD_MAX 999
 // Load profile okumasinda flash mutex'i ust uste kac kez alinamazsa okuma
 // iptal edilir. 250 ms'lik timeout ile en fazla ~5 saniyelik takilma; 8 s'lik
 // donanim watchdog'unun altinda kalir.
