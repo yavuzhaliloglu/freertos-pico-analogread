@@ -761,10 +761,6 @@ int main() {
     gpio_set_function(RTC_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(RTC_I2C_SCL_PIN, GPIO_FUNC_I2C);
 
-#if WITHOUT_BOOTLOADER
-    addSerialNumber();
-#endif
-
     checkSectorContent();
     checkThresholdContent();
 

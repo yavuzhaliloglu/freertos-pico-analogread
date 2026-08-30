@@ -101,8 +101,12 @@ extern volatile uint32_t task_health_flags;
 #define PRINTF(x, ...)
 #endif
 
+// Bootloader'siz derlemede seri numarasinin TEK kaynagi budur; flash'a yazilmaz
+// ve flash'tan okunmaz. Bootloader'li derlemede ise seri numarasini flash'a
+// bootloader koyar ve getFlashContents() oradan okur.
+// SERIAL_NUMBER_SIZE (9) + sonlandirici sigacak kadar buyuk olmali.
 #if WITHOUT_BOOTLOADER
-static const char s_number[256] = "612400080";
+static const char s_number[16] = "612400080";
 #endif
 
 #endif

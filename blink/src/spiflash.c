@@ -93,9 +93,15 @@ void getFlashContents() {
     th_sector_data = th_ptr[1];
 
     // set serial number
+#if WITHOUT_BOOTLOADER
+    // Seri numarasi dogrudan derlenmis sabitten gelir; flash'a hic dokunulmaz.
+    memcpy(serial_number, s_number, SERIAL_NUMBER_SIZE);
+#else
+    // Bootloader'li derlemede seri numarasini flash'a bootloader yazar.
     uint8_t *serial_number_offset =
         (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
     memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
+#endif
 
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
     PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);
@@ -824,25 +830,10 @@ void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val) {
     }
 }
 
-#if WITHOUT_BOOTLOADER
-// This function adds serial number to flash area
-void __not_in_flash_func(addSerialNumber)() {
-    PRINTF("ADDSERIALNUMBER: entered addserialnumber function.\n");
-
-    uint8_t *snumber = (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
-
-    if (snumber[0] == 0xFF) {
-        PRINTF("ADDSERIALNUMBER: serial number is going to be added.\n");
-
-        uint32_t ints = save_and_disable_interrupts();
-        flash_range_erase(FLASH_SERIAL_NUMBER_ADDR,
-                          FLASH_SERIAL_NUMBER_AREA_SIZE);
-        flash_range_program(FLASH_SERIAL_NUMBER_ADDR, (const uint8_t *)s_number,
-                            FLASH_PAGE_SIZE);
-        restore_interrupts(ints);
-    }
-}
-#endif
+// addSerialNumber() kaldirildi: bootloader'siz derlemede seri numarasi artik
+// dogrudan s_number sabitinden okunuyor, flash kopyasini kimse okumuyordu.
+// Ayrica o fonksiyon s_number'dan FLASH_PAGE_SIZE (256) bayt programliyordu;
+// dizi 16 bayta indigi icin dizi disina tasardi.
 
 void __not_in_flash_func(setProgramStartDate)(datetime_t *ct) {
     uint8_t *flash_reset_count_offset =

@@ -38,10 +38,6 @@ void send_load_profile_records(uint8_t *buf);
 void __not_in_flash_func(checkSectorContent)();
 void __not_in_flash_func(checkThresholdContent)();
 void __not_in_flash_func(updateThresholdSector)(uint16_t sector_val);
-#if WITHOUT_BOOTLOADER
-// This function adds serial number to flash area
-void __not_in_flash_func(addSerialNumber)();
-#endif
 void __not_in_flash_func(setProgramStartDate)(datetime_t *ct);
 void __not_in_flash_func(writeSuddenAmplitudeChangeRecordToFlash)(struct AmplitudeChangeTimerCallbackParameters *ac_params);
 
