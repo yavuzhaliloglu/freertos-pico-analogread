@@ -84,6 +84,10 @@
 #define TH_RECORD_SECTOR_COUNT (FLASH_THRESHOLD_RECORDS_SIZE / FLASH_SECTOR_SIZE)
 #define TH_RECORDS_PER_SECTOR (FLASH_SECTOR_SIZE / FLASH_RECORD_SIZE)
 #define TH_RECORD_SLOT_COUNT (TH_RECORD_SECTOR_COUNT * TH_RECORDS_PER_SECTOR)
+// RTC saniyede bir okunuyor. Ust uste bu kadar okumada saat ILERLEMEZSE
+// (veya okuma basarisiz olursa) saat durmus sayilir. Arada bir ayni saniyeye
+// denk gelmek normal oldugu icin sinir 1 degil.
+#define RTC_STALL_LIMIT 5
 // Esik degerinin gecerli araligi. Protokol 3 haneli yaziyor (96.3.12 -> %03d),
 // bu yuzden ust sinir 999. Flash'tan bu araligin disinda bir deger okunursa
 // varsayilana donulur.

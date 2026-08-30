@@ -27,6 +27,12 @@ static volatile bool waiting_for_bcc = false;
 MessageBufferHandle_t xUARTMessageBuffer;
 volatile uint8_t task_flags = 0;
 
+// RTC canliligi. Sistemdeki neredeyse her periyodik is current_time'in
+// ILERLEMESINE bagli: esik penceresi dakika degisimiyle kapaniyor, load profile
+// belirli dakikalarda yaziliyor. Saat donarsa ikisi de sessizce bozulur -- ne
+// hata verir ne durur. vGetRTCTask bu bayragi tutar, tuketiciler kontrol eder.
+static volatile bool s_rtc_healthy = true;
+
 void reset_uart_software_buffer() {
     rx_index = 0;
     waiting_for_bcc = false;
@@ -520,6 +526,13 @@ static void thProcessWindow(uint16_t threshold_cv) {
         return;
     }
 
+    // Saat donmussa zaman damgasi guvenilmez; ayni damgayla ust uste kayit
+    // yazmaktansa yazmamak dogru. Olay makinesi calismaya devam eder.
+    if (!s_rtc_healthy) {
+        PRINTF("THRESHOLD EVENT: RTC ilerlemiyor, kayit atlandi\r\n");
+        return;
+    }
+
     switch (action) {
     case TH_ACTION_EVENT_STARTED:
         thWriteRecord(&rec, "BASLADI");
@@ -545,6 +558,11 @@ void vADCReadTask() {
     float vrms_values_per_second[VRMS_SAMPLE_SIZE / SAMPLE_SIZE_PER_VRMS_CALC];
     uint16_t vrms_buffer_count = 0;
     float vrms_buffer[VRMS_BUFFER_SIZE] = {0};
+    // En son load profile kaydinin yazildigi duvar saati dilimi. Ayni dilime
+    // ikinci kez yazmayi engeller.
+    int8_t lp_last_min = -1;
+    int8_t lp_last_hour = -1;
+    int8_t lp_last_day = -1;
 
 #if CONF_THRESHOLD_ENABLED
     uint16_t initial_threshold_cv = thresholdVoltsToCv(getVRMSThresholdValue());
@@ -620,7 +638,10 @@ void vADCReadTask() {
 
         // Pencere RTC dakikasina hizalidir. sec == 0 yerine dakika DEGISIMINE
         // bakiyoruz; gorev jitter'i bir saniyeyi kacirsa bile pencere kapanir.
-        if (current_time.min != th_last_min) {
+        // Ikinci kosul emniyet supabi: RTC durursa dakika hic degismez ve olay
+        // mantigi sessizce olurdu. Tampon dolunca da kapatiyoruz ki boru hatti
+        // (ve teshis loglari) saatten bagimsiz calismaya devam etsin.
+        if (current_time.min != th_last_min || th_window_count >= TH_WINDOW_MAX_SAMPLES) {
             if (th_last_min >= 0 && th_window_count > 0) {
                 thProcessWindow(threshold_cv);
             }
@@ -643,30 +664,47 @@ void vADCReadTask() {
         }
 #endif
 
-        if (current_time.sec == 0) {
+        if (current_time.sec == 0 && s_rtc_healthy) {
             if (current_time.min % load_profile_record_period == 0) {
-                PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\r\n", load_profile_record_period);
+                // Ayni dakika icin ikinci kez yazma. RTC tam bu kombinasyonda
+                // (sec == 0 ve dakika periyodun kati) donarsa kosul her saniye
+                // saglanir ve saniyede bir sektor silinirdi -- 100k dayanim
+                // ~28 saatte tukenir. Bu kontrol o senaryoyu kapatiyor ve
+                // saatten bagimsiz olarak da dogru bir degismezdir.
+                bool already_written = (current_time.min == lp_last_min &&
+                                        current_time.hour == lp_last_hour &&
+                                        current_time.day == lp_last_day);
 
-                if (vrms_buffer_count > VRMS_BUFFER_SIZE) {
-                    vrms_buffer_count = VRMS_BUFFER_SIZE;
-                }
-
-                VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
-                PRINTF("ADC READ TASK: calculated VRMS values.\r\n");
-
-                uint32_t uptime_ms = to_ms_since_boot(get_absolute_time());
-                uint32_t guard_ms = (uint32_t)load_profile_record_period * 60u * 1000u;
-
-                if (uptime_ms + guard_ms < ESTIMATE_RESET_MS) {
-                    SPIWriteToFlash(&vrms_values);
-                    PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
+                if (already_written) {
+                    PRINTF("ADC READ TASK: bu dakika icin load profile zaten yazildi, atlandi\r\n");
                 } else {
-                    PRINTF("ADC READ TASK: reset window is close (uptime=%lu ms), load profile skipped.\r\n", uptime_ms);
-                }
+                    lp_last_min = current_time.min;
+                    lp_last_hour = current_time.hour;
+                    lp_last_day = current_time.day;
 
-                memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
-                vrms_buffer_count = 0;
-                PRINTF("ADC READ TASK: buffer content is deleted\r\n");
+                    PRINTF("ADC READ TASK: minute is multiple of %d. write flash block is running...\r\n", load_profile_record_period);
+
+                    if (vrms_buffer_count > VRMS_BUFFER_SIZE) {
+                        vrms_buffer_count = VRMS_BUFFER_SIZE;
+                    }
+
+                    VRMS_VALUES_RECORD vrms_values = vrmsSetMinMaxMean(vrms_buffer, vrms_buffer_count);
+                    PRINTF("ADC READ TASK: calculated VRMS values.\r\n");
+
+                    uint32_t uptime_ms = to_ms_since_boot(get_absolute_time());
+                    uint32_t guard_ms = (uint32_t)load_profile_record_period * 60u * 1000u;
+
+                    if (uptime_ms + guard_ms < ESTIMATE_RESET_MS) {
+                        SPIWriteToFlash(&vrms_values);
+                        PRINTF("ADC READ TASK: writing flash memory process is completed.\r\n");
+                    } else {
+                        PRINTF("ADC READ TASK: reset window is close (uptime=%lu ms), load profile skipped.\r\n", uptime_ms);
+                    }
+
+                    memset(vrms_buffer, 0, VRMS_BUFFER_SIZE * sizeof(float));
+                    vrms_buffer_count = 0;
+                    PRINTF("ADC READ TASK: buffer content is deleted\r\n");
+                }
             }
         }
     }
@@ -675,12 +713,43 @@ void vADCReadTask() {
 void vGetRTCTask() {
     TickType_t startTime;
     const TickType_t xFrequency = pdMS_TO_TICKS(1000);
+    datetime_t previous = {0};
+    uint16_t stall_count = 0;
+
     startTime = xTaskGetTickCount();
 
     while (true) {
         vTaskDelayUntil(&startTime, xFrequency);
 
-        rtc_get_datetime(&current_time);
+        if (!rtc_get_datetime(&current_time)) {
+            // Okuma basarisiz: current_time eski degerinde KALIR. Sessizce
+            // devam edersek saat donmus gibi davranir.
+            stall_count++;
+            PRINTF("RTC: rtc_get_datetime basarisiz (%u ardisik)\r\n", stall_count);
+        } else if (current_time.sec == previous.sec &&
+                   current_time.min == previous.min &&
+                   current_time.hour == previous.hour) {
+            // Cagri basarili ama saat ILERLEMIYOR. Saniyede bir okudugumuz icin
+            // arada bir ayni saniyeye denk gelmek normal; ustuste RTC_STALL_LIMIT
+            // kez ayni kalmasi ise saatin gercekten durdugu anlamina gelir.
+            stall_count++;
+        } else {
+            stall_count = 0;
+            previous = current_time;
+        }
+
+        bool healthy = (stall_count < RTC_STALL_LIMIT);
+
+        if (!healthy && s_rtc_healthy) {
+            PRINTF("RTC: saat ilerlemiyor! Esik olaylari ve load profile "
+                   "kayitlari durduruldu.\r\n");
+            led_blink_pattern(LED_ERROR_CODE_RTC_STALLED, false);
+        } else if (healthy && !s_rtc_healthy) {
+            PRINTF("RTC: saat yeniden ilerliyor, kayitlar devam ediyor.\r\n");
+        }
+
+        s_rtc_healthy = healthy;
+
         datetime_to_str(datetime_str, sizeof(datetime_buffer), &current_time);
         PRINTF("---------------------------------------------------------------------------------------------------------\n");
         PRINTF("WRITE DEBUG TASK: The Time is:%s\r\n", datetime_str);
