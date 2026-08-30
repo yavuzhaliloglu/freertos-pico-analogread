@@ -92,16 +92,8 @@ void getFlashContents() {
     vrms_threshold = th_ptr[0];
     th_sector_data = th_ptr[1];
 
-    // set serial number
-#if WITHOUT_BOOTLOADER
-    // Seri numarasi dogrudan derlenmis sabitten gelir; flash'a hic dokunulmaz.
+    // set serial number -- dogrudan derlenmis sabitten, flash'a hic dokunulmaz
     memcpy(serial_number, s_number, SERIAL_NUMBER_SIZE);
-#else
-    // Bootloader'li derlemede seri numarasini flash'a bootloader yazar.
-    uint8_t *serial_number_offset =
-        (uint8_t *)(XIP_BASE + FLASH_SERIAL_NUMBER_ADDR);
-    memcpy(serial_number, serial_number_offset, SERIAL_NUMBER_SIZE);
-#endif
 
     PRINTF("GETFLASHCONTENTS: vrms threshold value is: %d\n", vrms_threshold);
     PRINTF("GETFLASHCONTENTS: flash sector is: %d\n", sector_data);

@@ -14,8 +14,6 @@
 #define PRODUCTION_DATE "26-06-12"
 // Debugs
 #define DEBUG 1
-// bootloader select
-#define WITHOUT_BOOTLOADER 1
 // vrms multiplier value -- trafo ile olculmus gercek bolucu orani, donanim
 // surumune bagli. Ikisi de tek nokta (32.5 V multimetre) uzerinden cikarildi:
 //   v2: cihaz 33.86 V (carpan 150 ile) -> 150 * 32.5/33.86 = 144.0
@@ -101,12 +99,8 @@ extern volatile uint32_t task_health_flags;
 #define PRINTF(x, ...)
 #endif
 
-// Bootloader'siz derlemede seri numarasinin TEK kaynagi budur; flash'a yazilmaz
-// ve flash'tan okunmaz. Bootloader'li derlemede ise seri numarasini flash'a
-// bootloader koyar ve getFlashContents() oradan okur.
+// Seri numarasinin tek kaynagi. Flash'a yazilmaz, flash'tan okunmaz.
 // SERIAL_NUMBER_SIZE (9) + sonlandirici sigacak kadar buyuk olmali.
-#if WITHOUT_BOOTLOADER
 static const char s_number[16] = "612400080";
-#endif
 
 #endif
