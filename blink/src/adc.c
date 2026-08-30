@@ -102,6 +102,34 @@ float getMean(uint16_t *buffer, size_t size)
     }
 }
 
+// thFindOpenEvent icin geri cagirim: halkada `back` kayit geriye giden ham
+// 16 bayti okur (back = 1 en son yazilan kayit).
+static bool fetchThresholdRecordBack(void *ctx, uint16_t back, uint8_t *out)
+{
+    if (ctx == NULL || out == NULL || back == 0 || back > TH_RECORD_SLOT_COUNT)
+    {
+        return false;
+    }
+
+    uint16_t write_index = *(const uint16_t *)ctx;
+    const uint8_t *base = (const uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
+    uint16_t slot = thSlotBack(write_index, back, TH_RECORD_SLOT_COUNT);
+
+    memcpy(out, base + ((size_t)slot * FLASH_RECORD_SIZE), FLASH_RECORD_SIZE);
+    return true;
+}
+
+// Acilista cagrilir: onceki calisma bir olayin ortasinda kesildiyse (son kayit
+// hala "acik" isaretliyse) o olayin baslangicini, tepesini ve son kayit anini
+// dondurur.
+bool findOpenThresholdEvent(th_time_t *start_time, uint16_t *peak_cv, th_time_t *last_record_time)
+{
+    uint16_t write_index = getThresholdWriteIndex();
+
+    return thFindOpenEvent(fetchThresholdRecordBack, &write_index, TH_OPEN_EVENT_MAX_BACK,
+                           start_time, peak_cv, last_record_time);
+}
+
 // Halkadaki bir sonraki yazma konumunu (mutlak slot indeksi) hesaplar.
 uint16_t getThresholdWriteIndex(void)
 {
