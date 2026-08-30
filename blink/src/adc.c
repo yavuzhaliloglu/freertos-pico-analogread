@@ -6,6 +6,7 @@
 #include "semphr.h"
 #include <string.h>
 #include <math.h>
+#include <stddef.h>
 #include <stdio.h>
 
 #include "header/project_globals.h"
@@ -13,6 +14,17 @@
 #include "header/spiflash.h"
 #include "header/adc.h"
 #include "header/bcc.h"
+#include "header/threshold_event.h"
+
+// Halka tampon aritmetigi kayit boyutunun 16 bayt kalmasina dayaniyor.
+// Okuma tarafi (uart.c) alanlari SABIT OFFSET ile cozuyor; derleyici araya
+// dolgu koyarsa flash yerlesimi sessizce bozulur. O yuzden burada zorluyoruz.
+_Static_assert(sizeof(struct ThresholdData) == FLASH_RECORD_SIZE,
+               "ThresholdData FLASH_RECORD_SIZE ile ayni boyutta olmali");
+_Static_assert(offsetof(struct ThresholdData, vrms) == 12,
+               "vrms alani 12. bayttan baslamali (uart.c sabit offset kullaniyor)");
+_Static_assert(offsetof(struct ThresholdData, duration) == 14,
+               "duration alani 14. bayttan baslamali (uart.c sabit offset kullaniyor)");
 
 uint16_t calculateVariance(uint16_t *buffer, uint16_t size)
 {
@@ -90,15 +102,30 @@ float getMean(uint16_t *buffer, size_t size)
     }
 }
 
-// Write threshold data to flash
-void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
+// Halkadaki bir sonraki yazma konumunu (mutlak slot indeksi) hesaplar.
+uint16_t getThresholdWriteIndex(void)
+{
+    const uint8_t *sector = (const uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
+    uint16_t offset = thFindFreeOffset(sector, FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
+    th_write_pos_t pos = thNextWritePos(th_sector_data, offset, FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE, TH_RECORD_SECTOR_COUNT);
+
+    return (uint16_t)(((uint32_t)pos.sector * TH_RECORDS_PER_SECTOR) + pos.slot_in_sector);
+}
+
+// Write threshold data to flash.
+// Kayit alani bir HALKA tampondur: son sektor dolunca 0. sektore donulur, o
+// sektor silinip uzerine yazilmaya devam edilir (en eski kayitlar dusr).
+void __not_in_flash_func(writeThresholdRecord)(const struct ThresholdData *record)
 {
     PRINTF("writing threshold record\r\n");
 
+    if (record == NULL)
+    {
+        return;
+    }
+
     // initialize the variables
-    struct ThresholdData data;
-    uint8_t *flash_threshold_recs = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
-    uint16_t offset = 0;
+    const uint8_t *flash_threshold_recs = (const uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR + (th_sector_data * FLASH_SECTOR_SIZE));
 
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
     {
@@ -113,74 +140,28 @@ void __not_in_flash_func(writeThresholdRecord)(float vrms, uint16_t variance)
         return;
     }
 
-    // set struct data parameters
-    setDateToCharArray(current_time.year, data.year);
-    setDateToCharArray(current_time.month, data.month);
-    setDateToCharArray(current_time.day, data.day);
-    setDateToCharArray(current_time.hour, data.hour);
-    setDateToCharArray(current_time.min, data.min);
-    setDateToCharArray(current_time.sec, data.sec);
-    data.vrms = vrms;
-    data.variance = variance;
+    // Kaydin alanlari cagiran tarafta (olay mantiginda) doldurulmustur; burada
+    // sadece halkadaki yerine konur.
+    uint16_t free_offset = thFindFreeOffset((const uint8_t *)th_flash_buf, FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE);
+    th_write_pos_t pos = thNextWritePos(th_sector_data, free_offset, FLASH_SECTOR_SIZE, FLASH_RECORD_SIZE, TH_RECORD_SECTOR_COUNT);
 
-    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)
+    if (pos.sector_changed)
     {
-        PRINTF("WRITETHRESHOLDRECORD: offset loop mutex received\r\n");
-        // find the last offset of flash records and write current values to last offset of flash_data buffer
-        for (offset = 0; offset < FLASH_SECTOR_SIZE; offset += FLASH_RECORD_SIZE)
-        {
-            if (flash_threshold_recs[offset] == 0x00 || flash_threshold_recs[offset] == 0xFF)
-            {
-                if (offset == 0)
-                {
-                    PRINTF("WRITETHRESHOLDRECORD: last record is not found.\r\n");
-                }
-                else
-                {
-                    PRINTF("WRITETHRESHOLDRECORD: last record is start in %d offset\r\n", offset - 16);
-                }
+        PRINTF("WRITETHRESHOLDRECORD: sector %d dolu, %d. sektore geciliyor\r\n", th_sector_data, pos.sector);
 
-                th_flash_buf[offset / FLASH_RECORD_SIZE] = data;
+        th_sector_data = pos.sector;
 
-                PRINTF("WRITETHRESHOLDRECORD: record saved to offset: %d. used %d/%d of sector.\r\n", offset, offset + 16, FLASH_SECTOR_SIZE);
-
-                break;
-            }
-        }
-
-        xSemaphoreGive(xFlashMutex);
-    }
-    else
-    {
-        PRINTF("WRITETHRESHOLDRECORD: offset loop mutex error\r\n");
-        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
-        return;
-    }
-
-    // if offset value is equals or bigger than FLASH_SECTOR_SIZE, (4096 bytes) it means current sector is full and program should write new values to next sector
-    if (offset >= FLASH_SECTOR_SIZE)
-    {
-        PRINTF("WRITETHRESHOLDRECORD: offset value is equals to sector size. Current sector data is: %d. Sector is changing...\r\n", th_sector_data);
-
-        // if current sector is last sector of flash, sector data will be 0 and the program will start to write new records to beginning of the flash record offset
-        if (th_sector_data == 3)
-        {
-            th_sector_data = 0;
-        }
-        else
-        {
-            th_sector_data++;
-        }
-
-        PRINTF("WRITETHRESHOLDRECORD: new sector value is: %d\r\n", th_sector_data);
-
-        // reset variables and call setSectorData()
-        memset(th_flash_buf, 0, FLASH_SECTOR_SIZE);
-        th_flash_buf[0] = data;
+        // Yeni sektorun RAM kopyasini silinmis hale (0xFF) getir. Bu sektor
+        // asagida silinip bastan yazildigi icin icindeki en eski kayitlar duser
+        // -- halkanin basa donmesi tam olarak budur.
+        memset(th_flash_buf, 0xFF, FLASH_SECTOR_SIZE);
         updateThresholdSector(th_sector_data);
-
-        PRINTF("WRITETHRESHOLDRECORD: Sector changing written to flash.\r\n");
     }
+
+    th_flash_buf[pos.slot_in_sector] = *record;
+
+    PRINTF("WRITETHRESHOLDRECORD: kayit sektor %d slot %d/%d konumuna yazildi\r\n",
+           th_sector_data, pos.slot_in_sector, (int)TH_RECORDS_PER_SECTOR);
 
     // write buffer in flash
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE)

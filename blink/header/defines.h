@@ -80,6 +80,10 @@
 #define FLASH_AMPLITUDE_RECORDS_TOTAL_SECTOR 100
 // this is the size of one load profile record
 #define FLASH_RECORD_SIZE (16)
+// esik kayit alanindaki sektor / slot sayilari (halka tampon)
+#define TH_RECORD_SECTOR_COUNT (FLASH_THRESHOLD_RECORDS_SIZE / FLASH_SECTOR_SIZE)
+#define TH_RECORDS_PER_SECTOR (FLASH_SECTOR_SIZE / FLASH_RECORD_SIZE)
+#define TH_RECORD_SLOT_COUNT (TH_RECORD_SECTOR_COUNT * TH_RECORDS_PER_SECTOR)
 // serial number size
 #define SERIAL_NUMBER_SIZE 9
 #define SERIAL_NUMBER_FLAG_SIZE 3
@@ -150,6 +154,19 @@
 #define BIAS_SAMPLE_SIZE 2000
 // amplitude threshold
 #define AMPLITUDE_THRESHOLD 5
+// ESIK OLAY DEFINES
+// bir pencerede toplanabilecek en fazla saniyelik VRMS ornegi (1 dk + pay)
+#define TH_WINDOW_MAX_SAMPLES 72
+// olayin baslamasi icin gereken ardisik pencere sayisi
+#define TH_ENTER_WINDOWS 2
+// olayin bitmesi icin gereken ardisik pencere sayisi (esik altinda)
+#define TH_EXIT_WINDOWS 5
+// uzun olaylarda ara "suruyor" kaydi periyodu (dakika); 1440 = gunde bir
+#define TH_HEARTBEAT_WINDOWS 1440
+// histerezis: cikis esigi giris esiginin bu kadar altindadir (santivolt)
+#define TH_HYSTERESIS_CV 50
+// RTC'nin kurulmus sayilmasi icin en kucuk yil (2 haneli)
+#define TH_RTC_MIN_VALID_YEAR 25
 // mean calculation window size
 #define MEAN_CALCULATION_WINDOW_SIZE 20
 // mean calculation shifting size

@@ -15,8 +15,10 @@
 #include "semphr.h"
 #include "task.h"
 
+#include "header/adc.h"
 #include "header/bcc.h"
 #include "header/mutex.h"
+#include "header/threshold_event.h"
 #include "header/print.h"
 #include "header/project_globals.h"
 #include "header/rtc.h"
@@ -269,8 +271,8 @@ uint8_t exract_baud_rate_and_mode_from_message(uint8_t *msg_buf, size_t msg_len,
 
 void send_threshold_records(uint8_t *xor_result) {
     uint8_t threshold_records_raw[FLASH_RECORD_SIZE * THRESHOLD_RECORD_OBIS_COUNT];
-    // record area offset pointer
-    uint8_t *record_ptr = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
+    // record area base pointer
+    uint8_t *record_base = (uint8_t *)(XIP_BASE + FLASH_THRESHOLD_RECORDS_ADDR);
     // buffer to format
     uint8_t buffer[48] = {0};
     // copy the flash content in struct
@@ -281,14 +283,26 @@ void send_threshold_records(uint8_t *xor_result) {
     char min[3] = {0};
     char sec[3] = {0};
     uint16_t vrms = 0;
-    uint16_t variance = 0;
+    uint16_t duration = 0;
     int result;
 
     memset(buffer, 0, sizeof(buffer));
-    memset(threshold_records_raw, 0, sizeof(threshold_records_raw));
+    memset(threshold_records_raw, 0xFF, sizeof(threshold_records_raw));
 
     if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) == pdTRUE) {
-        memcpy(threshold_records_raw, record_ptr, sizeof(threshold_records_raw));
+        // Kayit alani bir halka tampon. Alanin basindan degil, YAZMA
+        // KONUMUNDAN geriye dogru yuruyup en yeni kayitlari topluyoruz;
+        // eskiden hep 0. sektorun ilk 10 kaydi donuyordu.
+        uint16_t write_index = getThresholdWriteIndex();
+
+        for (size_t i = 0; i < THRESHOLD_RECORD_OBIS_COUNT; i++) {
+            uint16_t slot = thSlotBack(write_index, (uint16_t)(i + 1u), TH_RECORD_SLOT_COUNT);
+
+            memcpy(&threshold_records_raw[i * FLASH_RECORD_SIZE],
+                   record_base + ((size_t)slot * FLASH_RECORD_SIZE),
+                   FLASH_RECORD_SIZE);
+        }
+
         xSemaphoreGive(xFlashMutex);
     } else {
         PRINTF("SEND THRESHOLD RECORDS: Could not take flash mutex!\n");
@@ -301,7 +315,7 @@ void send_threshold_records(uint8_t *xor_result) {
         size_t offset = i * FLASH_RECORD_SIZE;
 
         if (threshold_records_raw[offset] == 0xFF || threshold_records_raw[offset] == 0x00) {
-            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(00-00-00,00:00:00)(000,00000)\r\n", idx);
+            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(00-00-00,00:00:00)(000.00,00000)\r\n", idx);
         } else {
             snprintf(year, sizeof(year), "%c%c", threshold_records_raw[offset], threshold_records_raw[offset + 1]);
             snprintf(month, sizeof(month), "%c%c", threshold_records_raw[offset + 2], threshold_records_raw[offset + 3]);
@@ -309,14 +323,16 @@ void send_threshold_records(uint8_t *xor_result) {
             snprintf(hour, sizeof(hour), "%c%c", threshold_records_raw[offset + 6], threshold_records_raw[offset + 7]);
             snprintf(min, sizeof(min), "%c%c", threshold_records_raw[offset + 8], threshold_records_raw[offset + 9]);
             snprintf(sec, sizeof(sec), "%c%c", threshold_records_raw[offset + 10], threshold_records_raw[offset + 11]);
+            // vrms artik SANTIVOLT (573 = 5.73 V), ikinci alan da varyans degil
+            // olayin DAKIKA cinsinden suresi (65535 = olay hala suruyor).
             vrms = threshold_records_raw[offset + 13];
             vrms = (vrms << 8);
             vrms += threshold_records_raw[offset + 12];
-            variance = threshold_records_raw[offset + 15];
-            variance = (variance << 8);
-            variance += threshold_records_raw[offset + 14];
+            duration = threshold_records_raw[offset + 15];
+            duration = (duration << 8);
+            duration += threshold_records_raw[offset + 14];
 
-            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(%s-%s-%s,%s:%s:%s)(%03d,%05d)\r\n", idx, year, month, day, hour, min, sec, vrms, variance);
+            result = snprintf((char *)buffer, sizeof(buffer), "96.77.4*%d(%s-%s-%s,%s:%s:%s)(%03d.%02d,%05d)\r\n", idx, year, month, day, hour, min, sec, vrms / 100, vrms % 100, duration);
         }
 
         // xor all bytes of formatted array

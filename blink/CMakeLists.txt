@@ -21,6 +21,7 @@
         src/print.c
         src/rtc.c
         src/spiflash.c
+        src/threshold_event.c
         src/uart.c
         src/mutex.c
         src/globals.c
