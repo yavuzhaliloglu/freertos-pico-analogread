@@ -51,7 +51,7 @@ SemaphoreHandle_t xVRMSLastValuesMutex;
 SemaphoreHandle_t xVRMSThresholdMutex;
 SemaphoreHandle_t xThresholdSetFlagMutex;
 
-const uint16_t pattern_idle[] = {100, 100, 100, 100, 100, 100, 100, 100, 100, 100};
+const uint16_t pattern_idle[] = {500, 500};
 
 // Error Patterns
 const uint16_t led_pattern_uart_not_readable[] = {50, 950}; // 1 Short
