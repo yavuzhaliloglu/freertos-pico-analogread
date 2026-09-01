@@ -124,10 +124,27 @@ static bool fetchThresholdRecordBack(void *ctx, uint16_t back, uint8_t *out)
 // dondurur.
 bool findOpenThresholdEvent(th_time_t *start_time, uint16_t *peak_cv, th_time_t *last_record_time)
 {
+    // Bu fonksiyon XIP'ten dogrudan okuyor ve (uart.c'deki okuma yolunun
+    // aksine) mutex TUTMADAN cagriliyordu. RP2040'ta bir cekirdek flash silerken
+    // digerinin XIP'ten okumasi tanimsiz davranistir -- bayat veri degil, veri
+    // yolu seviyesinde sorun. copy_to_ram yalnizca KODU RAM'e tasiyor, XIP'ten
+    // VERI okumasini korumuyor. Yazma tarafi silme boyunca bu mutex'i tuttugu
+    // icin kilidi burada almak iki yolu birbirine karsi seri hale getiriyor.
+    if (xSemaphoreTake(xFlashMutex, pdMS_TO_TICKS(250)) != pdTRUE)
+    {
+        PRINTF("FINDOPENTHRESHOLDEVENT: flash mutex alinamadi, devralma atlandi\r\n");
+        led_blink_pattern(LED_ERROR_CODE_FLASH_MUTEX_NOT_TAKEN, false);
+        return false;
+    }
+
     uint16_t write_index = getThresholdWriteIndex();
 
-    return thFindOpenEvent(fetchThresholdRecordBack, &write_index, TH_OPEN_EVENT_MAX_BACK,
-                           start_time, peak_cv, last_record_time);
+    bool found = thFindOpenEvent(fetchThresholdRecordBack, &write_index, TH_OPEN_EVENT_MAX_BACK,
+                                 start_time, peak_cv, last_record_time);
+
+    xSemaphoreGive(xFlashMutex);
+
+    return found;
 }
 
 // Halkadaki bir sonraki yazma konumunu (mutlak slot indeksi) hesaplar.
