@@ -436,7 +436,7 @@ void send_reset_dates(uint8_t *xor_result) {
             char hour[3] = {reset_dates_raw[i + 6], reset_dates_raw[i + 7], 0x00};
             char min[3] = {reset_dates_raw[i + 8], reset_dates_raw[i + 9], 0x00};
             char sec[3] = {reset_dates_raw[i + 10], reset_dates_raw[i + 11], 0x00};
-            xSemaphoreGive(xFlashMutex);
+            // xSemaphoreGive(xFlashMutex);
 
             result = snprintf(date_buffer, sizeof(date_buffer), "0.1.2*%d(%s-%s-%s,%s:%s:%s)\r\n", idx, year, month, day, hour, min, sec);
 
