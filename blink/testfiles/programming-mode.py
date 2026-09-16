@@ -527,7 +527,7 @@ if(args.baud_rate):
     max_baud_rate_integer = int(max_baud_rate.decode("utf-8"))
 
 try:
-    seri = serial.Serial("/dev/ttyUSB0", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=1)
+    seri = serial.Serial("/dev/tty.usbserial-1120", baudrate=300, bytesize=7, parity="E", stopbits=1, timeout=1)
 except FileNotFoundError:
     print("File not found, please check connection and try again!")
     exit(1)
@@ -567,7 +567,7 @@ time.sleep(0.25)
 
 seri.close()
 seri = serial.Serial(
-    "/dev/ttyUSB0",
+    "/dev/tty.usbserial-1120",
     baudrate=baud_rates[max_baud_rate_integer],
     bytesize=7,
     parity="E",

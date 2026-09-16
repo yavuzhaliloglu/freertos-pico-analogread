@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 // version
-#define HARDWARE_VERSION 3
+#define HARDWARE_VERSION 2
 
 // Device Password (will be written to flash)
 #define DEVICE_PASSWORD "12345678"
@@ -13,7 +13,7 @@
 // production date of device (yy-mm-dd)
 #define PRODUCTION_DATE "26-06-12"
 // Debugs
-#define DEBUG 1
+#define DEBUG 0
 // vrms multiplier value -- trafo ile olculmus gercek bolucu orani, donanim
 // surumune bagli. Ikisi de tek nokta (32.5 V multimetre) uzerinden cikarildi:
 //   v2: cihaz 33.86 V (carpan 150 ile) -> 150 * 32.5/33.86 = 144.0
